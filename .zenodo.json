@@ -1,0 +1,10 @@
+{
+  "title": "piktests: Run PIK Integration Tests",
+  "version": "0.1.1",
+  "description": "<p>This package includes integration tests for important models and packages related to those models.<\/p>",
+  "creators": [
+    {
+      "name": "Führlich, Pascal"
+    }
+  ]
+}

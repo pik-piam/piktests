@@ -3,3 +3,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^\.buildlibrary$
+^\.github$
+^codecov\.yml$
+^.*\.zenodo.json$
