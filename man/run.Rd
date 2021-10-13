@@ -4,17 +4,13 @@
 \alias{run}
 \title{run}
 \usage{
-run(path = ".")
-}
-\arguments{
-\item{path}{Path to a folder. Here, a new folder named after the current date/time will be created for this test run.}
+run(madratConfig = readRDS("initialMadratConfig.rds"))
 }
 \description{
-Runs all integration tests available in a mostly isolated runtime environment.
+This function is only meant to be run by piktests::runInRenv. Runs all integration tests in a mostly isolated runtime
+environment.
 }
 \details{
-A new folder will be created for each run, named after the current date/time. In this folder a madratCacheFolder and
-a madratOutputFolder are created and used while running the tests. A runtimeWorkingDirectory is also created and
-while running the tests this will be the working directory. The original madrat configuration and working directory
-will be restored afterwards.
+A runtimeWorkingDirectory is created and used as the working directory while running the tests, also a
+madratCacheFolder and a madratOutputFolder are created and used while running the tests.
 }

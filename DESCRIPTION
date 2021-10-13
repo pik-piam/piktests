@@ -12,7 +12,9 @@ LazyData: true
 RoxygenNote: 7.1.2
 Imports:
     madrat,
+    mrmagpie,
     mrremind,
+    renv,
     withr
 Suggests: 
     covr
