@@ -6,6 +6,9 @@
 \usage{
 run(madratConfig = readRDS("initialMadratConfig.rds"))
 }
+\arguments{
+\item{madratConfig}{The madrat configuration to use.}
+}
 \description{
 This function is only meant to be run by piktests::runInRenv. Runs all integration tests in a mostly isolated runtime
 environment.

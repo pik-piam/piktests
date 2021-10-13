@@ -6,6 +6,8 @@
 #' A runtimeWorkingDirectory is created and used as the working directory while running the tests, also a
 #' madratCacheFolder and a madratOutputFolder are created and used while running the tests.
 #'
+#' @param madratConfig The madrat configuration to use.
+#'
 #' @importFrom madrat setConfig
 #' @importFrom withr local_options
 run <- function(madratConfig = readRDS("initialMadratConfig.rds")) {

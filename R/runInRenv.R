@@ -1,3 +1,8 @@
+#' runInRenv
+#'
+#' Creates a test run folder, sets up a fresh renv and installs needed packages in it. Then calls piktests:::run() to
+#' run the actual tests.
+#'
 #' @importFrom madrat getConfig
 #' @importFrom utils packageDescription
 #' @importFrom withr local_dir
