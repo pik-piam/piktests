@@ -2,7 +2,7 @@ runPreprocessing <- function(package = "mrremind", retrieveDataArgs = "'remind'"
   stopifnot(length(retrieveDataArgs) == 1)
   command <- paste0("withr::with_options(list(madrat_cfg = readRDS('madratConfig.rds')), { ",
                     "library(", package, "); ",
-                    "madrat::retrieveData(", retrieveDataArgs, ") })")
+                    "madrat::retrieveData(", retrieveDataArgs, ", cachetype = 'def') })")
   message("Running ", command)
   logFileName <- file.path("preprocessingLogs", paste0(package, "-", retrieveDataArgs, ".log"))
   # TODO remove timeout; maybe set wait = FALSE
