@@ -19,8 +19,9 @@ run <- function(madratConfig = readRDS("initialMadratConfig.rds")) {
 
   local_options(madrat_cfg = madratConfig)
   setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
-  saveRDS(getOption("madrat_cfg"), "madratConfig.rds")
+  madratConfig <- getOption("madrat_cfg")
+  saveRDS(madratConfig, "madratConfig.rds")
 
-  runPreprocessing("mrmagpie", "'cellularmagpie', rev = 4.63")
-  runPreprocessing("mrremind", "'remind'")
+  runPreprocessing(madratConfig, "mrmagpie", list("cellularmagpie", rev = 4.63))
+  runPreprocessing(madratConfig, "mrremind", list("remind"))
 }

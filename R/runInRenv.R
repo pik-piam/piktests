@@ -21,7 +21,7 @@ runInRenv <- function() { # TODO submit to slurm arg
   # copying the piktests DESCRIPTION so renv can automatically determine dependencies
   file.copy(attr(packageDescription("piktests"), "file"), runFolder)
   system2("Rscript", "-", input = "renv::init()")
-  # TODO comment in next line, remove copying DESCRIPTION
+  # TODO comment in next line, remove copying DESCRIPTION, submit to slurm, write output to logfile
   # system2("Rscript", "-", input = "renv::record('piktests'); renv::restore(); renv::snapshot()")
   system2("Rscript", "-", input = "renv::restore(); renv::install('/home/pascal/dev/piktests'); piktests:::run()")
 }

@@ -3,7 +3,7 @@ Type: Package
 Version: 0.1.1
 Date: 2021-09-23
 Title: Run PIK Integration Tests
-Description: This package includes integration tests for important models and packages related to those models.
+Description: This package includes integration tests for selected models and packages related to those models.
 Authors@R: c(person("Pascal", "Führlich", email = "pascal.fuehrlich@pik-potsdam.de", role = c("aut","cre")))
 URL: https://github.com/pik-piam/piktests
 License: MIT + file LICENSE
@@ -11,10 +11,12 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2
 Imports:
-    madrat,
+    madrat(>= 2.3.4),
     mrmagpie,
     mrremind,
     renv,
     withr
 Suggests: 
     covr
+Remotes:
+    pfuehrlich-pik/madrat
