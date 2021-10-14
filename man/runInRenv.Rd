@@ -4,7 +4,10 @@
 \alias{runInRenv}
 \title{runInRenv}
 \usage{
-runInRenv()
+runInRenv(useSlurm = TRUE)
+}
+\arguments{
+\item{useSlurm}{Whether to start the tests via sbatch (default, run in background) or directly in the current shell.}
 }
 \description{
 Creates a test run folder, sets up a fresh renv and installs needed packages in it. Then calls piktests:::run() to
