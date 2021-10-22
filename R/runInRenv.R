@@ -3,13 +3,13 @@
 #' Creates a test run folder, sets up a fresh renv and installs needed packages in it. Then calls piktests:::run() to
 #' run the actual tests.
 #'
-#' @param useSlurm Whether to start the tests via sbatch (default, run in background) or directly in the current shell.
+#' @param useSlurm Whether to start the tests via sbatch (run in background) or directly in the current shell.
 #'
 #' @importFrom madrat getConfig
 #' @importFrom utils packageDescription
 #' @importFrom withr local_dir
 #' @export
-runInRenv <- function(useSlurm = TRUE) {
+runInRenv <- function(useSlurm = FALSE) {
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   runFolder <- file.path(getwd(), now)
   if (file.exists(runFolder)) {
@@ -28,7 +28,6 @@ runInRenv <- function(useSlurm = TRUE) {
                "piktests:::run()"),
              "installDependenciesAndRun.R")
 
-  # TODO this crashes, but running renv::init() in an interactive R session works
   system2("Rscript", "-", input = "renv::init()")
 
   logFile <- "runInRenv.log"
@@ -38,7 +37,7 @@ runInRenv <- function(useSlurm = TRUE) {
                         "--mail-type=END",
                         "--qos=priority",
                         "--mem=32000",
-                        paste0("--wrap=", shQuote("Rscript installDependenciesAndRun.R"))))
+                        "--wrap='Rscript installDependenciesAndRun.R'"))
   } else {
     system2("Rscript", "installDependenciesAndRun.R", stdout = logFile, stderr = logFile, wait = FALSE)
   }

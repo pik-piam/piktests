@@ -4,7 +4,7 @@
 \alias{runInRenv}
 \title{runInRenv}
 \usage{
-runInRenv(useSlurm = TRUE)
+runInRenv(useSlurm = FALSE)
 }
 \arguments{
 \item{useSlurm}{Whether to start the tests via sbatch (default, run in background) or directly in the current shell.}
