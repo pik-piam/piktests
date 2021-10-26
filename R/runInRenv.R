@@ -22,13 +22,9 @@ runInRenv <- function(useSlurm = FALSE) {
   getConfig()
   saveRDS(getOption("madrat_cfg"), "initialMadratConfig.rds")
 
-  # this is executed in the new renv
-  writeLines(c("renv::install('pfuehrlich-pik/piktests')",
-               "renv::snapshot()",
-               "piktests:::run()"),
-             "installDependenciesAndRun.R")
-
   system2("Rscript", "-", input = "renv::init()")
+  system2("Rscript", "-", input = paste0("renv::install('pfuehrlich-pik/piktests')\n", # TODO install from main repo
+                                        "renv::snapshot()"))
 
   logFile <- "runInRenv.log"
   if (useSlurm) {
@@ -37,11 +33,11 @@ runInRenv <- function(useSlurm = FALSE) {
                     "--mail-type=END",
                     "--qos=priority",
                     "--mem=32000",
-                    "--wrap='Rscript installDependenciesAndRun.R'")
+                    paste0("--wrap='Rscript -e \"piktests:::run()\"'"))
     message("Running `sbatch ", paste(sbatchArgs, collapse = " "), "`")
     system2("sbatch", sbatchArgs)
   } else {
     message("Running `Rscript installDependenciesAndRun.R &> ", logFile, " &`")
-    system2("Rscript", "installDependenciesAndRun.R", stdout = logFile, stderr = logFile, wait = FALSE)
+    system2("Rscript", "-", input = "piktests:::run()", stdout = logFile, stderr = logFile, wait = FALSE)
   }
 }
