@@ -3,13 +3,14 @@
 #' Creates a test run folder, sets up a fresh renv and installs needed packages in it. Then calls piktests:::run() to
 #' run the actual tests.
 #'
-#' @param useSlurm Whether to start the tests via sbatch (run in background) or directly in the current shell.
+#' @param useSbatch Whether to start the tests via sbatch (run in background) or directly in the current shell. If NA
+#' the user is asked.
 #'
 #' @importFrom madrat getConfig
 #' @importFrom utils packageDescription
 #' @importFrom withr local_dir
 #' @export
-runInRenv <- function(useSlurm = FALSE) {
+runInRenv <- function(useSbatch = NA) {
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   runFolder <- file.path(getwd(), now)
   if (file.exists(runFolder)) {
@@ -28,10 +29,9 @@ runInRenv <- function(useSlurm = FALSE) {
   system2("Rscript", "-", input = paste0("renv::install('pfuehrlich-pik/piktests')\n", # TODO install from main repo
                                         "renv::snapshot()"))
 
-  logFile <- "runInRenv.log"
-  if (useSlurm) {
+  if (isTRUE(useSbatch) || is.na(useSbatch) && tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")) {
     sbatchArgs <- c(paste0("--job-name=piktests-", now),
-                    paste0("--output=", logFile),
+                    "--output=runInRenv.log",
                     "--mail-type=END",
                     "--qos=priority",
                     "--mem=32000",
@@ -39,7 +39,7 @@ runInRenv <- function(useSlurm = FALSE) {
     message("Running `sbatch ", paste(sbatchArgs, collapse = " "), "`")
     system2("sbatch", sbatchArgs)
   } else {
-    message("Running `Rscript installDependenciesAndRun.R &> ", logFile, " &`")
-    system2("Rscript", "-", input = "piktests:::run()", stdout = logFile, stderr = logFile, wait = FALSE)
+    message("Running `Rscript installDependenciesAndRun.R`")
+    system2("Rscript", "-", input = "piktests:::run()")
   }
 }
