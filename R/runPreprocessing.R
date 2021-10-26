@@ -20,7 +20,8 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs) {
                arguments = list(madratConfig = madratConfig, package = package, retrieveDataArgs = retrieveDataArgs)),
           workFile)
   logFileName <- paste0(preprocessingFileNameBase, ".log")
+  # TODO wait = FALSE does not work, probably because the shell immediately closes and all child processes die
   system2("Rscript", c("-e", shQuote(paste0("work <- readRDS('", workFile, "'); ",
                                             "work[['workFunction']](work[['arguments']])"))),
-          stdout = logFileName, stderr = logFileName, wait = FALSE)
+          stdout = logFileName, stderr = logFileName)
 }

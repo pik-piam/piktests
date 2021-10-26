@@ -23,6 +23,8 @@ runInRenv <- function(useSlurm = FALSE) {
   saveRDS(getOption("madrat_cfg"), "initialMadratConfig.rds")
 
   system2("Rscript", "-", input = "renv::init()")
+
+  # installation requires internet connection which is not available when running via sbatch
   system2("Rscript", "-", input = paste0("renv::install('pfuehrlich-pik/piktests')\n", # TODO install from main repo
                                         "renv::snapshot()"))
 
