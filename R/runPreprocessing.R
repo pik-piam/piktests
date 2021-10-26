@@ -6,18 +6,20 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs) {
 
   workFunction <- function(arguments) {
     withr::local_options(madrat_cfg = arguments[["madratConfig"]])
-    library(arguments[["package"]], character.only = TRUE)
+    library(arguments[["package"]], character.only = TRUE) # nolint
     retrieveDataArgs <- arguments[["retrieveDataArgs"]]
     retrieveDataArgs["cachetype"] <- "def"
     # TODO breaks before madrat 2.3.4, remove Remotes from DESCRIPTION when madrat 2.3.4 is released
     do.call(madrat::retrieveData, retrieveDataArgs)
   }
 
-  workFile <- local_tempfile()
+  preprocessingFileNameBase <- file.path("preprocessingLogs", paste0(package, "-", retrieveDataArgs[[1]]))
+
+  workFile <- paste0(preprocessingFileNameBase, "_work.rds")
   saveRDS(list(workFunction = workFunction,
                arguments = list(madratConfig = madratConfig, package = package, retrieveDataArgs = retrieveDataArgs)),
           workFile)
-  logFileName <- file.path("preprocessingLogs", paste0(package, "-", retrieveDataArgs[[1]], ".log"))
+  logFileName <- paste0(preprocessingFileNameBase, ".log")
   system2("Rscript", c("-e", shQuote(paste0("work <- readRDS('", workFile, "'); ",
                                             "work[['workFunction']](work[['arguments']])"))),
           stdout = logFileName, stderr = logFileName, wait = FALSE)

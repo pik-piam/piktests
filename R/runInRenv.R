@@ -16,6 +16,7 @@ runInRenv <- function(useSlurm = FALSE) {
     stop(runFolder, " already exists!")
   }
   dir.create(runFolder)
+  message("Runfolder ", runFolder, " created.")
   local_dir(runFolder)
 
   getConfig()
@@ -31,13 +32,16 @@ runInRenv <- function(useSlurm = FALSE) {
 
   logFile <- "runInRenv.log"
   if (useSlurm) {
-    system2("sbatch", c(paste0("--job-name=piktests-", now),
-                        paste0("--output=", logFile),
-                        "--mail-type=END",
-                        "--qos=priority",
-                        "--mem=32000",
-                        "--wrap='Rscript installDependenciesAndRun.R'"))
+    sbatchArgs <- c(paste0("--job-name=piktests-", now),
+                    paste0("--output=", logFile),
+                    "--mail-type=END",
+                    "--qos=priority",
+                    "--mem=32000",
+                    "--wrap='Rscript installDependenciesAndRun.R'")
+    message("Running `sbatch ", paste(sbatchArgs, collapse = " "), "`")
+    system2("sbatch", sbatchArgs)
   } else {
+    message("Running `Rscript installDependenciesAndRun.R &> ", logFile, " &`")
     system2("Rscript", "installDependenciesAndRun.R", stdout = logFile, stderr = logFile, wait = FALSE)
   }
 }
