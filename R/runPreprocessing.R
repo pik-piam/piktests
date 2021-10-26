@@ -18,8 +18,7 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs) {
                arguments = list(madratConfig = madratConfig, package = package, retrieveDataArgs = retrieveDataArgs)),
           workFile)
   logFileName <- file.path("preprocessingLogs", paste0(package, "-", retrieveDataArgs[[1]], ".log"))
-  # TODO remove timeout; maybe set wait = FALSE
   system2("Rscript", c("-e", shQuote(paste0("work <- readRDS('", workFile, "'); ",
                                             "work[['workFunction']](work[['arguments']])"))),
-          stdout = logFileName, stderr = logFileName, wait = TRUE, timeout = 20)
+          stdout = logFileName, stderr = logFileName, wait = FALSE)
 }

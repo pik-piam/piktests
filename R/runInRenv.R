@@ -22,9 +22,8 @@ runInRenv <- function(useSlurm = FALSE) {
   saveRDS(getOption("madrat_cfg"), "initialMadratConfig.rds")
 
   # this is executed in the new renv
-  writeLines(c("renv::record('pfuehrlich-pik/piktests')",
-               "renv::restore()",
-               # "renv::install('~/dev/piktests'); ", # for local development/testing
+  writeLines(c("renv::install('pfuehrlich-pik/piktests')",
+               "renv::snapshot()",
                "piktests:::run()"),
              "installDependenciesAndRun.R")
 
