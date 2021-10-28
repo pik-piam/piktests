@@ -7,7 +7,6 @@
 #' the user is asked.
 #'
 #' @importFrom madrat getConfig
-#' @importFrom utils packageDescription
 #' @importFrom withr local_dir
 #' @export
 runInRenv <- function(useSbatch = NA) {
@@ -23,23 +22,24 @@ runInRenv <- function(useSbatch = NA) {
   getConfig()
   saveRDS(getOption("madrat_cfg"), "initialMadratConfig.rds")
 
-  system2("Rscript", "-", input = "renv::init()")
+  runInNewRSession(function() {
+    renv::init()
+  })
 
   # install right away, because installing requires internet connection which is not available when running via sbatch
-  system2("Rscript", "-", input = paste0("renv::install('pfuehrlich-pik/piktests')\n", # TODO install from main repo
-                                         "renv::snapshot()"))
+  runInNewRSession(function() {
+    renv::install("pfuehrlich-pik/piktests") # TODO install from main repo
+    renv::snapshot()
+  })
 
   if (isTRUE(useSbatch) || is.na(useSbatch) && tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")) {
     sbatchArgs <- c(paste0("--job-name=piktests-", now),
                     "--output=runInRenv.log",
-                    "--mail-type=END",
+                    "--mail-type=NONE",
                     "--qos=priority",
-                    "--mem=32000",
-                    "--wrap='Rscript -e \"piktests:::run()\"'")
-    message("Running `sbatch ", paste(sbatchArgs, collapse = " "), "`")
-    system2("sbatch", sbatchArgs)
+                    "--mem=32000")
+    runInNewRSession(run, list(useSbatch = TRUE), useSbatch = TRUE, sbatchArgs)
   } else {
-    message("Running `Rscript installDependenciesAndRun.R`")
-    system2("Rscript", "-", input = "piktests:::run()")
+    runInNewRSession(run, list(useSbatch = TRUE))
   }
 }

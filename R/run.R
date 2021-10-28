@@ -6,11 +6,12 @@
 #' A runtimeWorkingDirectory is created and used as the working directory while running the tests, also a
 #' madratCacheFolder and a madratOutputFolder are created and used while running the tests.
 #'
+#' @param useSbatch Whether to start the tests via sbatch (run in background) or directly in the current shell.
 #' @param madratConfig The madrat configuration to use.
 #'
 #' @importFrom madrat setConfig
 #' @importFrom withr local_options
-run <- function(madratConfig = readRDS("initialMadratConfig.rds")) {
+run <- function(useSbatch, madratConfig = readRDS("initialMadratConfig.rds")) {
   cacheFolder <- file.path(getwd(), "madratCacheFolder")
   dir.create(cacheFolder)
   outputFolder <- file.path(getwd(), "madratOutputFolder")
@@ -22,6 +23,6 @@ run <- function(madratConfig = readRDS("initialMadratConfig.rds")) {
   madratConfig <- getOption("madrat_cfg")
   saveRDS(madratConfig, "madratConfig.rds")
 
-  runPreprocessing(madratConfig, "mrmagpie", list("cellularmagpie", rev = 4.63))
-  runPreprocessing(madratConfig, "mrremind", list("remind"))
+  runPreprocessing(madratConfig, "mrmagpie", list("cellularmagpie", rev = 4.63), useSbatch)
+  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch)
 }

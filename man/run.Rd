@@ -4,9 +4,11 @@
 \alias{run}
 \title{run}
 \usage{
-run(madratConfig = readRDS("initialMadratConfig.rds"))
+run(useSbatch, madratConfig = readRDS("initialMadratConfig.rds"))
 }
 \arguments{
+\item{useSbatch}{Whether to start the tests via sbatch (run in background) or directly in the current shell.}
+
 \item{madratConfig}{The madrat configuration to use.}
 }
 \description{

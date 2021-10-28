@@ -1,4 +1,22 @@
-#' withr local_tempfile
+#' runInNewRSession
+#'
+#' Runs the given function with the given arguments in a new R session.
+#'
+#' An RDS file containing the function and args is created, then a new R session is started via system2. In this new
+#' session the RDS file is read and the function executed with the arguments.
+#'
+#' @param workFunction The function to execute in the new R session. TODO
+#' @param arguments A list of arguments that is passed to workFunction.
+#' @param workFileName The file name of an RDS file containing workFunction and arguments. This file is read in the new
+#' R session.
+#' @param ... Additional arguments passed to system2. The most useful arguments are probably stdout and stderr, see
+#' documentation for system2.
+#' @param cleanupWorkFile Whether to delete the workFile after it has been read in the new R session.
+#' @param useSbatch Whether to run the new R session in the background using sbatch.
+#' @param sbatchArguments Arguments passed to sbatch. A --wrap argument must not be passed. A --wrap argument running
+#' the given function in a new R session is automatically appended.
+#' @return The result of the system2 call which is calling Rscript directly or via sbatch.
+#' @importFrom withr local_tempfile
 #' @export
 runInNewRSession <- function(workFunction,
                              arguments = list(),
@@ -17,6 +35,7 @@ runInNewRSession <- function(workFunction,
             is.list(arguments),
             isTRUE(useSbatch) || isFALSE(useSbatch),
             isTRUE(cleanupWorkFile) || isFALSE(cleanupWorkFile),
+            is.character(sbatchArguments), !any(startsWith(sbatchArguments, "--wrap")),
             file.create(workFileName, showWarnings = FALSE))
 
   saveRDS(list(func = workFunction, arguments = arguments), workFileName)

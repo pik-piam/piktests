@@ -11,7 +11,7 @@ test_that("runInNewRSession works properly", {
 })
 
 test_that("runInNewRSession works with sbatch", {
-  skip_if(Sys.which("sbatch") == "")
+  skip_if(Sys.which("sbatch") == "", "The command line tool `sbatch` is not available")
 
   logFile <- withr::local_tempfile()
 
