@@ -1,11 +1,11 @@
 test_that("runInNewRSession works properly", {
-  workFile <- withr::local_tempfile()
-  expect_identical(tail(runInNewRSession(function() 1 + 1, workFileName = workFile, stdout = TRUE,
+  workFile <- "test_workFile.rds"
+  expect_identical(tail(runInNewRSession(function() 1 + 1, workFileName = workFile, stdout = TRUE, stderr = TRUE,
                                          cleanupWorkFile = FALSE), 1),
                    "[1] 2")
   expect_true(file.exists(workFile))
   expect_identical(tail(runInNewRSession(function(x) 1 + x, list(x = 1), workFileName = workFile, stdout = TRUE,
-                                         cleanupWorkFile = TRUE), 1),
+                                         stderr = TRUE, cleanupWorkFile = TRUE), 1),
                    "[1] 2")
   expect_false(file.exists(workFile))
 })
@@ -15,9 +15,10 @@ test_that("runInNewRSession runs via sbatch", {
 
   logFile <- normalizePath(withr::local_tempfile(), winslash = "/", mustWork = FALSE)
 
-  runInNewRSession(function() 1 + 1, useSbatch = TRUE, sbatchArguments = c(paste0("--output=", logFile),
-                                                                           "--mail-type=NONE",
-                                                                           "--wait"))
+  runInNewRSession(function() 1 + 1, stdout = NULL, stderr = NULL, useSbatch = TRUE,
+                   sbatchArguments = c(paste0("--output=", logFile),
+                                       "--mail-type=NONE",
+                                       "--wait"))
 
   expect_true(file.exists(logFile))
   expect_identical(tail(readLines(logFile), 1),

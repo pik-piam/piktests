@@ -15,9 +15,9 @@ runInNewRSession <- function(workFunction,
                                                  "--mem=32000")) {
   stopifnot(is.function(workFunction),
             is.list(arguments),
-            file.create(workFileName, showWarnings = FALSE),
             isTRUE(useSbatch) || isFALSE(useSbatch),
-            isTRUE(cleanupWorkFile) || isFALSE(cleanupWorkFile))
+            isTRUE(cleanupWorkFile) || isFALSE(cleanupWorkFile),
+            file.create(workFileName, showWarnings = FALSE))
 
   saveRDS(list(func = workFunction, arguments = arguments), workFileName)
 
