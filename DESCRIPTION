@@ -11,7 +11,7 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2
 Imports:
-    madrat(>= 2.3.4),
+    madrat(>= 2.4.3),
     mrmagpie,
     mrremind,
     renv,
