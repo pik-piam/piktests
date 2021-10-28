@@ -36,6 +36,7 @@ test_that("runInNewRSession detects malformed input", {
                "isTRUE(useSbatch) || isFALSE(useSbatch) is not TRUE", fixed = TRUE)
   expect_error(runInNewRSession(function() 0, cleanupWorkFile = NA),
                "isTRUE(cleanupWorkFile) || isFALSE(cleanupWorkFile) is not TRUE", fixed = TRUE)
-  expect_error(runInNewRSession(function() 0, unknownArgument = NULL),
+  workFile <- withr::local_tempfile()
+  expect_error(runInNewRSession(function() 0, workFileName = workFile, unknownArgument = NULL),
                "unused argument (unknownArgument = NULL)", fixed = TRUE)
 })
