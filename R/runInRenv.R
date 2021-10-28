@@ -25,9 +25,9 @@ runInRenv <- function(useSbatch = NA) {
 
   system2("Rscript", "-", input = "renv::init()")
 
-  # installation requires internet connection which is not available when running via sbatch
+  # install right away, because installing requires internet connection which is not available when running via sbatch
   system2("Rscript", "-", input = paste0("renv::install('pfuehrlich-pik/piktests')\n", # TODO install from main repo
-                                        "renv::snapshot()"))
+                                         "renv::snapshot()"))
 
   if (isTRUE(useSbatch) || is.na(useSbatch) && tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")) {
     sbatchArgs <- c(paste0("--job-name=piktests-", now),
@@ -35,7 +35,7 @@ runInRenv <- function(useSbatch = NA) {
                     "--mail-type=END",
                     "--qos=priority",
                     "--mem=32000",
-                    paste0("--wrap='Rscript -e \"piktests:::run()\"'"))
+                    "--wrap='Rscript -e \"piktests:::run()\"'")
     message("Running `sbatch ", paste(sbatchArgs, collapse = " "), "`")
     system2("sbatch", sbatchArgs)
   } else {

@@ -15,7 +15,7 @@ run <- function(madratConfig = readRDS("initialMadratConfig.rds")) {
   dir.create(cacheFolder)
   outputFolder <- file.path(getwd(), "madratOutputFolder")
   dir.create(outputFolder)
-  dir.create("preprocessingLogs")
+  dir.create("preprocessings")
 
   local_options(madrat_cfg = madratConfig)
   setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
