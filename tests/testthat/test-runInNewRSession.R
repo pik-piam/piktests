@@ -10,10 +10,10 @@ test_that("runInNewRSession works properly", {
   expect_false(file.exists(workFile))
 })
 
-test_that("runInNewRSession runs via sbatch", {
-  skip_if(Sys.which("batch") == "")
+test_that("runInNewRSession works with sbatch", {
+  skip_if(Sys.which("sbatch") == "")
 
-  logFile <- normalizePath(withr::local_tempfile(), winslash = "/", mustWork = FALSE)
+  logFile <- withr::local_tempfile()
 
   runInNewRSession(function() 1 + 1, stdout = NULL, stderr = NULL, useSbatch = TRUE,
                    sbatchArguments = c(paste0("--output=", logFile),
