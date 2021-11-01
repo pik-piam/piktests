@@ -38,8 +38,8 @@ runInRenv <- function(useSbatch = NA) {
                     "--mail-type=NONE",
                     "--qos=priority",
                     "--mem=32000")
-    runInNewRSession(run, list(useSbatch = TRUE), useSbatch = TRUE, sbatchArgs)
+    runInNewRSession(run, list(useSbatch = TRUE), useSbatch = TRUE, sbatchArguments = sbatchArgs)
   } else {
-    runInNewRSession(run, list(useSbatch = TRUE))
+    runInNewRSession(run, list(useSbatch = FALSE))
   }
 }
