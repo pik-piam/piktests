@@ -41,9 +41,9 @@ runInNewRSession <- function(workFunction,
   saveRDS(list(func = workFunction, arguments = arguments), workFilePath)
 
   bootstrapScript <- tempfile("bootstrapScript-", dirname(workFilePath), ".R")
-  writeLines(c(paste0("file.remove('", bootstrapScript, "')"),
+  writeLines(c(paste0("invisible(file.remove('", bootstrapScript, "'))"),
                paste0("work <- readRDS('", workFilePath, "')"),
-               if (cleanupWorkFile) paste0("file.remove('", workFilePath, "')") else NULL,
+               if (cleanupWorkFile) paste0("invisible(file.remove('", workFilePath, "'))") else NULL,
                "do.call(work[['func']], work[['arguments']])"),
              bootstrapScript)
 
