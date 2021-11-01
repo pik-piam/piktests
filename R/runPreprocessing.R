@@ -25,6 +25,6 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch)
   workFile <- file.path("preprocessings", paste0(package, "-", retrieveDataArgs[[1]], "_work.rds"))
 
   runInNewRSession(workFunction,
-                   list(madratConfig = madratConfig, package = package, retrieveDataArgs = retrieveDataArgs),
+                   list(list(madratConfig = madratConfig, package = package, retrieveDataArgs = retrieveDataArgs)),
                    workFile, useSbatch = useSbatch)
 }
