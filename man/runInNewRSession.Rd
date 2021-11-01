@@ -7,13 +7,13 @@
 runInNewRSession(
   workFunction,
   arguments = list(),
-  workFileName = tempfile("workFile-", getwd(), ".rds"),
+  workFilePath = tempfile("workFile-", getwd(), ".rds"),
   ...,
   cleanupWorkFile = TRUE,
   useSbatch = FALSE,
   sbatchArguments = c(paste0("--job-name=", shQuote(paste0("runInNewRSession-",
-    basename(workFileName)))), paste0("--output=", shQuote(paste0("runInNewRSession-",
-    basename(workFileName), ".log"))), "--mail-type=END", "--qos=priority",
+    basename(workFilePath)))), paste0("--output=", shQuote(paste0("runInNewRSession-",
+    basename(workFilePath), ".log"))), "--mail-type=END", "--qos=priority",
     "--mem=32000")
 )
 }
@@ -22,8 +22,8 @@ runInNewRSession(
 
 \item{arguments}{A list of arguments that is passed to workFunction.}
 
-\item{workFileName}{The file name of an RDS file containing workFunction and arguments. This file is read in the new
-R session.}
+\item{workFilePath}{Where to store the intermediate file containing workFunction and arguments. This file is read
+in the new R session.}
 
 \item{...}{Additional arguments passed to system2. The most useful arguments are probably stdout and stderr, see
 documentation for system2.}

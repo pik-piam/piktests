@@ -7,8 +7,8 @@
 #'
 #' @param workFunction The function to execute in the new R session. TODO
 #' @param arguments A list of arguments that is passed to workFunction.
-#' @param workFileName The file name of an RDS file containing workFunction and arguments. This file is read in the new
-#' R session.
+#' @param workFilePath Where to store the intermediate file containing workFunction and arguments. This file is read
+#' in the new R session.
 #' @param ... Additional arguments passed to system2. The most useful arguments are probably stdout and stderr, see
 #' documentation for system2.
 #' @param cleanupWorkFile Whether to delete the workFile after it has been read in the new R session.
@@ -20,14 +20,14 @@
 #' @export
 runInNewRSession <- function(workFunction,
                              arguments = list(),
-                             workFileName = tempfile("workFile-", getwd(), ".rds"),
+                             workFilePath = tempfile("workFile-", getwd(), ".rds"),
                              ...,
                              cleanupWorkFile = TRUE,
                              useSbatch = FALSE,
                              sbatchArguments = c(paste0("--job-name=", shQuote(paste0("runInNewRSession-",
-                                                                                      basename(workFileName)))),
+                                                                                      basename(workFilePath)))),
                                                  paste0("--output=", shQuote(paste0("runInNewRSession-",
-                                                                                    basename(workFileName), ".log"))),
+                                                                                    basename(workFilePath), ".log"))),
                                                  "--mail-type=END",
                                                  "--qos=priority",
                                                  "--mem=32000")) {
@@ -36,14 +36,15 @@ runInNewRSession <- function(workFunction,
             isTRUE(useSbatch) || isFALSE(useSbatch),
             isTRUE(cleanupWorkFile) || isFALSE(cleanupWorkFile),
             is.character(sbatchArguments), !any(startsWith(sbatchArguments, "--wrap")),
-            file.create(workFileName, showWarnings = FALSE))
+            file.create(workFilePath, showWarnings = FALSE))
 
-  saveRDS(list(func = workFunction, arguments = arguments), workFileName)
+  saveRDS(list(func = workFunction, arguments = arguments), workFilePath)
 
-  cleanup <- paste0("if (!file.remove('", workFileName, "')) warning('Could not remove ", workFileName, "')")
-  bootstrapScript <- normalizePath(local_tempfile(), winslash = "/", mustWork = FALSE)
-  writeLines(c(paste0("work <- readRDS('", workFileName, "')"),
+  cleanup <- paste0("if (!file.remove('", workFilePath, "')) warning('Could not remove ", workFilePath, "')")
+  bootstrapScript <- normalizePath(tempfile("bootstrapScript-", dirname(workFilePath), ".R"), winslash = "/", mustWork = FALSE)
+  writeLines(c(paste0("work <- readRDS('", workFilePath, "')"),
                if (cleanupWorkFile) cleanup else NULL,
+               "file.remove('", bootstrapScript, "')",
                "do.call(work[['func']], work[['arguments']])"),
              bootstrapScript)
 
@@ -52,7 +53,6 @@ runInNewRSession <- function(workFunction,
     message("Running sbatch ", paste(sbatchArguments, collapse = " "))
     return(system2("sbatch", sbatchArguments, ...))
   } else {
-    message("Running Rscript ", bootstrapScript, ...)
     return(system2("Rscript", bootstrapScript, ...))
   }
 }
