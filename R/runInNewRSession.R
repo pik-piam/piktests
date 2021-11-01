@@ -40,11 +40,10 @@ runInNewRSession <- function(workFunction,
 
   saveRDS(list(func = workFunction, arguments = arguments), workFilePath)
 
-  cleanup <- paste0("if (!file.remove('", workFilePath, "')) warning('Could not remove ", workFilePath, "')")
-  bootstrapScript <- normalizePath(tempfile("bootstrapScript-", dirname(workFilePath), ".R"), winslash = "/", mustWork = FALSE)
-  writeLines(c(paste0("work <- readRDS('", workFilePath, "')"),
-               if (cleanupWorkFile) cleanup else NULL,
-               "file.remove('", bootstrapScript, "')",
+  bootstrapScript <- tempfile("bootstrapScript-", dirname(workFilePath), ".R")
+  writeLines(c(paste0("file.remove('", bootstrapScript, "')"),
+               paste0("work <- readRDS('", workFilePath, "')"),
+               if (cleanupWorkFile) paste0("file.remove('", workFilePath, "')") else NULL,
                "do.call(work[['func']], work[['arguments']])"),
              bootstrapScript)
 
