@@ -12,8 +12,9 @@ runInNewRSession(
   cleanupWorkFile = TRUE,
   useSbatch = FALSE,
   sbatchArguments = c(paste0("--job-name=", shQuote(paste0("runInNewRSession-",
-    basename(workFilePath)))), paste0("--output=", shQuote(paste0("runInNewRSession-",
-    basename(workFilePath), ".log"))), "--mail-type=END", "--qos=priority",
+    basename(workFilePath)))), paste0("--output=",
+    shQuote(file.path(dirname(workFilePath), paste0("runInNewRSession-",
+    basename(workFilePath), ".log")))), "--mail-type=END", "--qos=priority",
     "--mem=32000")
 )
 }
