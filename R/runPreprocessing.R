@@ -26,5 +26,5 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch)
 
   runInNewRSession(workFunction,
                    list(list(madratConfig = madratConfig, package = package, retrieveDataArgs = retrieveDataArgs)),
-                   workFile, useSbatch = useSbatch)
+                   workFilePath = workFile, cleanupWorkFile = FALSE, useSbatch = useSbatch)
 }
