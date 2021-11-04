@@ -19,9 +19,10 @@ runInNewRSession(
 )
 }
 \arguments{
-\item{workFunction}{The function to execute in the new R session. TODO}
+\item{workFunction}{The function to execute in the new R session. It must not use variables from outside the
+function, these must instead be passed via the arguments parameter of runInNewRSession.}
 
-\item{arguments}{A list of arguments that is passed to workFunction.}
+\item{arguments}{A list of arguments that is passed to workFunction: do.call(workFunction, arguments)}
 
 \item{workFilePath}{Where to store the intermediate file containing workFunction and arguments. This file is read
 in the new R session.}

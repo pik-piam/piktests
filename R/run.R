@@ -23,6 +23,7 @@ run <- function(useSbatch, madratConfig = readRDS("initialMadratConfig.rds")) {
   madratConfig <- getOption("madrat_cfg")
   saveRDS(madratConfig, "madratConfig.rds")
 
+  # TODO remove rgdal dependency in DESCRIPTION once rgdal is a dependency of mrmagpie
   runPreprocessing(madratConfig, "mrmagpie", list("cellularmagpie", rev = 4.63), useSbatch)
   runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch)
 }

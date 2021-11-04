@@ -28,7 +28,7 @@ runInRenv <- function(useSbatch = NA) {
 
   # install right away, because installing requires internet connection which is not available when running via sbatch
   runInNewRSession(function() {
-    renv::install("pfuehrlich-pik/piktests") # TODO install from main repo
+    renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
     renv::snapshot()
   })
 

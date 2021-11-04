@@ -5,8 +5,9 @@
 #' An RDS file containing the function and args is created, then a new R session is started via system2. In this new
 #' session the RDS file is read and the function executed with the arguments.
 #'
-#' @param workFunction The function to execute in the new R session. TODO
-#' @param arguments A list of arguments that is passed to workFunction.
+#' @param workFunction The function to execute in the new R session. It must not use variables from outside the
+#' function, these must instead be passed via the arguments parameter of runInNewRSession.
+#' @param arguments A list of arguments that is passed to workFunction: do.call(workFunction, arguments)
 #' @param workFilePath Where to store the intermediate file containing workFunction and arguments. This file is read
 #' in the new R session.
 #' @param ... Additional arguments passed to system2. The most useful arguments are probably stdout and stderr, see
