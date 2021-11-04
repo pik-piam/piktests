@@ -10,6 +10,10 @@
 #' @importFrom withr local_dir
 #' @export
 runInRenv <- function(useSbatch = NA) {
+  if (is.na(useSbatch)) {
+    useSbatch <- tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")
+  }
+
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   runFolder <- file.path(getwd(), now)
   if (file.exists(runFolder)) {
@@ -37,10 +41,6 @@ runInRenv <- function(useSbatch = NA) {
     renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
     renv::snapshot()
   })
-
-  if (is.na(useSbatch)) {
-    useSbatch <- tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")
-  }
 
   run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"))
 }
