@@ -20,7 +20,8 @@ runInNewRSession(
 }
 \arguments{
 \item{workFunction}{The function to execute in the new R session. It must not use variables from outside the
-function, these must instead be passed via the arguments parameter of runInNewRSession.}
+function, these must instead be passed via the arguments parameter of runInNewRSession. Always use `::` when calling
+non-default package functions, roxygen's `@importFrom` does not work.}
 
 \item{arguments}{A list of arguments that is passed to workFunction: do.call(workFunction, arguments)}
 

@@ -38,15 +38,9 @@ runInRenv <- function(useSbatch = NA) {
     renv::snapshot()
   })
 
-  if (isTRUE(useSbatch) || is.na(useSbatch) && tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")) {
-    sbatchArgs <- c(paste0("--job-name=piktests-", now),
-                    "--output=runInRenv.log",
-                    "--mail-type=NONE",
-                    "--qos=priority",
-                    "--mem=32000")
-    runInNewRSession(run, list(useSbatch = TRUE, madratConfig = getOption("madrat_cfg")),
-                     useSbatch = TRUE, sbatchArguments = sbatchArgs)
-  } else {
-    runInNewRSession(run, list(useSbatch = FALSE, madratConfig = getOption("madrat_cfg")))
+  if (is.na(useSbatch)) {
+    useSbatch <- tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")
   }
+
+  run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"))
 }

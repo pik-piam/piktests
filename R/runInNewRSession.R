@@ -6,7 +6,8 @@
 #' session the RDS file is read and the function executed with the arguments.
 #'
 #' @param workFunction The function to execute in the new R session. It must not use variables from outside the
-#' function, these must instead be passed via the arguments parameter of runInNewRSession.
+#' function, these must instead be passed via the arguments parameter of runInNewRSession. Always use `::` when calling
+#' non-default package functions, roxygen's `@importFrom` does not work.
 #' @param arguments A list of arguments that is passed to workFunction: do.call(workFunction, arguments)
 #' @param workFilePath Where to store the intermediate file containing workFunction and arguments. This file is read
 #' in the new R session.

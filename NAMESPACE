@@ -2,8 +2,10 @@
 
 export(runInNewRSession)
 export(runInRenv)
+importFrom(gert,git_clone)
 importFrom(madrat,getConfig)
 importFrom(madrat,setConfig)
 importFrom(withr,local_dir)
 importFrom(withr,local_options)
 importFrom(withr,local_tempfile)
+importFrom(withr,with_dir)
