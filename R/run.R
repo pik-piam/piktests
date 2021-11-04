@@ -11,7 +11,7 @@
 #'
 #' @importFrom madrat setConfig
 #' @importFrom withr local_options
-run <- function(useSbatch, madratConfig = readRDS("initialMadratConfig.rds")) {
+run <- function(useSbatch, madratConfig) {
   cacheFolder <- file.path(getwd(), "madratCacheFolder")
   dir.create(cacheFolder)
   outputFolder <- file.path(getwd(), "madratOutputFolder")

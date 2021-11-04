@@ -11,10 +11,11 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch)
 
   # written to an RDS file and executed in a new R session, so cannot use @importFrom
   workFunction <- function(arguments) {
-    withr::local_options(madrat_cfg = arguments[["madratConfig"]])
+    withr::local_options(madrat_cfg = arguments[["madratConfig"]], nwarnings = 10000)
     library(arguments[["package"]], character.only = TRUE) # nolint
     # TODO breaks unless pfuehrlich-pik/madrat is merged, remove Remotes: pfuehrlich-pik/madrat from DESCRIPTION
     do.call(madrat::retrieveData, arguments[["retrieveDataArgs"]])
+    warnings()
   }
 
   workFile <- file.path("preprocessings", paste0(package, "-", retrieveDataArgs[[1]], "_work.rds"))

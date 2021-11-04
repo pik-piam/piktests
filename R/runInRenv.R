@@ -19,8 +19,14 @@ runInRenv <- function(useSbatch = NA) {
   message("Runfolder ", runFolder, " created.")
   local_dir(runFolder)
 
-  getConfig()
-  saveRDS(getOption("madrat_cfg"), "initialMadratConfig.rds")
+  # initialize madrat config
+  getConfig(verbose = TRUE, print = TRUE)
+
+  # not used further, just for archiving/looking up later
+  saveRDS(list(options = options(), # nolint
+               environmentVariables = Sys.getenv(),
+               locale = Sys.getlocale()),
+          "optionsEnvironmentVariablesLocale.rds")
 
   runInNewRSession(function() {
     renv::init()
@@ -38,8 +44,9 @@ runInRenv <- function(useSbatch = NA) {
                     "--mail-type=NONE",
                     "--qos=priority",
                     "--mem=32000")
-    runInNewRSession(run, list(useSbatch = TRUE), useSbatch = TRUE, sbatchArguments = sbatchArgs)
+    runInNewRSession(run, list(useSbatch = TRUE, madratConfig = getOption("madrat_cfg")),
+                     useSbatch = TRUE, sbatchArguments = sbatchArgs)
   } else {
-    runInNewRSession(run, list(useSbatch = FALSE))
+    runInNewRSession(run, list(useSbatch = FALSE, madratConfig = getOption("madrat_cfg")))
   }
 }
