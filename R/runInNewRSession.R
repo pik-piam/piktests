@@ -1,0 +1,59 @@
+#' runInNewRSession
+#'
+#' Runs the given function with the given arguments in a new R session.
+#'
+#' An RDS file containing the function and args is created, then a new R session is started via system2. In this new
+#' session the RDS file is read and the function executed with the arguments.
+#'
+#' @param workFunction The function to execute in the new R session. It must not use variables from outside the
+#' function, these must instead be passed via the arguments parameter of runInNewRSession.
+#' @param arguments A list of arguments that is passed to workFunction: do.call(workFunction, arguments)
+#' @param workFilePath Where to store the intermediate file containing workFunction and arguments. This file is read
+#' in the new R session.
+#' @param ... Additional arguments passed to system2. The most useful arguments are probably stdout and stderr, see
+#' documentation for system2.
+#' @param cleanupWorkFile Whether to delete the workFile after it has been read in the new R session.
+#' @param useSbatch Whether to run the new R session in the background using sbatch.
+#' @param sbatchArguments Arguments passed to sbatch. A --wrap argument must not be passed. A --wrap argument running
+#' the given function in a new R session is automatically appended.
+#' @return The result of the system2 call which is calling Rscript directly or via sbatch.
+#' @importFrom withr local_tempfile
+#' @export
+runInNewRSession <- function(workFunction,
+                             arguments = list(),
+                             workFilePath = tempfile("workFile-", getwd(), ".rds"),
+                             ...,
+                             cleanupWorkFile = TRUE,
+                             useSbatch = FALSE,
+                             sbatchArguments = c(
+                               paste0("--job-name=", shQuote(paste0("runInNewRSession-", basename(workFilePath)))),
+                               paste0("--output=",
+                                      shQuote(file.path(dirname(workFilePath),
+                                                        paste0("runInNewRSession-", basename(workFilePath), ".log")))),
+                               "--mail-type=END",
+                               "--qos=priority",
+                               "--mem=32000")) {
+  stopifnot(is.function(workFunction),
+            is.list(arguments),
+            isTRUE(useSbatch) || isFALSE(useSbatch),
+            isTRUE(cleanupWorkFile) || isFALSE(cleanupWorkFile),
+            is.character(sbatchArguments), !any(startsWith(sbatchArguments, "--wrap")),
+            file.create(workFilePath, showWarnings = FALSE))
+
+  saveRDS(list(func = workFunction, arguments = arguments), workFilePath)
+
+  bootstrapScript <- tempfile("bootstrapScript-", dirname(workFilePath), ".R")
+  writeLines(c(paste0("invisible(file.remove('", bootstrapScript, "'))"),
+               paste0("work <- readRDS('", workFilePath, "')"),
+               if (cleanupWorkFile) paste0("invisible(file.remove('", workFilePath, "'))") else NULL,
+               "do.call(work[['func']], work[['arguments']])"),
+             bootstrapScript)
+
+  if (useSbatch) {
+    sbatchArguments <- c(sbatchArguments, paste0("--wrap=", shQuote(paste("Rscript", bootstrapScript))))
+    message("Running sbatch ", paste(sbatchArguments, collapse = " "))
+    return(system2("sbatch", sbatchArguments, ...))
+  } else {
+    return(system2("Rscript", bootstrapScript, ...))
+  }
+}
