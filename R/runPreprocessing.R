@@ -1,4 +1,5 @@
-#' @importFrom withr local_tempfile
+#' @importFrom madrat retrieveData
+#' @importFrom withr local_tempfile local_options
 runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch) {
   stopifnot(requireNamespace(package, quietly = TRUE),
             is.list(retrieveDataArgs), is.character(retrieveDataArgs[[1]]), length(retrieveDataArgs[[1]]) == 1)
