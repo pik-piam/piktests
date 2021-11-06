@@ -39,7 +39,7 @@ runInRenv <- function(useSbatch = NA) {
   # install right away, because installing requires internet connection which is not available when running via sbatch
   runInNewRSession(function() {
     renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
-    renv::snapshot()
+    renv::snapshot() # TODO why is lockfile not written?
   })
 
   run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"))
