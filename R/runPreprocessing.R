@@ -15,7 +15,7 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch)
     withr::local_options(madrat_cfg = arguments[["madratConfig"]], nwarnings = 10000, error = function() {
       traceback(2, max.lines = 1000)
       if (!interactive())
-        quit(save = 'no', status = 1, runLast = TRUE)
+        quit(save = "no", status = 1, runLast = TRUE)
     })
     library(arguments[["package"]], character.only = TRUE) # nolint
     # TODO breaks unless pfuehrlich-pik/madrat is merged, remove Remotes: pfuehrlich-pik/madrat from DESCRIPTION

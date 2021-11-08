@@ -7,7 +7,7 @@ preprocessingMagpie <- function(madratConfig, useSbatch) {
     withr::local_options(madrat_cfg = madratConfig, nwarnings = 10000, error = function() {
       traceback(2, max.lines = 1000)
       if (!interactive())
-        quit(save = 'no', status = 1, runLast = TRUE)
+        quit(save = "no", status = 1, runLast = TRUE)
     })
     withr::local_dir("preprocessing-magpie")
     source(file.path("start", "default.R")) # nolint

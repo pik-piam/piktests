@@ -10,6 +10,7 @@
 #' @importFrom withr local_dir
 #' @export
 runInRenv <- function(useSbatch = NA) {
+  # TODO remove igraph dependency as soon as the most recent igraph can be built on the cluster
   if (is.na(useSbatch)) {
     useSbatch <- tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")
   }
