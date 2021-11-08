@@ -12,7 +12,6 @@ LazyData: true
 RoxygenNote: 7.1.2
 Imports:
     gert,
-    igraph(<= 1.2.7),
     madrat(>= 2.4.3),
     mrmagpie,
     mrremind,
