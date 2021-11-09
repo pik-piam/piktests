@@ -13,5 +13,10 @@ preprocessingMagpie <- function(madratConfig, useSbatch) {
     source(file.path("start", "default.R")) # nolint
     warnings()
   }
-  runInNewRSession(workFunction, arguments = list(madratConfig = madratConfig), useSbatch = useSbatch)
+  runInNewRSession(workFunction, arguments = list(madratConfig = madratConfig), useSbatch = useSbatch,
+                   sbatchArguments = c("--job-name=piktests-magpie-preprocessing",
+                                       "--output=magpie.log",
+                                       "--mail-type=END",
+                                       "--qos=priority",
+                                       "--mem=50000"))
 }

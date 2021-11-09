@@ -11,7 +11,7 @@
 #' @export
 runInRenv <- function(useSbatch = NA) {
   if (is.na(useSbatch)) {
-    useSbatch <- tolower(readline("Run via sbatch? (Y/n)")) %in% c("y", "yes", "")
+    useSbatch <- tolower(readline("Run via SLURM (sbatch)? (Y/n)")) %in% c("y", "yes", "")
   }
 
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
@@ -24,13 +24,7 @@ runInRenv <- function(useSbatch = NA) {
   local_dir(runFolder)
 
   # initialize madrat config
-  getConfig(verbose = TRUE, print = TRUE)
-
-  # not used further, just for archiving/looking up later
-  saveRDS(list(options = options(), # nolint
-               environmentVariables = Sys.getenv(),
-               locale = Sys.getlocale()),
-          "optionsEnvironmentVariablesLocale.rds")
+  getConfig(print = TRUE)
 
   runInNewRSession(function() {
     renv::init()
@@ -41,6 +35,15 @@ runInRenv <- function(useSbatch = NA) {
     renv::install("igraph@1.2.7") # TODO remove once the most recent igraph can be built on the cluster
     renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
     renv::snapshot() # TODO why is lockfile not written?
+
+    # initialize madrat config
+    getConfig(verbose = FALSE)
+
+    # not used further, just for archiving/looking up later
+    saveRDS(list(options = options(), # nolint
+                 environmentVariables = Sys.getenv(),
+                 locale = Sys.getlocale()),
+            "optionsEnvironmentVariablesLocale.rds")
   })
 
   run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"))
