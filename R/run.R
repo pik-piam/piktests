@@ -29,5 +29,5 @@ run <- function(useSbatch, madratConfig) {
   })
 
   # remind preprocessing
-  # runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch) # TODO comment this in
+  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch)
 }

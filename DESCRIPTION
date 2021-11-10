@@ -12,7 +12,7 @@ LazyData: true
 RoxygenNote: 7.1.2
 Imports:
     gert,
-    madrat(>= 2.4.3),
+    madrat,
     mrmagpie,
     mrremind,
     renv,
@@ -20,5 +20,3 @@ Imports:
     withr
 Suggests: 
     covr
-Remotes:
-    pfuehrlich-pik/madrat

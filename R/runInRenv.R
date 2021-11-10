@@ -32,12 +32,13 @@ runInRenv <- function(useSbatch = NA) {
 
   # install right away, because installing requires internet connection which is not available when running via sbatch
   runInNewRSession(function() {
-    renv::install("igraph@1.2.7") # TODO remove once the most recent igraph can be built on the cluster
+    renv::install("pfuehrlich-pik/magclass") # TODO remove
+    renv::install("pfuehrlich-pik/madrat") # TODO remove
     renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
     renv::snapshot() # TODO why is lockfile not written?
 
     # initialize madrat config
-    getConfig(verbose = FALSE)
+    madrat::getConfig(verbose = FALSE)
 
     # not used further, just for archiving/looking up later
     saveRDS(list(options = options(), # nolint
