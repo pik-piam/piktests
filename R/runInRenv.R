@@ -36,8 +36,19 @@ runInRenv <- function(useSbatch = NA) {
     renv::install("pfuehrlich-pik/magclass") # TODO remove
     renv::install("pfuehrlich-pik/madrat") # TODO remove
     renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
-    renv::install("rgdal") # TODO remove rgdal dependency in DESCRIPTION once rgdal is a dependency of mrmagpie
-    renv::install("lucode2") # needed for magpie preprocessing
+
+    # TODO clone magpie-preprocessing repo before renv::init so dependencies are automatically detected
+    # install magpie preprocessing dependencies
+    renv::install("lucode2")
+    renv::install("digest")
+    renv::install("gms")
+    renv::install("rgdal") # TODO remove once rgdal is a dependency of mrmagpie
+
+    renv::install("mrmagpie")
+    renv::install("mrland")
+    renv::install("mrvalidation")
+    renv::install("mrremind")
+
     renv::snapshot(type = "all")
 
     # initialize madrat config

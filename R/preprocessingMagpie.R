@@ -14,7 +14,7 @@ preprocessingMagpie <- function(madratConfig, useSbatch, renvProject) {
   }
   runInNewRSession(workFunction, arguments = list(madratConfig = madratConfig), renvProject = renvProject,
                    useSbatch = useSbatch, sbatchArguments = c("--job-name=piktests-magpie-preprocessing",
-                                                              "--output=magpie.log",
+                                                              "--output=magpie-preprocessing.log",
                                                               "--mail-type=END",
                                                               "--qos=priority",
                                                               "--mem=50000"))
