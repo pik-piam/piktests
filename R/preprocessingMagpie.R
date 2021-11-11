@@ -1,6 +1,6 @@
 #' @importFrom gert git_clone
 #' @importFrom withr local_dir local_options
-preprocessingMagpie <- function(madratConfig, renvProject, useSbatch) {
+preprocessingMagpie <- function(madratConfig, useSbatch, renvProject) {
   git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git", path = "preprocessing-magpie")
   workFunction <- function(madratConfig) {
     withr::local_options(madrat_cfg = madratConfig, nwarnings = 10000, error = function() {
