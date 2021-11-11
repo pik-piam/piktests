@@ -1,7 +1,6 @@
 #' @importFrom gert git_clone
 #' @importFrom withr local_dir local_options
-preprocessingMagpie <- function(madratConfig, useSbatch) {
-  # TODO remove rgdal dependency in DESCRIPTION once rgdal is a dependency of mrmagpie
+preprocessingMagpie <- function(madratConfig, renvProject, useSbatch) {
   git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git", path = "preprocessing-magpie")
   workFunction <- function(madratConfig) {
     withr::local_options(madrat_cfg = madratConfig, nwarnings = 10000, error = function() {
@@ -13,10 +12,10 @@ preprocessingMagpie <- function(madratConfig, useSbatch) {
     source(file.path("start", "default.R")) # nolint
     warnings()
   }
-  runInNewRSession(workFunction, arguments = list(madratConfig = madratConfig), useSbatch = useSbatch,
-                   sbatchArguments = c("--job-name=piktests-magpie-preprocessing",
-                                       "--output=magpie.log",
-                                       "--mail-type=END",
-                                       "--qos=priority",
-                                       "--mem=50000"))
+  runInNewRSession(workFunction, arguments = list(madratConfig = madratConfig), renvProject = renvProject,
+                   useSbatch = useSbatch, sbatchArguments = c("--job-name=piktests-magpie-preprocessing",
+                                                              "--output=magpie.log",
+                                                              "--mail-type=END",
+                                                              "--qos=priority",
+                                                              "--mem=50000"))
 }

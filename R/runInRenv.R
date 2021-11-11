@@ -26,16 +26,18 @@ runInRenv <- function(useSbatch = NA) {
   # initialize madrat config
   getConfig(print = TRUE)
 
-  runInNewRSession(function() {
-    renv::init()
-  })
+  renvProject <- getwd()
+  runInNewRSession(function(renvProject) {
+    renv::init(renvProject)
+  }, list(renvProject = renvProject))
 
   # install right away, because installing requires internet connection which is not available when running via sbatch
   runInNewRSession(function() {
     renv::install("pfuehrlich-pik/magclass") # TODO remove
     renv::install("pfuehrlich-pik/madrat") # TODO remove
     renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
-    renv::snapshot() # TODO why is lockfile not written?
+    renv::install("rgdal") # TODO remove rgdal dependency in DESCRIPTION once rgdal is a dependency of mrmagpie
+    renv::snapshot(type = "all") # TODO why is lockfile not written?
 
     # initialize madrat config
     madrat::getConfig(verbose = FALSE)
@@ -45,7 +47,7 @@ runInRenv <- function(useSbatch = NA) {
                  environmentVariables = Sys.getenv(),
                  locale = Sys.getlocale()),
             "optionsEnvironmentVariablesLocale.rds")
-  })
+  }, renvProject = renvProject)
 
-  run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"))
+  run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"), renvProject = renvProject)
 }

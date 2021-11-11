@@ -8,10 +8,11 @@
 #'
 #' @param useSbatch Whether to start the tests via sbatch (run in background) or directly in the current shell.
 #' @param madratConfig The madrat configuration to use.
+#' @param renvProject Path to an renv project that will be passed to runInNewRSession.
 #'
 #' @importFrom madrat setConfig
 #' @importFrom withr local_options with_dir
-run <- function(useSbatch, madratConfig) {
+run <- function(useSbatch, madratConfig, renvProject) {
   cacheFolder <- file.path(getwd(), "madratCacheFolder")
   dir.create(cacheFolder)
   outputFolder <- file.path(getwd(), "madratOutputFolder")
@@ -25,9 +26,9 @@ run <- function(useSbatch, madratConfig) {
   # magpie preprocessing
   dir.create(file.path("preprocessings", "magpie"), recursive = TRUE)
   with_dir(file.path("preprocessings", "magpie"), {
-    preprocessingMagpie(madratConfig, useSbatch)
+    preprocessingMagpie(madratConfig, useSbatch, renvProject)
   })
 
   # remind preprocessing
-  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch)
+  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch, renvProject)
 }

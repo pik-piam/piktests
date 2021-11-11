@@ -4,7 +4,7 @@
 \alias{run}
 \title{run}
 \usage{
-run(useSbatch, madratConfig)
+run(useSbatch, madratConfig, renvProject)
 }
 \arguments{
 \item{useSbatch}{Whether to start the tests via sbatch (run in background) or directly in the current shell.}

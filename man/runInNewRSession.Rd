@@ -9,6 +9,7 @@ runInNewRSession(
   arguments = list(),
   workFilePath = tempfile("workFile-", getwd(), ".rds"),
   ...,
+  renvProject = NULL,
   cleanupWorkFile = TRUE,
   useSbatch = FALSE,
   sbatchArguments = c(paste0("--job-name=", shQuote(paste0("runInNewRSession-",
@@ -30,6 +31,8 @@ in the new R session.}
 
 \item{...}{Additional arguments passed to system2. The most useful arguments are probably stdout and stderr, see
 documentation for system2.}
+
+\item{renvProject}{Optional path to an renv project that will be loaded via `renv::load` in the new R session.}
 
 \item{cleanupWorkFile}{Whether to delete the workFile after it has been read in the new R session.}
 

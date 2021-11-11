@@ -1,6 +1,6 @@
 #' @importFrom madrat retrieveData
 #' @importFrom withr local_tempfile local_options
-runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch) {
+runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch, renvProject) {
   stopifnot(requireNamespace(package, quietly = TRUE),
             is.list(retrieveDataArgs), is.character(retrieveDataArgs[[1]]), length(retrieveDataArgs[[1]]) == 1)
 
@@ -27,5 +27,5 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch)
 
   runInNewRSession(workFunction,
                    list(list(madratConfig = madratConfig, package = package, retrieveDataArgs = retrieveDataArgs)),
-                   workFilePath = workFile, cleanupWorkFile = FALSE, useSbatch = useSbatch)
+                   renvProject = renvProject, workFilePath = workFile, cleanupWorkFile = FALSE, useSbatch = useSbatch)
 }
