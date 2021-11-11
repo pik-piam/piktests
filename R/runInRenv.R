@@ -37,7 +37,8 @@ runInRenv <- function(useSbatch = NA) {
     renv::install("pfuehrlich-pik/madrat") # TODO remove
     renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
     renv::install("rgdal") # TODO remove rgdal dependency in DESCRIPTION once rgdal is a dependency of mrmagpie
-    renv::snapshot(type = "all") # TODO why is lockfile not written?
+    renv::install("lucode2") # needed for magpie preprocessing
+    renv::snapshot(type = "all")
 
     # initialize madrat config
     madrat::getConfig(verbose = FALSE)
