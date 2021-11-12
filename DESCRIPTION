@@ -1,7 +1,7 @@
 Package: piktests
 Type: Package
-Version: 0.2.0
-Date: 2021-11-04
+Version: 0.3.0
+Date: 2021-11-12
 Title: Run PIK Integration Tests
 Description: This package includes integration tests for selected models and packages related to those models.
 Authors@R: c(person("Pascal", "Führlich", email = "pascal.fuehrlich@pik-potsdam.de", role = c("aut","cre")))
@@ -15,5 +15,6 @@ Imports:
     madrat,
     renv,
     withr
-Suggests: 
-    covr
+Suggests:
+    covr,
+    diffr
