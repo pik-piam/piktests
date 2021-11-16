@@ -8,22 +8,27 @@
 #'
 #' @param useSbatch Whether to start the tests via sbatch (run in background) or directly in the current shell.
 #' @param madratConfig The madrat configuration to use.
+#' @param renvProject Path to an renv project that will be passed to runInNewRSession.
 #'
 #' @importFrom madrat setConfig
-#' @importFrom withr local_options
-run <- function(useSbatch, madratConfig = readRDS("initialMadratConfig.rds")) {
+#' @importFrom withr local_options with_dir
+run <- function(useSbatch, madratConfig, renvProject) {
   cacheFolder <- file.path(getwd(), "madratCacheFolder")
   dir.create(cacheFolder)
   outputFolder <- file.path(getwd(), "madratOutputFolder")
   dir.create(outputFolder)
-  dir.create("preprocessings")
 
   local_options(madrat_cfg = madratConfig)
   setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
   saveRDS(madratConfig, "madratConfig.rds")
 
-  # TODO remove rgdal dependency in DESCRIPTION once rgdal is a dependency of mrmagpie
-  runPreprocessing(madratConfig, "mrmagpie", list("cellularmagpie", rev = 4.63), useSbatch)
-  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch)
+  # magpie preprocessing
+  dir.create(file.path("preprocessings", "magpie"), recursive = TRUE)
+  with_dir(file.path("preprocessings", "magpie"), {
+    preprocessingMagpie(madratConfig, useSbatch, renvProject)
+  })
+
+  # remind preprocessing
+  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch, renvProject)
 }
