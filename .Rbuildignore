@@ -8,3 +8,4 @@
 ^codecov\.yml$
 ^.*\.zenodo.json$
 ^run.sh$
+^\.pre-commit-config\.yaml$
