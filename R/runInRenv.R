@@ -33,8 +33,6 @@ runInRenv <- function(useSbatch = NA) {
 
   # install right away, because installing requires internet connection which is not available when running via sbatch
   runInNewRSession(function() {
-    renv::install("pfuehrlich-pik/magclass") # TODO remove
-    renv::install("pfuehrlich-pik/madrat") # TODO remove
     renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
 
     # TODO clone magpie-preprocessing repo before renv::init so dependencies are automatically detected
