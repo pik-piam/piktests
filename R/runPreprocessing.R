@@ -1,8 +1,7 @@
 #' @importFrom madrat retrieveData
 #' @importFrom withr local_tempfile local_options
-runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch, renvProject) {
-  stopifnot(requireNamespace(package, quietly = TRUE),
-            is.list(retrieveDataArgs), is.character(retrieveDataArgs[[1]]), length(retrieveDataArgs[[1]]) == 1)
+runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch, runFolder) {
+  stopifnot(is.list(retrieveDataArgs), is.character(retrieveDataArgs[[1]]), length(retrieveDataArgs[[1]]) == 1)
 
   cachetype <- retrieveDataArgs[["cachetype"]]
   if (!is.null(cachetype) && cachetype != "def") {
@@ -14,18 +13,18 @@ runPreprocessing <- function(madratConfig, package, retrieveDataArgs, useSbatch,
   workFunction <- function(arguments) {
     withr::local_options(madrat_cfg = arguments[["madratConfig"]], nwarnings = 10000, error = function() {
       traceback(2, max.lines = 1000)
-      if (!interactive())
+      if (!interactive()) {
         quit(save = "no", status = 1, runLast = TRUE)
+      }
     })
     library(arguments[["package"]], character.only = TRUE) # nolint
-    # TODO breaks unless pfuehrlich-pik/madrat is merged, remove Remotes: pfuehrlich-pik/madrat from DESCRIPTION
     do.call(madrat::retrieveData, arguments[["retrieveDataArgs"]])
     warnings()
   }
 
-  workFile <- file.path("preprocessings", paste0(package, "-", retrieveDataArgs[[1]], "_work.rds"))
+  workFile <- file.path(runFolder, "preprocessings", paste0(package, "-", retrieveDataArgs[[1]], "_work.rds"))
 
   runInNewRSession(workFunction,
                    list(list(madratConfig = madratConfig, package = package, retrieveDataArgs = retrieveDataArgs)),
-                   renvProject = renvProject, workFilePath = workFile, cleanupWorkFile = FALSE, useSbatch = useSbatch)
+                   renvProject = runFolder, workFilePath = workFile, cleanupWorkFile = FALSE, useSbatch = useSbatch)
 }

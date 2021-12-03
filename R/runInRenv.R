@@ -11,42 +11,31 @@
 #' @export
 runInRenv <- function(useSbatch = NA) {
   if (is.na(useSbatch)) {
-    useSbatch <- tolower(readline("Run via SLURM (sbatch)? (Y/n)")) %in% c("y", "yes", "")
+    if (Sys.which("sbatch") == "") {
+      useSbatch <- FALSE
+    } else {
+      useSbatch <- tolower(readline("Run via SLURM (sbatch)? (Y/n)")) %in% c("y", "yes", "")
+    }
   }
 
-  now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
-  runFolder <- file.path(getwd(), now)
+  runFolder <- file.path(getwd(), format(Sys.time(), "%Y_%m_%d-%H_%M"))
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")
   }
   dir.create(runFolder)
   message("Runfolder ", runFolder, " created.")
-  local_dir(runFolder)
 
   # initialize madrat config
   getConfig(print = TRUE)
 
-  renvProject <- getwd()
-  runInNewRSession(function(renvProject) {
-    renv::init(renvProject)
-  }, list(renvProject = renvProject))
+  runInNewRSession(function(runFolder) {
+    git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git",
+              path = file.path(runFolder, "preprocessings", "magpie", "preprocessing-magpie"))
+    renv::init(runFolder)
+  }, list(runFolder = runFolder))
 
   # install right away, because installing requires internet connection which is not available when running via sbatch
   runInNewRSession(function() {
-    renv::install("pfuehrlich-pik/magclass") # TODO remove
-    renv::install("pfuehrlich-pik/madrat") # TODO remove
-    renv::install("pfuehrlich-pik/piktests") # TODO install from main repo instead of github
-
-    # TODO clone magpie-preprocessing repo before renv::init so dependencies are automatically detected
-    # install magpie preprocessing dependencies
-    renv::install("lucode2")
-    renv::install("digest")
-    renv::install("gms")
-    renv::install("rgdal") # TODO remove once rgdal is a dependency of mrmagpie
-
-    renv::install("mrmagpie")
-    renv::install("mrland")
-    renv::install("mrvalidation")
     renv::install("mrremind")
 
     renv::snapshot(type = "all")
@@ -58,8 +47,8 @@ runInRenv <- function(useSbatch = NA) {
     saveRDS(list(options = options(), # nolint
                  environmentVariables = Sys.getenv(),
                  locale = Sys.getlocale()),
-            "optionsEnvironmentVariablesLocale.rds")
-  }, renvProject = renvProject)
+            file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
+  }, renvProject = runFolder)
 
-  run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"), renvProject = renvProject)
+  run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"), runFolder = runFolder)
 }
