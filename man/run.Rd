@@ -4,14 +4,14 @@
 \alias{run}
 \title{run}
 \usage{
-run(useSbatch, madratConfig, renvProject)
+run(useSbatch, madratConfig, runFolder)
 }
 \arguments{
 \item{useSbatch}{Whether to start the tests via sbatch (run in background) or directly in the current shell.}
 
 \item{madratConfig}{The madrat configuration to use.}
 
-\item{renvProject}{Path to an renv project that will be passed to runInNewRSession.}
+\item{runFolder}{Path to the folder where everything related to this piktests run is stored. Must be an renv project.}
 }
 \description{
 This function is only meant to be run by piktests::runInRenv. Runs all integration tests in a mostly isolated runtime

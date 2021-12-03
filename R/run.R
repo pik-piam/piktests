@@ -8,27 +8,27 @@
 #'
 #' @param useSbatch Whether to start the tests via sbatch (run in background) or directly in the current shell.
 #' @param madratConfig The madrat configuration to use.
-#' @param renvProject Path to an renv project that will be passed to runInNewRSession.
+#' @param runFolder Path to the folder where everything related to this piktests run is stored. Must be an renv project.
 #'
 #' @importFrom madrat setConfig
 #' @importFrom withr local_options with_dir
-run <- function(useSbatch, madratConfig, renvProject) {
-  cacheFolder <- file.path(getwd(), "madratCacheFolder")
+run <- function(useSbatch, madratConfig, runFolder) {
+  cacheFolder <- file.path(runFolder, "madratCacheFolder")
   dir.create(cacheFolder)
-  outputFolder <- file.path(getwd(), "madratOutputFolder")
+  outputFolder <- file.path(runFolder, "madratOutputFolder")
   dir.create(outputFolder)
 
   local_options(madrat_cfg = madratConfig)
   setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
-  saveRDS(madratConfig, "madratConfig.rds")
+  saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 
   # magpie preprocessing
-  dir.create(file.path("preprocessings", "magpie"), recursive = TRUE)
-  with_dir(file.path("preprocessings", "magpie"), {
-    preprocessingMagpie(madratConfig, useSbatch, renvProject)
+  dir.create(file.path(runFolder, "preprocessings", "magpie"), recursive = TRUE)
+  with_dir(file.path(runFolder, "preprocessings", "magpie"), {
+    preprocessingMagpie(madratConfig, useSbatch, runFolder)
   })
 
   # remind preprocessing
-  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch, renvProject)
+  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch, runFolder)
 }
