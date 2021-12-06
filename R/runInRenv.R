@@ -31,11 +31,17 @@ runInRenv <- function(useSbatch = NA) {
   runInNewRSession(function(runFolder) {
     git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git",
               path = file.path(runFolder, "preprocessings", "magpie", "preprocessing-magpie"))
-    renv::init(runFolder)
+    renv::init(runFolder, restart = FALSE, bare = TRUE) # remove bare when newest foreign can be installed on cluster
   }, list(runFolder = runFolder))
 
   # install right away, because installing requires internet connection which is not available when running via sbatch
-  runInNewRSession(function() {
+  runInNewRSession(function(runFolder) {
+    # TODO remove this when newest foreign can be installed on cluster
+    renv::install("foreign@0.8-76")
+    dependencies <- renv::dependencies(runFolder, errors = "fatal")
+    renv::install(unique(dependencies[["Package"]]))
+    # remove until here
+
     renv::install("mrremind")
 
     renv::snapshot(type = "all")
@@ -48,7 +54,7 @@ runInRenv <- function(useSbatch = NA) {
                  environmentVariables = Sys.getenv(),
                  locale = Sys.getlocale()),
             file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
-  }, renvProject = runFolder)
+  }, list(runFolder = runFolder), renvProject = runFolder)
 
   run(useSbatch = useSbatch, madratConfig = getOption("madrat_cfg"), runFolder = runFolder)
 }
