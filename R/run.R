@@ -24,7 +24,6 @@ run <- function(useSbatch, madratConfig, runFolder) {
   saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 
   # magpie preprocessing
-  dir.create(file.path(runFolder, "preprocessings", "magpie"), recursive = TRUE)
   with_dir(file.path(runFolder, "preprocessings", "magpie"), {
     preprocessingMagpie(madratConfig, useSbatch, runFolder)
   })

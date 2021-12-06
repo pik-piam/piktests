@@ -1,8 +1,8 @@
 # Run PIK Integration Tests
 
-R package **piktests**, version **0.3.1**
+R package **piktests**, version **0.3.2**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/piktests)](https://cran.r-project.org/package=piktests)  [![R build status](https://github.com/pik-piam/piktests/workflows/check/badge.svg)](https://github.com/pik-piam/piktests/actions) [![codecov](https://codecov.io/gh/pik-piam/piktests/branch/master/graph/badge.svg)](https://codecov.io/gh/pik-piam/piktests) 
+[![CRAN status](https://www.r-pkg.org/badges/version/piktests)](https://cran.r-project.org/package=piktests)  [![R build status](https://github.com/pik-piam/piktests/workflows/check/badge.svg)](https://github.com/pik-piam/piktests/actions) [![codecov](https://codecov.io/gh/pik-piam/piktests/branch/master/graph/badge.svg)](https://codecov.io/gh/pik-piam/piktests) [![r-universe](https://pik-piam.r-universe.dev/badges/piktests)](https://pik-piam.r-universe.dev/ui#builds)
 
 ## Purpose and Functionality
 
@@ -38,7 +38,7 @@ In case of questions / problems please contact Pascal Führlich <pascal.fuehrlic
 
 To cite package **piktests** in publications use:
 
-Führlich P (2021). _piktests: Run PIK Integration Tests_. R package version 0.3.1, <URL: https://github.com/pik-piam/piktests>.
+Führlich P (2021). _piktests: Run PIK Integration Tests_. R package version 0.3.2, <URL: https://github.com/pik-piam/piktests>.
 
 A BibTeX entry for LaTeX users is
 
@@ -47,7 +47,7 @@ A BibTeX entry for LaTeX users is
   title = {piktests: Run PIK Integration Tests},
   author = {Pascal Führlich},
   year = {2021},
-  note = {R package version 0.3.1},
+  note = {R package version 0.3.2},
   url = {https://github.com/pik-piam/piktests},
 }
 ```
