@@ -4,9 +4,12 @@
 \alias{runInRenv}
 \title{runInRenv}
 \usage{
-runInRenv(useSbatch = NA)
+runInRenv(renvInstallPackages = NULL, useSbatch = NA)
 }
 \arguments{
+\item{renvInstallPackages}{Which packages should be installed via renv::install after installing other packages.
+Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
+
 \item{useSbatch}{Whether to start the tests via sbatch (run in background) or directly in the current shell. If NA
 the user is asked.}
 }
