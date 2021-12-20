@@ -4,20 +4,23 @@
 \alias{run}
 \title{run}
 \usage{
-run(useSbatch, madratConfig, runFolder)
+run(
+  renvInstallPackages = NULL,
+  piktestsFolder = getwd(),
+  whatToRun = c("remind-preprocessing", "magpie-preprocessing")
+)
 }
 \arguments{
-\item{useSbatch}{Whether to start the tests via sbatch (run in background) or directly in the current shell.}
+\item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
+Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
 
-\item{madratConfig}{The madrat configuration to use.}
+\item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
-\item{runFolder}{Path to the folder where everything related to this piktests run is stored. Must be an renv project.}
+\item{whatToRun}{A character vector defining what tests to run. See default value for a list of all possible tests.}
 }
 \description{
-This function is only meant to be run by piktests::runInRenv. Runs all integration tests in a mostly isolated runtime
-environment.
+Runs integration tests in an isolated runtime environment.
 }
 \details{
-A runtimeWorkingDirectory is created and used as the working directory while running the tests, also a
-madratCacheFolder and a madratOutputFolder are created and used while running the tests.
+A madratCacheFolder and a madratOutputFolder are created and used while running the tests.
 }
