@@ -8,6 +8,7 @@
 #' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
 #' @param piktestsFolder A new folder for this piktests run is created in the given directory.
 #' @param whatToRun A character vector defining what tests to run. See default value for a list of all possible tests.
+#' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @importFrom callr r
 #' @importFrom gert git_clone
@@ -33,7 +34,7 @@ run <- function(renvInstallPackages = NULL,
             path = file.path(runFolder, "preprocessings", "magpie"))
   callr::r(setupRenv, list(runFolder, renvInstallPackages))
 
-  setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
+  setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, diagnostics = "madratDiagnostics", .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
   saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 
@@ -43,7 +44,7 @@ run <- function(renvInstallPackages = NULL,
                locale = Sys.getlocale()),
           file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
 
-  if (grepl("magpie-preprocessing", whatToRun)) {
+  if (isTRUE(grepl("magpie-preprocessing", whatToRun))) {
     runLongJob(function() source(file.path("start", "default.R")), # nolint
                workingDirectory = file.path(runFolder, "preprocessings", "magpie"),
                renvToActivate = runFolder,
@@ -51,9 +52,9 @@ run <- function(renvInstallPackages = NULL,
                jobName = "piktests-magpie-preprocessing")
   }
 
-  if (grepl("remind-preprocessing", whatToRun)) {
+  if (isTRUE(grepl("remind-preprocessing", whatToRun))) {
     runLongJob(function() {
-                 # sidestep a warning during package check by using paste0 here
+                 # sidestep package check warning (mrremind not in DESCRIPTION); ok because setupRenv installs mrremind
                  library(paste0("mr", "remind"), character.only = TRUE) # nolint
                  madrat::retrieveData("remind", cachetype = "def")
                },
@@ -62,4 +63,6 @@ run <- function(renvInstallPackages = NULL,
                madratConfig = madratConfig,
                jobName = "piktests-remind-preprocessing")
   }
+
+  return(invisible(runFolder))
 }

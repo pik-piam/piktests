@@ -18,6 +18,9 @@ Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfueh
 
 \item{whatToRun}{A character vector defining what tests to run. See default value for a list of all possible tests.}
 }
+\value{
+Invisibly, the path to the folder holding everything related to this piktests run.
+}
 \description{
 Runs integration tests in an isolated runtime environment.
 }
