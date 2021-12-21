@@ -37,23 +37,29 @@ run <- function(renvInstallPackages = NULL,
   madratConfig <- getOption("madrat_cfg")
   saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 
+  # not used further, just for archiving/looking up later
+  saveRDS(list(options = options(), # nolint
+               environmentVariables = Sys.getenv(),
+               locale = Sys.getlocale()),
+          file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
+
   if (grepl("magpie-preprocessing", whatToRun)) {
-    runLongJob(runFolder,
-               file.path(runFolder, "preprocessings", "magpie"),
-               madratConfig,
-               function() source(file.path("start", "default.R")), # nolint
+    runLongJob(function() source(file.path("start", "default.R")), # nolint
+               workingDirectory = file.path(runFolder, "preprocessings", "magpie"),
+               renvToActivate = runFolder,
+               madratConfig = madratConfig,
                jobName = "piktests-magpie-preprocessing")
   }
 
   if (grepl("remind-preprocessing", whatToRun)) {
-    runLongJob(runFolder,
-               file.path(runFolder, "preprocessings", "remind"),
-               madratConfig,
-               function() {
+    runLongJob(function() {
                  # sidestep a warning during package check by using paste0 here
                  library(paste0("mr", "remind"), character.only = TRUE) # nolint
                  madrat::retrieveData("remind", cachetype = "def")
                },
+               workingDirectory = file.path(runFolder, "preprocessings", "remind"),
+               renvToActivate = runFolder,
+               madratConfig = madratConfig,
                jobName = "piktests-remind-preprocessing")
   }
 }

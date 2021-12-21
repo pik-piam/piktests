@@ -1,15 +1,19 @@
+#' runLongJob
+#'
+#' Run a function in a new R session.
+#'
 #' @importFrom callr r_bg r
 #' @importFrom renv activate
 #' @importFrom slurmR opts_slurmR Slurm_EvalQ
 #' @importFrom utils dump.frames
 #' @importFrom withr local_dir local_options
-runLongJob <- function(renvToActivate,
-                       workingDirectory,
-                       madratConfig,
-                       workFunction,
+runLongJob <- function(workFunction,
                        arguments = NULL,
-                       mode = c("sbatch", "parallel", "sequential"),
-                       jobName = opts_slurmR$get_job_name()) {
+                       workingDirectory = getwd(),
+                       renvToActivate = NULL,
+                       madratConfig = NULL,
+                       jobName = opts_slurmR$get_job_name(),
+                       mode = c("sbatch", "parallel", "sequential")) {
   mode <- match.arg(mode)
   if (mode == "sbatch" && Sys.which("sbatch") == "") {
     warning("sbatch is unavailable, falling back to parallel execution")
@@ -17,13 +21,19 @@ runLongJob <- function(renvToActivate,
   }
 
   augmentedWorkFunction <- function(renvToActivate, workingDirectory, madratConfig, workFunction, arguments) {
-    renv::activate(renvToActivate)
+    if (!is.null(renvToActivate)) {
+      renv::activate(renvToActivate)
+    }
     withr::local_dir(workingDirectory)
-    withr::local_options(madrat_cfg = madratConfig, nwarnings = 10000, error = function() {
+    withr::local_options(nwarnings = 10000, error = function() {
       traceback(2, max.lines = 1000)
       dump.frames(to.file = TRUE)
+      message("Dumped frames, run `load('", getwd(), "/last.dump.rda'); debugger()` to start debugging")
       quit(save = "no", status = 1, runLast = TRUE)
     })
+    if (!is.null(madratConfig)) {
+      withr::local_options(madrat_cfg = madratConfig)
+    }
 
     do.call(workFunction, arguments)
 

@@ -4,10 +4,10 @@
 \alias{setupRenv}
 \title{setupRenv}
 \usage{
-setupRenv(runFolder, renvInstallPackages = NULL)
+setupRenv(targetFolder, renvInstallPackages = NULL)
 }
 \arguments{
-\item{runFolder}{Where to setup the renv.}
+\item{targetFolder}{Where to setup the renv.}
 
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
