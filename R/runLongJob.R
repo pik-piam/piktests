@@ -2,27 +2,38 @@
 #'
 #' Run a function in a new R session.
 #'
+#' @param workFunction This function will be run in a new R session, so it must use `::` whenever package functions are
+#' used. Also it cannot refer to variables in the outer scope, use the next parameter (arguments) to pass them.
+#' @param arguments A list of arguments passed to workFunction.
+#' @param workingDirectory The working directory in which workFunction will be called.
+#' @param renvToLoad The renv project to load before running workFunction.
+#' @param madratConfig A madrat config (as returned by `madrat::getConfig()`) to be used when running workFunction.
+#' @param jobName The name of the slurm job. The slurm output file will be called `<jobName>.log`. This has no
+#' effect when mode is not "sbatch".
+#' @param mode Determines how workFunction is started.
+#' "sbatch" -> `slurmR::EvalQ`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
+#'
 #' @importFrom callr r_bg r
 #' @importFrom renv activate
 #' @importFrom slurmR opts_slurmR Slurm_EvalQ
 #' @importFrom utils dump.frames
 #' @importFrom withr local_dir local_options
 runLongJob <- function(workFunction,
-                       arguments = NULL,
+                       arguments = list(),
                        workingDirectory = getwd(),
-                       renvToActivate = NULL,
+                       renvToLoad = NULL,
                        madratConfig = NULL,
                        jobName = opts_slurmR$get_job_name(),
-                       mode = c("sbatch", "parallel", "sequential")) {
+                       mode = c("sbatch", "background", "directly")) {
   mode <- match.arg(mode)
   if (mode == "sbatch" && Sys.which("sbatch") == "") {
-    warning("sbatch is unavailable, falling back to parallel execution")
-    mode <- "parallel"
+    warning("sbatch is unavailable, falling back to background execution (callr::r_bg)")
+    mode <- "background"
   }
 
-  augmentedWorkFunction <- function(renvToActivate, workingDirectory, madratConfig, workFunction, arguments) {
-    if (!is.null(renvToActivate)) {
-      renv::activate(renvToActivate)
+  augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
+    if (!is.null(renvToLoad)) {
+      renv::load(renvToLoad)
     }
     withr::local_dir(workingDirectory)
     withr::local_options(nwarnings = 10000, error = function() {
@@ -35,25 +46,26 @@ runLongJob <- function(workFunction,
       withr::local_options(madrat_cfg = madratConfig)
     }
 
-    do.call(workFunction, arguments)
-
+    result <- do.call(workFunction, arguments)
     print(warnings())
+    return(result)
   }
 
   if (mode == "sbatch") {
-    Slurm_EvalQ(expr = {
-                  augmentedWorkFunction(renvToActivate, workingDirectory, madratConfig, workFunction, arguments)
-                },
-                njobs = 1,
-                job_name = jobName,
-                plan = "submit",
-                sbatch_opt = c("--mail-type=END",
-                               "--qos=priority",
-                               "--mem=50000",
-                               paste0("--output=", jobName, ".log")))
-  } else if (mode == "parallel") {
-    callr::r_bg(augmentedWorkFunction, list(renvToActivate, workingDirectory, madratConfig, workFunction, arguments))
+    return(Slurm_EvalQ(expr = {
+                         augmentedWorkFunction(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)
+                       },
+                       njobs = 1,
+                       job_name = jobName,
+                       plan = "submit",
+                       sbatch_opt = c("--mail-type=END",
+                                      "--qos=priority",
+                                      "--mem=50000",
+                                      paste0("--output=", jobName, ".log"))))
+  } else if (mode == "background") {
+    return(callr::r_bg(augmentedWorkFunction,
+                       list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)))
   } else {
-    callr::r(augmentedWorkFunction, list(renvToActivate, workingDirectory, madratConfig, workFunction, arguments))
+    return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)))
   }
 }

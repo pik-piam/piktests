@@ -6,13 +6,31 @@
 \usage{
 runLongJob(
   workFunction,
-  arguments = NULL,
+  arguments = list(),
   workingDirectory = getwd(),
-  renvToActivate = NULL,
+  renvToLoad = NULL,
   madratConfig = NULL,
   jobName = opts_slurmR$get_job_name(),
-  mode = c("sbatch", "parallel", "sequential")
+  mode = c("sbatch", "background", "directly")
 )
+}
+\arguments{
+\item{workFunction}{This function will be run in a new R session, so it must use `::` whenever package functions are
+used. Also it cannot refer to variables in the outer scope, use the next parameter (arguments) to pass them.}
+
+\item{arguments}{A list of arguments passed to workFunction.}
+
+\item{workingDirectory}{The working directory in which workFunction will be called.}
+
+\item{renvToLoad}{The renv project to load before running workFunction.}
+
+\item{madratConfig}{A madrat config (as returned by `madrat::getConfig()`) to be used when running workFunction.}
+
+\item{jobName}{The name of the slurm job. The slurm output file will be called `<jobName>.log`. This has no
+effect when mode is not "sbatch".}
+
+\item{mode}{Determines how workFunction is started.
+"sbatch" -> `slurmR::EvalQ`, "background" -> `callr::r_bg`, "directly" -> `callr::r`}
 }
 \description{
 Run a function in a new R session.

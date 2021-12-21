@@ -9,7 +9,6 @@
 setupRenv <- function(targetFolder, renvInstallPackages = NULL) {
   # This function is run via callr::r so it must use `::` everywhere and cannot rely on roxygen's `@importFrom`.
   renv::init(targetFolder, restart = FALSE, bare = TRUE) # remove bare when newest foreign can be installed on cluster
-  renv::load(targetFolder)
 
   # TODO remove this when newest foreign can be installed on cluster
   renv::install("foreign@0.8-76")

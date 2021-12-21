@@ -47,7 +47,7 @@ run <- function(renvInstallPackages = NULL,
   if (isTRUE(grepl("magpie-preprocessing", whatToRun))) {
     runLongJob(function() source(file.path("start", "default.R")), # nolint
                workingDirectory = file.path(runFolder, "preprocessings", "magpie"),
-               renvToActivate = runFolder,
+               renvToLoad = runFolder,
                madratConfig = madratConfig,
                jobName = "piktests-magpie-preprocessing")
   }
@@ -59,7 +59,7 @@ run <- function(renvInstallPackages = NULL,
                  madrat::retrieveData("remind", cachetype = "def")
                },
                workingDirectory = file.path(runFolder, "preprocessings", "remind"),
-               renvToActivate = runFolder,
+               renvToLoad = runFolder,
                madratConfig = madratConfig,
                jobName = "piktests-remind-preprocessing")
   }
