@@ -1,9 +1,9 @@
 test_that("setupRenv works", {
-  if (Sys.getenv("RENV_PATHS_CACHE") == "") {
-    cat(paste0("\nThe environment variable RENV_PATHS_CACHE is not set, so the renv cache is not used and ",
-              "this test will take a very long time. ",
-              "To change this, cancel testing and run the following before running tests again:\n",
-              "Sys.setenv(RENV_PATHS_CACHE=renv::paths$root('cache'))"))
+  skip_on_ci()
+  if (startsWith(renv::paths$cache(), tempdir())) {
+    cat(paste0("\nWith your setup the renv cache is not used in tests, so this test will take a very long time. ",
+               "To change this, cancel testing and run the following before running tests again:\n",
+               "Sys.setenv(RENV_PATHS_ROOT=renv::paths$root())"))
   }
   withr::local_options(repos = c(rse = "https://rse.pik-potsdam.de/r/packages", cran = "https://cran.rstudio.com/"))
   renvProject <- withr::local_tempdir()
