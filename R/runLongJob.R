@@ -15,7 +15,7 @@
 #'
 #' @importFrom callr r_bg r
 #' @importFrom renv activate
-#' @importFrom slurmR opts_slurmR Slurm_EvalQ
+#' @importFrom slurmR opts_slurmR Slurm_lapply
 #' @importFrom utils dump.frames
 #' @importFrom withr local_dir local_options
 runLongJob <- function(workFunction,
@@ -32,9 +32,6 @@ runLongJob <- function(workFunction,
   }
 
   augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
-    if (!is.null(renvToLoad)) {
-      renv::load(renvToLoad)
-    }
     withr::local_dir(workingDirectory)
     withr::local_options(nwarnings = 10000, error = function() {
       traceback(2, max.lines = 1000)
@@ -45,23 +42,22 @@ runLongJob <- function(workFunction,
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
-
+    if (!is.null(renvToLoad)) {
+      renv::load(renvToLoad)
+    }
     result <- do.call(workFunction, arguments)
     print(warnings())
     return(result)
   }
 
   if (mode == "sbatch") {
-    return(Slurm_EvalQ(expr = {
-                         augmentedWorkFunction(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)
-                       },
-                       njobs = 1,
-                       job_name = jobName,
-                       plan = "submit",
-                       sbatch_opt = c("--mail-type=END",
-                                      "--qos=priority",
-                                      "--mem=50000",
-                                      paste0("--output=", jobName, ".log"))))
+    # TODO suppress normalizePath warning
+    return(Slurm_lapply(list(augmentedWorkFunction), callr::r, args = list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+                     njobs = 1, job_name = jobName, plan = "submit",
+                     sbatch_opt = list(`mail-type` = "END",
+                                         qos = "priority",
+                                         mem = 50000,
+                                         output = file.path(workingDirectory, paste0(jobName, ".log")))))
   } else if (mode == "background") {
     return(callr::r_bg(augmentedWorkFunction,
                        list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)))

@@ -6,7 +6,15 @@ test_that("runLongJob works", {
     expect_warning(piktests:::runLongJob(function() 0),
                    "sbatch is unavailable, falling back to background execution (callr::r_bg)", fixed = TRUE)
   } else {
-    expect_identical(slurmR::Slurm_collect(piktests:::runLongJob(function() 3 + 5))[[1]], 8)
+    # testthat loads piktests in a weird way, so slurmR cannot load it, so we unload to avoid crashing
+    unloadNamespace("piktests")
+    withr::with_output_sink(nullfile(), {
+      slurmJob <- piktests:::runLongJob(function() 3 + 5)
+    })
+    library("piktests", character.only = TRUE)
+    expect_identical(slurmR::Slurm_collect(slurmJob)[[1]], 8)
+    slurmR::Slurm_clean(slurmJob)
+    # TODO remove log file
   }
 
   workFunction <- function() {
@@ -21,8 +29,7 @@ test_that("runLongJob works", {
                              madratConfig = madrat::getConfig(verbose = FALSE),
                              mode = "directly")
   expect_identical(normalizePath(x[["workingDirectory"]]), normalizePath(tempdir()))
-  expect_identical(normalizePath(x[["libPaths"]][[1]]),
-                   normalizePath(file.path(renvProject, "renv", "library", "R-4.1", "x86_64-pc-linux-gnu")))
+  expect_true(startsWith(x[["libPaths"]][[1]], renvProject))
   expect_true(endsWith(x[["libPaths"]][[2]], "renv-system-library"))
   expect_identical(x[["madratConfig"]], madrat::getConfig(verbose = FALSE))
 })

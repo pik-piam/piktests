@@ -7,6 +7,7 @@ test_that("run works", {
   }
   withr::local_options(repos = c(rse = "https://rse.pik-potsdam.de/r/packages", cran = "https://cran.rstudio.com/"))
   tempFolder <- withr::local_tempdir()
+  # TODO suppress output of gert::git_clone
   runFolder <- piktests::run(piktestsFolder = tempFolder, whatToRun = NULL)
   expect_true(all(dir.exists(c(runFolder,
                                file.path(runFolder, "madratCacheFolder"),
