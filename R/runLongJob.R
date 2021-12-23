@@ -33,6 +33,8 @@ runLongJob <- function(workFunction,
     mode <- "background"
   }
 
+  dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
+
   augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
     withr::local_dir(workingDirectory)
     withr::local_options(nwarnings = 10000, error = function() {
@@ -64,12 +66,10 @@ runLongJob <- function(workFunction,
                                           mem = 50000,
                                           output = outputFilePath)))
   } else if (mode == "background") {
-    dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
     return(callr::r_bg(augmentedWorkFunction,
                        list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
                        stdout = outputFilePath, stderr = outputFilePath))
   } else {
-    dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
     return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
                     stdout = outputFilePath, stderr = outputFilePath))
   }
