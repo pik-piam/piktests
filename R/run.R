@@ -27,7 +27,7 @@ run <- function(renvInstallPackages = NULL,
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")
   }
-  dir.create(runFolder)
+  dir.create(runFolder, recursive = TRUE)
   cacheFolder <- file.path(runFolder, "madratCacheFolder")
   dir.create(cacheFolder)
   outputFolder <- file.path(runFolder, "madratOutputFolder")

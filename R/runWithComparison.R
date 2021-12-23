@@ -19,6 +19,10 @@ runWithComparison <- function(renvInstallPackages,
                               piktestsFolder = getwd(),
                               whatToRun = c("remind-preprocessing", "magpie-preprocessing")) {
   runFolder <- file.path(piktestsFolder, format(Sys.time(), "%Y_%m_%d-%H_%M"))
+  if (file.exists(runFolder)) {
+    stop(runFolder, " already exists!")
+  }
+  dir.create(runFolder, recursive = TRUE)
   run(NULL, piktestsFolder, whatToRun, runFolder = file.path(runFolder, "old"))
   run(renvInstallPackages, piktestsFolder, whatToRun, runFolder = file.path(runFolder, "new"))
   invisible(runFolder)
