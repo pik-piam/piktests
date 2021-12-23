@@ -54,6 +54,8 @@ runLongJob <- function(workFunction,
     return(result)
   }
 
+  outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
+
   if (mode == "sbatch") {
     dir.create(file.path(opts_slurmR$get_tmp_path(), jobName))
     return(Slurm_lapply(list(augmentedWorkFunction), callr::r,
@@ -62,11 +64,13 @@ runLongJob <- function(workFunction,
                         sbatch_opt = list(`mail-type` = "END",
                                           qos = "priority",
                                           mem = 50000,
-                                          output = file.path(workingDirectory, paste0(jobName, ".log")))))
+                                          output = outputFilePath)))
   } else if (mode == "background") {
     return(callr::r_bg(augmentedWorkFunction,
-                       list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)))
+                       list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+                       stdout = outputFilePath, stderr = outputFilePath))
   } else {
-    return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)))
+    return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+                    stdout = outputFilePath, stderr = outputFilePath))
   }
 }

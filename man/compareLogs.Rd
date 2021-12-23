@@ -17,3 +17,6 @@ Show side-by-side diff of the two given log files.
 \details{
 Runtimes are removed from logs before comparison.
 }
+\author{
+Pascal Führlich
+}

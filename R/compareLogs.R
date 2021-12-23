@@ -7,6 +7,8 @@
 #' @param pathToLogA Path to the first log file, shown on the left hand side in the resulting diff.
 #' @param pathToLogB Path to the second log file, shown on the right hand side in the resulting diff.
 #'
+#' @author Pascal Führlich
+#'
 #' @importFrom withr local_tempfile
 #' @export
 compareLogs <- function(pathToLogA, pathToLogB) {

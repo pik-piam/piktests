@@ -8,6 +8,7 @@ run(
   renvInstallPackages = NULL,
   piktestsFolder = getwd(),
   whatToRun = c("remind-preprocessing", "magpie-preprocessing"),
+  runFolder = file.path(piktestsFolder, format(Sys.time(), "\%Y_\%m_\%d-\%H_\%M")),
   runInNewRSession = callr::r
 )
 }
@@ -18,6 +19,8 @@ Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfueh
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
 \item{whatToRun}{A character vector defining what tests to run. See default value for a list of all possible tests.}
+
+\item{runFolder}{In general this should be left as default. Where the folder for this piktests run should be created.}
 
 \item{runInNewRSession}{Exists for testing. A function like `callr::r` taking a function and arguments to execute
 in a new R session.}
