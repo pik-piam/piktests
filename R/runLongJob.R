@@ -33,7 +33,7 @@ runLongJob <- function(workFunction,
     mode <- "background"
   }
 
-  dir.create(workingDirectory, showWarnings = !dir.exists(workingDirectory))
+  dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
   augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
     withr::local_dir(workingDirectory)

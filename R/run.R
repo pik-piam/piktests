@@ -47,7 +47,7 @@ run <- function(renvInstallPackages = NULL,
                locale = Sys.getlocale()),
           file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
 
-  if (isTRUE(grepl("magpie-preprocessing", whatToRun))) {
+  if ("magpie-preprocessing" %in% whatToRun) {
     runLongJob(function() source(file.path("start", "default.R")), # nolint
                workingDirectory = file.path(runFolder, "preprocessings", "magpie"),
                renvToLoad = runFolder,
@@ -55,7 +55,7 @@ run <- function(renvInstallPackages = NULL,
                jobName = "piktests-magpie-preprocessing")
   }
 
-  if (isTRUE(grepl("remind-preprocessing", whatToRun))) {
+  if ("remind-preprocessing" %in% whatToRun) {
     runLongJob(function() {
                  # sidestep package check warning (mrremind not in DESCRIPTION); ok because setupRenv installs mrremind
                  library(paste0("mr", "remind"), character.only = TRUE) # nolint
