@@ -55,14 +55,14 @@ runLongJob <- function(workFunction,
   }
 
   if (mode == "sbatch") {
-    # TODO suppress normalizePath warning
+    dir.create(file.path(opts_slurmR$get_tmp_path(), jobName))
     return(Slurm_lapply(list(augmentedWorkFunction), callr::r,
                         args = list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                     njobs = 1, job_name = jobName, plan = "submit",
-                     sbatch_opt = list(`mail-type` = "END",
-                                         qos = "priority",
-                                         mem = 50000,
-                                         output = file.path(workingDirectory, paste0(jobName, ".log")))))
+                        njobs = 1, job_name = jobName, plan = "submit",
+                        sbatch_opt = list(`mail-type` = "END",
+                                          qos = "priority",
+                                          mem = 50000,
+                                          output = file.path(workingDirectory, paste0(jobName, ".log")))))
   } else if (mode == "background") {
     return(callr::r_bg(augmentedWorkFunction,
                        list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)))

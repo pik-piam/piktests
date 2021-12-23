@@ -9,12 +9,13 @@ test_that("runLongJob works", {
     # testthat loads piktests in a weird way, so slurmR cannot load it, so we unload to avoid crashing
     unloadNamespace("piktests")
     withr::with_output_sink(nullfile(), {
-      slurmJob <- piktests:::runLongJob(function() 3 + 5)
+      slurmJob <- piktests:::runLongJob(function() 3 + 5, jobName = "pusteblume")
     })
     library("piktests", character.only = TRUE)
     expect_identical(slurmR::Slurm_collect(slurmJob)[[1]], 8)
     slurmR::Slurm_clean(slurmJob)
-    # TODO remove log file
+    expect_true(file.exists("pusteblume.log"))
+    file.remove("pusteblume.log")
   }
 
   workFunction <- function() {
