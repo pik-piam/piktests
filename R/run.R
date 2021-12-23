@@ -35,7 +35,7 @@ run <- function(renvInstallPackages = NULL,
 
   gitCloneRepos <- "git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git"
   names(gitCloneRepos) <- file.path(runFolder, "preprocessings", "magpie")
-  runInNewRSession(setupRenv, list(runFolder, gitCloneRepos, renvInstallPackages))
+  runInNewRSession(setupRenv, list(runFolder, gitCloneRepos, renvInstallPackages)) # TODO this does not print stdout
 
   setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, diagnostics = "madratDiagnostics", .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
@@ -52,7 +52,7 @@ run <- function(renvInstallPackages = NULL,
                workingDirectory = file.path(runFolder, "preprocessings", "magpie"),
                renvToLoad = runFolder,
                madratConfig = madratConfig,
-               jobName = "piktests-magpie-preprocessing")
+               jobName = paste0("piktests-magpie-preprocessing_", substring(tempfile("", ""), 2)))
   }
 
   if ("remind-preprocessing" %in% whatToRun) {
@@ -64,7 +64,7 @@ run <- function(renvInstallPackages = NULL,
                workingDirectory = file.path(runFolder, "preprocessings", "remind"),
                renvToLoad = runFolder,
                madratConfig = madratConfig,
-               jobName = "piktests-remind-preprocessing")
+               jobName = paste0("piktests-remind-preprocessing_", substring(tempfile("", ""), 2)))
   }
 
   return(invisible(runFolder))
