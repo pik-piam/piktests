@@ -4,7 +4,7 @@
 \alias{setupRenv}
 \title{setupRenv}
 \usage{
-setupRenv(targetFolder, renvInstallPackages = NULL)
+setupRenv(targetFolder, gitCloneRepos = NULL, renvInstallPackages = NULL)
 }
 \arguments{
 \item{targetFolder}{Where to setup the renv.}
@@ -14,4 +14,7 @@ Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfueh
 }
 \description{
 Sets up a fresh renv and installs the required packages in it.
+}
+\author{
+Pascal Führlich
 }

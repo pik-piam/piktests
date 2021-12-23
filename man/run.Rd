@@ -7,7 +7,8 @@
 run(
   renvInstallPackages = NULL,
   piktestsFolder = getwd(),
-  whatToRun = c("remind-preprocessing", "magpie-preprocessing")
+  whatToRun = c("remind-preprocessing", "magpie-preprocessing"),
+  runInNewRSession = callr::r
 )
 }
 \arguments{
@@ -17,6 +18,9 @@ Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfueh
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
 \item{whatToRun}{A character vector defining what tests to run. See default value for a list of all possible tests.}
+
+\item{runInNewRSession}{Exists for testing. A function like `callr::r` taking a function and arguments to execute
+in a new R session.}
 }
 \value{
 Invisibly, the path to the folder holding everything related to this piktests run.
@@ -25,5 +29,9 @@ Invisibly, the path to the folder holding everything related to this piktests ru
 Runs integration tests in an isolated runtime environment.
 }
 \details{
-A madratCacheFolder and a madratOutputFolder are created and used while running the tests.
+A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
+preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
+}
+\author{
+Pascal Führlich
 }

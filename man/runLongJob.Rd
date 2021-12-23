@@ -35,3 +35,6 @@ effect when mode is not "sbatch".}
 \description{
 Run a function in a new R session.
 }
+\author{
+Pascal Führlich
+}

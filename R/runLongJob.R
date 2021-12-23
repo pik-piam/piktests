@@ -13,6 +13,8 @@
 #' @param mode Determines how workFunction is started.
 #' "sbatch" -> `slurmR::EvalQ`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
 #'
+#' @author Pascal Führlich
+#'
 #' @importFrom callr r_bg r
 #' @importFrom renv activate
 #' @importFrom slurmR opts_slurmR Slurm_lapply
@@ -30,6 +32,8 @@ runLongJob <- function(workFunction,
     warning("sbatch is unavailable, falling back to background execution (callr::r_bg)")
     mode <- "background"
   }
+
+  dir.create(workingDirectory, showWarnings = !dir.exists(workingDirectory))
 
   augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
     withr::local_dir(workingDirectory)
@@ -52,7 +56,8 @@ runLongJob <- function(workFunction,
 
   if (mode == "sbatch") {
     # TODO suppress normalizePath warning
-    return(Slurm_lapply(list(augmentedWorkFunction), callr::r, args = list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+    return(Slurm_lapply(list(augmentedWorkFunction), callr::r,
+                        args = list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
                      njobs = 1, job_name = jobName, plan = "submit",
                      sbatch_opt = list(`mail-type` = "END",
                                          qos = "priority",

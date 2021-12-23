@@ -2,22 +2,25 @@
 #'
 #' Runs integration tests in an isolated runtime environment.
 #'
-#' A madratCacheFolder and a madratOutputFolder are created and used while running the tests.
+#' A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
+#' preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
 #'
 #' @param renvInstallPackages After installing other packages, renv::install(renvInstallPackages) is called.
 #' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
 #' @param piktestsFolder A new folder for this piktests run is created in the given directory.
 #' @param whatToRun A character vector defining what tests to run. See default value for a list of all possible tests.
+#' @param runInNewRSession Exists for testing. A function like `callr::r` taking a function and arguments to execute
+#' in a new R session.
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
+#' @author Pascal Führlich
+#'
 #' @importFrom callr r
-#' @importFrom gert git_clone
 #' @importFrom madrat setConfig
-#' @importFrom slurmR Slurm_EvalQ
-#' @importFrom withr with_dir
 run <- function(renvInstallPackages = NULL,
                 piktestsFolder = getwd(),
-                whatToRun = c("remind-preprocessing", "magpie-preprocessing")) {
+                whatToRun = c("remind-preprocessing", "magpie-preprocessing"),
+                runInNewRSession = callr::r) {
   runFolder <- file.path(piktestsFolder, format(Sys.time(), "%Y_%m_%d-%H_%M"))
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")
@@ -29,10 +32,9 @@ run <- function(renvInstallPackages = NULL,
   outputFolder <- file.path(runFolder, "madratOutputFolder")
   dir.create(outputFolder)
 
-  # clone before setupRenv so renv can auto-detect dependencies
-  git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git",
-            path = file.path(runFolder, "preprocessings", "magpie"))
-  callr::r(setupRenv, list(runFolder, renvInstallPackages))
+  gitCloneRepos <- "git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git"
+  names(gitCloneRepos) <- file.path(runFolder, "preprocessings", "magpie")
+  runInNewRSession(setupRenv, list(runFolder, gitCloneRepos, renvInstallPackages))
 
   setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, diagnostics = "madratDiagnostics", .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
