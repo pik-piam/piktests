@@ -1,33 +1,70 @@
 #' run
 #'
-#' This function is only meant to be run by piktests::runInRenv. Runs all integration tests in a mostly isolated runtime
-#' environment.
+#' Runs integration tests in an isolated runtime environment.
 #'
-#' A runtimeWorkingDirectory is created and used as the working directory while running the tests, also a
-#' madratCacheFolder and a madratOutputFolder are created and used while running the tests.
+#' A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
+#' preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
 #'
-#' @param useSbatch Whether to start the tests via sbatch (run in background) or directly in the current shell.
-#' @param madratConfig The madrat configuration to use.
-#' @param runFolder Path to the folder where everything related to this piktests run is stored. Must be an renv project.
+#' @param renvInstallPackages After installing other packages, renv::install(renvInstallPackages) is called.
+#' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
+#' @param piktestsFolder A new folder for this piktests run is created in the given directory.
+#' @param whatToRun A character vector defining what tests to run. See default value for a list of all possible tests.
+#' @param runInNewRSession Exists for testing. A function like `callr::r` taking a function and arguments to execute
+#' in a new R session.
+#' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
+#' @author Pascal Führlich
+#'
+#' @importFrom callr r
 #' @importFrom madrat setConfig
-#' @importFrom withr local_options with_dir
-run <- function(useSbatch, madratConfig, runFolder) {
+run <- function(renvInstallPackages = NULL,
+                piktestsFolder = getwd(),
+                whatToRun = c("remind-preprocessing", "magpie-preprocessing"),
+                runInNewRSession = callr::r) {
+  runFolder <- file.path(piktestsFolder, format(Sys.time(), "%Y_%m_%d-%H_%M"))
+  if (file.exists(runFolder)) {
+    stop(runFolder, " already exists!")
+  }
+  dir.create(runFolder)
   cacheFolder <- file.path(runFolder, "madratCacheFolder")
   dir.create(cacheFolder)
+
   outputFolder <- file.path(runFolder, "madratOutputFolder")
   dir.create(outputFolder)
 
-  local_options(madrat_cfg = madratConfig)
-  setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
+  gitCloneRepos <- "git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git"
+  names(gitCloneRepos) <- file.path(runFolder, "preprocessings", "magpie")
+  runInNewRSession(setupRenv, list(runFolder, gitCloneRepos, renvInstallPackages))
+
+  setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, diagnostics = "madratDiagnostics", .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
   saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 
-  # magpie preprocessing
-  with_dir(file.path(runFolder, "preprocessings", "magpie"), {
-    preprocessingMagpie(madratConfig, useSbatch, runFolder)
-  })
+  # not used further, just for archiving/looking up later
+  saveRDS(list(options = options(), # nolint
+               environmentVariables = Sys.getenv(),
+               locale = Sys.getlocale()),
+          file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
 
-  # remind preprocessing
-  runPreprocessing(madratConfig, "mrremind", list("remind"), useSbatch, runFolder)
+  if (isTRUE(grepl("magpie-preprocessing", whatToRun))) {
+    runLongJob(function() source(file.path("start", "default.R")), # nolint
+               workingDirectory = file.path(runFolder, "preprocessings", "magpie"),
+               renvToLoad = runFolder,
+               madratConfig = madratConfig,
+               jobName = "piktests-magpie-preprocessing")
+  }
+
+  if (isTRUE(grepl("remind-preprocessing", whatToRun))) {
+    runLongJob(function() {
+                 # sidestep package check warning (mrremind not in DESCRIPTION); ok because setupRenv installs mrremind
+                 library(paste0("mr", "remind"), character.only = TRUE) # nolint
+                 madrat::retrieveData("remind", cachetype = "def")
+               },
+               workingDirectory = file.path(runFolder, "preprocessings", "remind"),
+               renvToLoad = runFolder,
+               madratConfig = madratConfig,
+               jobName = "piktests-remind-preprocessing")
+  }
+
+  return(invisible(runFolder))
 }
