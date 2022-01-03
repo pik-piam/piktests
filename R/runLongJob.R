@@ -49,6 +49,7 @@ runLongJob <- function(workFunction,
     if (!is.null(renvToLoad)) {
       renv::load(renvToLoad)
     }
+    unloadNamespace("piktests") # fixes a crash when testing a new version of a package also used by piktests
     result <- do.call(workFunction, arguments)
     print(warnings())
     return(result)
@@ -71,6 +72,6 @@ runLongJob <- function(workFunction,
                        stdout = outputFilePath, stderr = outputFilePath))
   } else {
     return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                    stdout = outputFilePath, stderr = outputFilePath))
+                    show = TRUE, stdout = outputFilePath, stderr = outputFilePath, package = TRUE))
   }
 }
