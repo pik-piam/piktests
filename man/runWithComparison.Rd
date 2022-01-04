@@ -28,7 +28,7 @@ be compared. Run this to test changes in your fork by passing "<gituser>/<repo>"
 Use `piktests::comparePreprocessingLogs` for comparison after all runs are completed.
 }
 \seealso{
-[comparePreprocessingLogs()], [run()]
+\code{\link{comparePreprocessingLogs}}, \code{\link{run}}
 }
 \author{
 Pascal Führlich

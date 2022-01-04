@@ -12,7 +12,7 @@
 #' @return Invisibly, the path to the folder holding the two actual piktests runs.
 #'
 #' @author Pascal Führlich
-#' @seealso [comparePreprocessingLogs()], [run()]
+#' @seealso \code{\link{comparePreprocessingLogs}}, \code{\link{run}}
 #'
 #' @export
 runWithComparison <- function(renvInstallPackages,

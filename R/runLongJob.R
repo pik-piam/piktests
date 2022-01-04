@@ -37,7 +37,7 @@ runLongJob <- function(workFunction,
 
   augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
     withr::local_dir(workingDirectory)
-    withr::local_options(nwarnings = 10000, error = function() {
+    withr::local_options(nwarnings = 10000, warn = 1, error = function() {
       traceback(2, max.lines = 1000)
       dump.frames(to.file = TRUE)
       message("Dumped frames, run `load('", getwd(), "/last.dump.rda'); debugger()` to start debugging")
@@ -50,9 +50,7 @@ runLongJob <- function(workFunction,
       renv::load(renvToLoad)
     }
     unloadNamespace("piktests") # fixes a crash when testing a new version of a package also used by piktests
-    result <- do.call(workFunction, arguments)
-    print(warnings())
-    return(result)
+    return(do.call(workFunction, arguments))
   }
 
   outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
@@ -72,6 +70,6 @@ runLongJob <- function(workFunction,
                        stdout = outputFilePath, stderr = outputFilePath))
   } else {
     return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                    show = TRUE, stdout = outputFilePath, stderr = outputFilePath, package = TRUE))
+                    show = TRUE, stdout = outputFilePath, stderr = outputFilePath))
   }
 }

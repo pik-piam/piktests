@@ -38,7 +38,7 @@ run <- function(renvInstallPackages = NULL,
   names(gitCloneRepos) <- file.path(runFolder, "preprocessings", "magpie")
   runInNewRSession(setupRenv, list(runFolder, gitCloneRepos, renvInstallPackages)) # TODO this does not print stdout
 
-  setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, diagnostics = "madratDiagnostics", .local = TRUE)
+  setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
   saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 

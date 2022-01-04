@@ -15,7 +15,7 @@ comparePreprocessingLogs(preprocessingName, runFolder = getwd())
 Convenience function for comparing logs after running `piktests::runWithComparison`.
 }
 \seealso{
-[runWithComparison()]
+\code{\link{runWithComparison}}
 }
 \author{
 Pascal Führlich

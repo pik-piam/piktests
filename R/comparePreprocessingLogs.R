@@ -6,7 +6,7 @@
 #' @param runFolder The path to a run folder created by `piktests::runWithComparison`.
 #'
 #' @author Pascal Führlich
-#' @seealso [runWithComparison()]
+#' @seealso \code{\link{runWithComparison}}
 #'
 #' @export
 comparePreprocessingLogs <- function(preprocessingName, runFolder = getwd()) {
