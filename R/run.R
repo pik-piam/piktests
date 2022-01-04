@@ -36,7 +36,7 @@ run <- function(renvInstallPackages = NULL,
 
   gitCloneRepos <- "git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git"
   names(gitCloneRepos) <- file.path(runFolder, "preprocessings", "magpie")
-  runInNewRSession(setupRenv, list(runFolder, gitCloneRepos, renvInstallPackages)) # TODO this does not print stdout
+  runInNewRSession(setupRenv, list(runFolder, gitCloneRepos, renvInstallPackages), show = TRUE)
 
   setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
