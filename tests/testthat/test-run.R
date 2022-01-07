@@ -1,7 +1,7 @@
 test_that("run works", {
   tempFolder <- withr::local_tempdir()
   runFolder <- piktests::run(piktestsFolder = tempFolder, whatToRun = NULL,
-                             runInNewRSession = function(x, y) invisible(NULL))
+                             runInNewRSession = function(...) invisible(NULL)) # effectively skip renv setup
   expect_true(dir.exists(file.path(runFolder, "madratCacheFolder")))
   expect_true(dir.exists(file.path(runFolder, "madratOutputFolder")))
   expect_true(file.exists(file.path(runFolder, "madratConfig.rds")))

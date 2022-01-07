@@ -18,7 +18,7 @@
 #' @importFrom callr r_bg r
 #' @importFrom renv activate
 #' @importFrom slurmR opts_slurmR Slurm_lapply
-#' @importFrom utils dump.frames
+#' @importFrom utils dump.frames sessionInfo
 #' @importFrom withr local_dir local_options
 runLongJob <- function(workFunction,
                        arguments = list(),
@@ -36,20 +36,26 @@ runLongJob <- function(workFunction,
   dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
   augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
-    withr::local_dir(workingDirectory)
     withr::local_options(nwarnings = 10000, warn = 1, error = function() {
       traceback(2, max.lines = 1000)
       dump.frames(to.file = TRUE)
-      message("Dumped frames, run `load('", getwd(), "/last.dump.rda'); debugger()` to start debugging")
+      message("Dumped frames, run `load('", file.path(getwd(), "last.dump.rda"), "'); debugger()` to start debugging")
       quit(save = "no", status = 1, runLast = TRUE)
     })
+    withr::local_dir(workingDirectory)
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
     if (!is.null(renvToLoad)) {
       renv::load(renvToLoad)
     }
-    unloadNamespace("piktests") # fixes a crash when testing a new version of a package also used by piktests
+
+    # unload all loaded namespaces to prevent a crash when testing a new version of a package also used by piktests
+    for (i in seq_along(sessionInfo()[["loadedOnly"]])) {
+      for (p in setdiff(names(sessionInfo()[["loadedOnly"]]), "compiler")) {
+        try(unloadNamespace(p), silent = TRUE)
+      }
+    }
     return(do.call(workFunction, arguments))
   }
 
