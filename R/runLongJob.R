@@ -11,14 +11,14 @@
 #' @param jobName The name of the slurm job. The slurm output file will be called `<jobName>.log`. This has no
 #' effect when mode is not "sbatch".
 #' @param mode Determines how workFunction is started.
-#' "sbatch" -> `slurmR::EvalQ`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
+#' "sbatch" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
 #'
 #' @author Pascal Führlich
 #'
 #' @importFrom callr r_bg r
 #' @importFrom renv activate
 #' @importFrom slurmR opts_slurmR Slurm_lapply
-#' @importFrom utils dump.frames
+#' @importFrom utils dump.frames sessionInfo
 #' @importFrom withr local_dir local_options
 runLongJob <- function(workFunction,
                        arguments = list(),
@@ -33,40 +33,49 @@ runLongJob <- function(workFunction,
     mode <- "background"
   }
 
-  dir.create(workingDirectory, showWarnings = !dir.exists(workingDirectory))
+  dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
   augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
-    withr::local_dir(workingDirectory)
-    withr::local_options(nwarnings = 10000, error = function() {
+    withr::local_options(nwarnings = 10000, warn = 1, error = function() {
       traceback(2, max.lines = 1000)
       dump.frames(to.file = TRUE)
-      message("Dumped frames, run `load('", getwd(), "/last.dump.rda'); debugger()` to start debugging")
+      message("Dumped frames, run `load('", file.path(getwd(), "last.dump.rda"), "'); debugger()` to start debugging")
       quit(save = "no", status = 1, runLast = TRUE)
     })
+    withr::local_dir(workingDirectory)
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
     if (!is.null(renvToLoad)) {
       renv::load(renvToLoad)
     }
-    result <- do.call(workFunction, arguments)
-    print(warnings())
-    return(result)
+
+    # unload all loaded namespaces to prevent a crash when testing a new version of a package also used by piktests
+    for (i in seq_along(sessionInfo()[["loadedOnly"]])) {
+      for (p in setdiff(names(sessionInfo()[["loadedOnly"]]), "compiler")) {
+        try(unloadNamespace(p), silent = TRUE)
+      }
+    }
+    return(do.call(workFunction, arguments))
   }
 
+  outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
+
   if (mode == "sbatch") {
-    dir.create(file.path(opts_slurmR$get_tmp_path(), jobName))
+    dir.create(file.path(workingDirectory, jobName))
     return(Slurm_lapply(list(augmentedWorkFunction), callr::r,
                         args = list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                        njobs = 1, job_name = jobName, plan = "submit",
+                        njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory,
                         sbatch_opt = list(`mail-type` = "END",
                                           qos = "priority",
                                           mem = 50000,
-                                          output = file.path(workingDirectory, paste0(jobName, ".log")))))
+                                          output = outputFilePath)))
   } else if (mode == "background") {
     return(callr::r_bg(augmentedWorkFunction,
-                       list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)))
+                       list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+                       stdout = outputFilePath, stderr = outputFilePath))
   } else {
-    return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments)))
+    return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+                    show = TRUE, stdout = outputFilePath, stderr = outputFilePath))
   }
 }
