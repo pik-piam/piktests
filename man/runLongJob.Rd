@@ -30,7 +30,7 @@ used. Also it cannot refer to variables in the outer scope, use the next paramet
 effect when mode is not "sbatch".}
 
 \item{mode}{Determines how workFunction is started.
-"sbatch" -> `slurmR::EvalQ`, "background" -> `callr::r_bg`, "directly" -> `callr::r`}
+"sbatch" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`}
 }
 \description{
 Run a function in a new R session.

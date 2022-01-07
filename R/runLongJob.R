@@ -11,7 +11,7 @@
 #' @param jobName The name of the slurm job. The slurm output file will be called `<jobName>.log`. This has no
 #' effect when mode is not "sbatch".
 #' @param mode Determines how workFunction is started.
-#' "sbatch" -> `slurmR::EvalQ`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
+#' "sbatch" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
 #'
 #' @author Pascal Führlich
 #'
@@ -62,10 +62,10 @@ runLongJob <- function(workFunction,
   outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
 
   if (mode == "sbatch") {
-    dir.create(file.path(opts_slurmR$get_tmp_path(), jobName))
+    dir.create(file.path(workingDirectory, jobName))
     return(Slurm_lapply(list(augmentedWorkFunction), callr::r,
                         args = list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                        njobs = 1, job_name = jobName, plan = "submit",
+                        njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory,
                         sbatch_opt = list(`mail-type` = "END",
                                           qos = "priority",
                                           mem = 50000,

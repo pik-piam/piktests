@@ -68,5 +68,16 @@ run <- function(renvInstallPackages = NULL,
                jobName = paste0("piktests-remind-preprocessing_", substring(tempfile("", ""), 2)))
   }
 
+  if ("madratExample" %in% whatToRun) {
+    runLongJob(function() {
+      library(paste0("m", "adrat"), character.only = TRUE) # nolint
+      madrat::retrieveData("example", cachetype = "def")
+    },
+    workingDirectory = file.path(runFolder, "preprocessings", "madratExample"),
+    renvToLoad = runFolder,
+    madratConfig = madratConfig,
+    jobName = paste0("piktests-madratExample-preprocessing_", substring(tempfile("", ""), 2)))
+  }
+
   return(invisible(runFolder))
 }
