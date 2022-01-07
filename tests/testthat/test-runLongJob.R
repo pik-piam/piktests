@@ -34,6 +34,5 @@ test_that("runLongJob works", {
                              mode = "directly")
   expect_identical(normalizePath(x[["workingDirectory"]]), normalizePath(workingDirectory))
   expect_true(startsWith(x[["libPaths"]][[1]], renvProject))
-  expect_true(endsWith(x[["libPaths"]][[2]], "renv-system-library"))
   expect_identical(x[["madratConfig"]], madrat::getConfig(verbose = FALSE))
 })
