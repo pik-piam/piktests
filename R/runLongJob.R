@@ -32,7 +32,11 @@ runLongJob <- function(workFunction,
 
   dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
-  augmentedWorkFunction <- function(renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
+  augmentedWorkFunction <- function(i, renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
+    # workaround for a crash in mcaffinity(old.aff)
+    if (i != 1) {
+        return(invisible(NULL))
+    }
     withr::local_options(nwarnings = 10000, warn = 1, error = function() {
       traceback(2, max.lines = 1000)
       dump.frames(to.file = TRUE)
@@ -67,10 +71,11 @@ runLongJob <- function(workFunction,
       })
     }
     return(suppressSpecificWarnings({
-      Slurm_lapply(list(renvToLoad), augmentedWorkFunction,
-                   workingDirectory = workingDirectory, madratConfig = madratConfig,
+    # workaround for a crash in mcaffinity(old.aff), length(X) has to be greater than 1
+      Slurm_lapply(list(1, 2), augmentedWorkFunction,
+                   renvToLoad = renvToLoad, workingDirectory = workingDirectory, madratConfig = madratConfig,
                    workFunction = workFunction, arguments = arguments,
-                   njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory, overwrite = FALSE,
+                   njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory, overwrite = FALSE, mc.cores = 1,
                    sbatch_opt = list(`mail-type` = "END",
                                      qos = "priority",
                                      mem = 50000,
@@ -78,10 +83,10 @@ runLongJob <- function(workFunction,
     }, "No such file or directory"))
   } else if (executionMode == "background") {
     return(callr::r_bg(augmentedWorkFunction,
-                       list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+                       list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
                        stdout = outputFilePath, stderr = outputFilePath))
   } else {
-    return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+    return(callr::r(augmentedWorkFunction, list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
                     show = interactive(), stdout = outputFilePath, stderr = outputFilePath))
   }
 }
