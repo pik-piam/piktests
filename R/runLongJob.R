@@ -61,7 +61,8 @@ runLongJob <- function(workFunction,
   if (executionMode == "sbatch") {
     dir.create(file.path(workingDirectory, jobName))
     return(Slurm_lapply(list(renvToLoad), augmentedWorkFunction,
-                        workingDirectory, madratConfig, workFunction, arguments,
+                        workingDirectory = workingDirectory, madratConfig = madratConfig,
+                        workFunction = workFunction, arguments = arguments,
                         njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory,
                         sbatch_opt = list(`mail-type` = "END",
                                           qos = "priority",
