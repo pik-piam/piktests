@@ -59,14 +59,23 @@ runLongJob <- function(workFunction,
   outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
 
   if (executionMode == "sbatch") {
-    return(Slurm_lapply(list(renvToLoad), augmentedWorkFunction,
-                        workingDirectory = workingDirectory, madratConfig = madratConfig,
-                        workFunction = workFunction, arguments = arguments,
-                        njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory,
-                        sbatch_opt = list(`mail-type` = "END",
-                                          qos = "priority",
-                                          mem = 50000,
-                                          output = outputFilePath)))
+    suppressSpecificWarnings <- function(expr, regexpr) {
+      withCallingHandlers(expr, warning = function(m) {
+        if (grepl(regexpr, m[["message"]])) {
+          invokeRestart("muffleWarning")
+        }
+      })
+    }
+    return(suppressSpecificWarnings({
+      Slurm_lapply(list(renvToLoad), augmentedWorkFunction,
+                   workingDirectory = workingDirectory, madratConfig = madratConfig,
+                   workFunction = workFunction, arguments = arguments,
+                   njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory, overwrite = FALSE,
+                   sbatch_opt = list(`mail-type` = "END",
+                                     qos = "priority",
+                                     mem = 50000,
+                                     output = outputFilePath))
+    }, "No such file or directory"))
   } else if (executionMode == "background") {
     return(callr::r_bg(augmentedWorkFunction,
                        list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
