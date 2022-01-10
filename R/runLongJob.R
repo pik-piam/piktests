@@ -59,7 +59,6 @@ runLongJob <- function(workFunction,
   outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
 
   if (executionMode == "sbatch") {
-    dir.create(file.path(workingDirectory, jobName))
     return(Slurm_lapply(list(renvToLoad), augmentedWorkFunction,
                         workingDirectory = workingDirectory, madratConfig = madratConfig,
                         workFunction = workFunction, arguments = arguments,
