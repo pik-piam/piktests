@@ -1,19 +1,16 @@
 test_that("runLongJob works", {
   expect_identical(piktests:::runLongJob(function(x, y) x + y, list(y = 3, 5),
-                                         workingDirectory = withr::local_tempdir(), mode = "directly"), 8)
+                                         workingDirectory = withr::local_tempdir(), executionMode = "directly"), 8)
   expect_identical(piktests:::runLongJob(function() 3 + 5, workingDirectory = withr::local_tempdir(),
-                                         mode = "background")$wait(3000)$get_result(), 8)
+                                         executionMode = "background")$wait(3000)$get_result(), 8)
 
-  if (Sys.which("sbatch") == "") {
-    expect_warning(piktests:::runLongJob(function() 0, workingDirectory = withr::local_tempdir()),
-                   "sbatch is unavailable, falling back to background execution (callr::r_bg)", fixed = TRUE)
-  } else {
+  if (Sys.which("sbatch") != "") {
     # testthat loads piktests in a weird way, so slurmR cannot load it, so we unload to avoid crashing
     unloadNamespace("piktests")
     withr::with_output_sink(nullfile(), {
       slurmJob <- piktests:::runLongJob(function() 3 + 5, jobName = "pusteblume")
     })
-    library("piktests", character.only = TRUE)
+    library("piktests")
     expect_identical(slurmR::Slurm_collect(slurmJob)[[1]], 8)
     slurmR::Slurm_clean(slurmJob)
     expect_true(file.exists("pusteblume.log"))
@@ -31,7 +28,7 @@ test_that("runLongJob works", {
                              workingDirectory = workingDirectory,
                              renvToLoad = renvProject,
                              madratConfig = madrat::getConfig(verbose = FALSE),
-                             mode = "directly")
+                             executionMode = "directly")
   expect_identical(normalizePath(x[["workingDirectory"]]), normalizePath(workingDirectory))
   expect_true(startsWith(x[["libPaths"]][[1]], renvProject))
   expect_identical(x[["madratConfig"]], madrat::getConfig(verbose = FALSE))

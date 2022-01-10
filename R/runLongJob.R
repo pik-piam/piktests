@@ -9,8 +9,8 @@
 #' @param renvToLoad The renv project to load before running workFunction.
 #' @param madratConfig A madrat config (as returned by `madrat::getConfig()`) to be used when running workFunction.
 #' @param jobName The name of the slurm job. The slurm output file will be called `<jobName>.log`. This has no
-#' effect when mode is not "sbatch".
-#' @param mode Determines how workFunction is started.
+#' effect when executionMode is not "sbatch".
+#' @param executionMode Determines how workFunction is started.
 #' "sbatch" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
 #'
 #' @author Pascal Führlich
@@ -26,12 +26,9 @@ runLongJob <- function(workFunction,
                        renvToLoad = NULL,
                        madratConfig = NULL,
                        jobName = opts_slurmR$get_job_name(),
-                       mode = c("sbatch", "background", "directly")) {
-  mode <- match.arg(mode)
-  if (mode == "sbatch" && Sys.which("sbatch") == "") {
-    warning("sbatch is unavailable, falling back to background execution (callr::r_bg)")
-    mode <- "background"
-  }
+                       executionMode = c("sbatch", "background", "directly")) {
+  executionMode <- match.arg(executionMode)
+  stopifnot(executionMode != "sbatch" || Sys.which("sbatch") != "")
 
   dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
@@ -61,21 +58,21 @@ runLongJob <- function(workFunction,
 
   outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
 
-  if (mode == "sbatch") {
+  if (executionMode == "sbatch") {
     dir.create(file.path(workingDirectory, jobName))
-    return(Slurm_lapply(list(augmentedWorkFunction), callr::r,
-                        args = list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+    return(Slurm_lapply(list(renvToLoad), augmentedWorkFunction,
+                        workingDirectory, madratConfig, workFunction, arguments,
                         njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory,
                         sbatch_opt = list(`mail-type` = "END",
                                           qos = "priority",
                                           mem = 50000,
                                           output = outputFilePath)))
-  } else if (mode == "background") {
+  } else if (executionMode == "background") {
     return(callr::r_bg(augmentedWorkFunction,
                        list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
                        stdout = outputFilePath, stderr = outputFilePath))
   } else {
     return(callr::r(augmentedWorkFunction, list(renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                    show = TRUE, stdout = outputFilePath, stderr = outputFilePath))
+                    show = interactive(), stdout = outputFilePath, stderr = outputFilePath))
   }
 }
