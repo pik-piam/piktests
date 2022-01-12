@@ -19,7 +19,7 @@ setupRenv <- function(targetFolder,
   # This function is run via callr::r so it must use `::` everywhere and cannot rely on roxygen's `@importFrom`.
   renv::init(targetFolder, restart = FALSE, bare = TRUE) # remove bare when newest foreign can be installed on cluster
 
-  # TODO remove the following line when newest foreign, cli, desc are installed on cluster
+  # TODO remove the following line when newest package versions are installed on cluster
   renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp"))
 
   renv::install("withr")
