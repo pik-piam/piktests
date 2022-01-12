@@ -7,9 +7,15 @@ test_that("setupRenv works", {
   }
   withr::local_options(repos = c(rse = "https://rse.pik-potsdam.de/r/packages", cran = "https://cran.rstudio.com/"))
   renvProject <- withr::local_tempdir()
-  gitCloneRepos <- setNames("https://github.com/pik-piam/universe.git", file.path("pik-piam", "universe"))
-  callr::r(piktests:::setupRenv, list(renvProject, gitCloneRepos))
-  expect_true(dir.exists(file.path(renvProject, "pik-piam", "universe")))
+  whatToRun <- list(testComputation = list(
+    setup = function(workingDirectory) {
+      renv::install("gert")
+      gert::git_clone("https://github.com/pik-piam/universe.git", path = file.path(workingDirectory, "universe"))
+    },
+    compute = function() NULL
+  ))
+  callr::r(piktests:::setupRenv, list(renvProject, whatToRun))
+  expect_true(dir.exists(file.path(renvProject, "computations", "testComputation", "universe")))
   expect_true(file.exists(file.path(renvProject, "renv.lock")))
   expect_true(dir.exists(file.path(renvProject, "renv")))
 })

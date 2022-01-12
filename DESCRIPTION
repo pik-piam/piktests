@@ -1,6 +1,6 @@
 Package: piktests
 Type: Package
-Version: 0.5.1
+Version: 0.6.0
 Date: 2022-01-12
 Title: Run PIK Integration Tests
 Description: This package includes integration tests for selected models and packages related to those models.

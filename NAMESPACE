@@ -2,11 +2,13 @@
 
 export(compareLogs)
 export(comparePreprocessingLogs)
+export(computations)
 export(run)
 export(runWithComparison)
 importFrom(callr,r)
 importFrom(callr,r_bg)
 importFrom(gert,git_clone)
+importFrom(madrat,retrieveData)
 importFrom(madrat,setConfig)
 importFrom(renv,activate)
 importFrom(renv,dependencies)

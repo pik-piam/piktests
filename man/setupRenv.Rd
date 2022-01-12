@@ -4,13 +4,16 @@
 \alias{setupRenv}
 \title{setupRenv}
 \usage{
-setupRenv(targetFolder, gitCloneRepos = NULL, renvInstallPackages = NULL)
+setupRenv(
+  targetFolder,
+  whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
+  renvInstallPackages = NULL
+)
 }
 \arguments{
 \item{targetFolder}{Where to setup the renv.}
 
-\item{gitCloneRepos}{A named list where the value is a git url and the corresponding name is a path where to clone
-that repo.}
+\item{whatToRun}{See \code{\link{run}} documentation for `whatToRun`.}
 
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
