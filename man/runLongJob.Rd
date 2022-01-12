@@ -11,7 +11,7 @@ runLongJob(
   renvToLoad = NULL,
   madratConfig = NULL,
   jobName = opts_slurmR$get_job_name(),
-  executionMode = c("sbatch", "background", "directly")
+  executionMode = c("slurm", "background", "directly")
 )
 }
 \arguments{
@@ -26,14 +26,14 @@ used. Also it cannot refer to variables in the outer scope, use the next paramet
 
 \item{madratConfig}{A madrat config (as returned by `madrat::getConfig()`) to be used when running workFunction.}
 
-\item{jobName}{The name of the slurm job. The slurm output file will be called `<jobName>.log`. This has no
-effect when executionMode is not "sbatch".}
+\item{jobName}{The output file will be called `<jobName>.log`. If executionMode is "slurm" this is also the name
+of the slurm job.}
 
 \item{executionMode}{Determines how workFunction is started.
-"sbatch" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`}
+"slurm" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`}
 }
 \description{
-Run a function in a new R session.
+Run a function in a new R session, per default via SLURM (see executionMode).
 }
 \author{
 Pascal Führlich

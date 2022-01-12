@@ -4,7 +4,7 @@ test_that("runLongJob works", {
   expect_identical(piktests:::runLongJob(function() 3 + 5, workingDirectory = withr::local_tempdir(),
                                          executionMode = "background")$wait(3000)$get_result(), 8)
 
-  if (Sys.which("sbatch") != "") {
+  if (slurmR::slurm_available()) {
     # testthat loads piktests in a weird way, so slurmR cannot load it, so we unload to avoid crashing
     unloadNamespace("piktests")
     withr::with_output_sink(nullfile(), {

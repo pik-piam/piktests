@@ -1,6 +1,6 @@
 #' runLongJob
 #'
-#' Run a function in a new R session.
+#' Run a function in a new R session, per default via SLURM (see executionMode).
 #'
 #' @param workFunction This function will be run in a new R session, so it must use `::` whenever package functions are
 #' used. Also it cannot refer to variables in the outer scope, use the next parameter (arguments) to pass them.
@@ -8,16 +8,16 @@
 #' @param workingDirectory The working directory in which workFunction will be called.
 #' @param renvToLoad The renv project to load before running workFunction.
 #' @param madratConfig A madrat config (as returned by `madrat::getConfig()`) to be used when running workFunction.
-#' @param jobName The name of the slurm job. The slurm output file will be called `<jobName>.log`. This has no
-#' effect when executionMode is not "sbatch".
+#' @param jobName The output file will be called `<jobName>.log`. If executionMode is "slurm" this is also the name
+#' of the slurm job.
 #' @param executionMode Determines how workFunction is started.
-#' "sbatch" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
+#' "slurm" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
 #'
 #' @author Pascal Führlich
 #'
 #' @importFrom callr r_bg r
 #' @importFrom renv activate
-#' @importFrom slurmR opts_slurmR Slurm_lapply
+#' @importFrom slurmR opts_slurmR Slurm_lapply slurm_available
 #' @importFrom utils dump.frames sessionInfo
 #' @importFrom withr local_dir local_options
 runLongJob <- function(workFunction,
@@ -26,9 +26,9 @@ runLongJob <- function(workFunction,
                        renvToLoad = NULL,
                        madratConfig = NULL,
                        jobName = opts_slurmR$get_job_name(),
-                       executionMode = c("sbatch", "background", "directly")) {
+                       executionMode = c("slurm", "background", "directly")) {
   executionMode <- match.arg(executionMode)
-  stopifnot(executionMode != "sbatch" || Sys.which("sbatch") != "")
+  stopifnot(executionMode != "slurm" || slurm_available())
 
   dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
@@ -62,7 +62,7 @@ runLongJob <- function(workFunction,
 
   outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
 
-  if (executionMode == "sbatch") {
+  if (executionMode == "slurm") {
     suppressSpecificWarnings <- function(expr, regexpr) {
       withCallingHandlers(expr, warning = function(m) {
         if (grepl(regexpr, m[["message"]])) {
@@ -71,22 +71,23 @@ runLongJob <- function(workFunction,
       })
     }
     return(suppressSpecificWarnings({
-    # workaround for a crash in mcaffinity(old.aff), length(X) has to be greater than 1
+      # list(1, 2) is a workaround for a crash in mcaffinity(old.aff), length(X) has to be greater than 1
       Slurm_lapply(list(1, 2), augmentedWorkFunction,
                    renvToLoad = renvToLoad, workingDirectory = workingDirectory, madratConfig = madratConfig,
                    workFunction = workFunction, arguments = arguments,
-                   njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory, overwrite = FALSE, mc.cores = 1,
+                   njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory, overwrite = FALSE,
                    sbatch_opt = list(`mail-type` = "END",
+                                     array = "",
                                      qos = "priority",
                                      mem = 50000,
                                      output = outputFilePath))
-    }, "No such file or directory"))
+    }, "No such file or directory")) # warning from normalizePath in Slurm_lapply, path is created after normalizing
   } else if (executionMode == "background") {
-    return(callr::r_bg(augmentedWorkFunction,
-                       list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                       stdout = outputFilePath, stderr = outputFilePath))
+    return(r_bg(augmentedWorkFunction,
+                list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+                stdout = outputFilePath, stderr = outputFilePath))
   } else {
-    return(callr::r(augmentedWorkFunction, list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                    show = interactive(), stdout = outputFilePath, stderr = outputFilePath))
+    return(r(augmentedWorkFunction, list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+             show = interactive(), stdout = outputFilePath, stderr = outputFilePath))
   }
 }

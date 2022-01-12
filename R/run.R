@@ -12,23 +12,24 @@
 #' @param runFolder In general this should be left as default. Where the folder for this piktests run should be created.
 #' @param runInNewRSession Exists for testing. A function like `callr::r` taking a function and arguments to execute
 #' in a new R session.
-#' @param executionMode Determines how long running jobs are started. One of "sbatch" (SLURM), "background", "directly"
+#' @param executionMode Determines how long running jobs are started. One of "slurm" (SLURM), "background", "directly"
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @author Pascal Führlich
 #'
 #' @importFrom callr r
 #' @importFrom madrat setConfig
+#' @importFrom slurmR slurm_available
 #' @export
 run <- function(renvInstallPackages = NULL,
                 piktestsFolder = getwd(),
                 whatToRun = c("remind-preprocessing", "magpie-preprocessing"),
                 runFolder = file.path(piktestsFolder, format(Sys.time(), "%Y_%m_%d-%H_%M")),
                 runInNewRSession = callr::r,
-                executionMode = c("sbatch", "background", "directly")) {
+                executionMode = c("slurm", "background", "directly")) {
   executionMode <- match.arg(executionMode)
-  if (executionMode == "sbatch" && Sys.which("sbatch") == "") {
-    warning("sbatch is unavailable, falling back to background execution (callr::r_bg)")
+  if (executionMode == "slurm" && !slurm_available()) {
+    warning("slurm is unavailable, falling back to background execution (callr::r_bg)")
     executionMode <- "background"
   }
   if (file.exists(runFolder)) {

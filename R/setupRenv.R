@@ -31,7 +31,8 @@ setupRenv <- function(targetFolder,
 
   renv::init(targetFolder, restart = FALSE, bare = TRUE) # remove bare when newest foreign can be installed on cluster
 
-  # workaround for outdated R base packages on cluster TODO remove this when newest foreign, cli, desc are installed on cluster
+  # workaround for outdated R base packages on cluster
+  # TODO remove this when newest foreign, cli, desc are installed on cluster
   renv::install(c("foreign@0.8-76", "cli", "desc"))
   dependencies <- renv::dependencies(targetFolder, errors = "fatal")
   renv::install(unique(dependencies[["Package"]]))
@@ -39,5 +40,6 @@ setupRenv <- function(targetFolder,
 
   renv::install("mrremind")
   renv::install(renvInstallPackages)
-  callr::r(function() renv::snapshot(type = "all"), show = TRUE) # TODO remove callr::r when cluster workaround is no longer needed
+  # TODO replace the following line with `renv::snapshot(type = "all")` when cluster workaround is no longer needed
+  callr::r(function() renv::snapshot(type = "all"), show = TRUE)
 }
