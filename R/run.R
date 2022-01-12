@@ -12,18 +12,26 @@
 #' @param runFolder In general this should be left as default. Where the folder for this piktests run should be created.
 #' @param runInNewRSession Exists for testing. A function like `callr::r` taking a function and arguments to execute
 #' in a new R session.
+#' @param executionMode Determines how long running jobs are started. One of "slurm", "background", "directly"
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @author Pascal Führlich
 #'
 #' @importFrom callr r
 #' @importFrom madrat setConfig
+#' @importFrom slurmR slurm_available
 #' @export
 run <- function(renvInstallPackages = NULL,
                 piktestsFolder = getwd(),
                 whatToRun = c("remind-preprocessing", "magpie-preprocessing"),
                 runFolder = file.path(piktestsFolder, format(Sys.time(), "%Y_%m_%d-%H_%M")),
-                runInNewRSession = callr::r) {
+                runInNewRSession = callr::r,
+                executionMode = c("slurm", "background", "directly")) {
+  executionMode <- match.arg(executionMode)
+  if (executionMode == "slurm" && !slurm_available()) {
+    warning("slurm is unavailable, falling back to background execution (callr::r_bg)")
+    executionMode <- "background"
+  }
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")
   }
@@ -53,19 +61,21 @@ run <- function(renvInstallPackages = NULL,
                workingDirectory = file.path(runFolder, "preprocessings", "magpie"),
                renvToLoad = runFolder,
                madratConfig = madratConfig,
-               jobName = paste0("piktests-magpie-preprocessing_", substring(tempfile("", ""), 2)))
+               jobName = paste0("piktests-magpie-preprocessing_", substring(tempfile("", ""), 2)),
+               executionMode = executionMode)
   }
 
   if ("remind-preprocessing" %in% whatToRun) {
     runLongJob(function() {
                  # sidestep package check warning (mrremind not in DESCRIPTION); ok because setupRenv installs mrremind
-                 library(paste0("mr", "remind"), character.only = TRUE) # nolint
+                 library(paste("mrremind"), character.only = TRUE) # nolint
                  madrat::retrieveData("remind", cachetype = "def")
                },
                workingDirectory = file.path(runFolder, "preprocessings", "remind"),
                renvToLoad = runFolder,
                madratConfig = madratConfig,
-               jobName = paste0("piktests-remind-preprocessing_", substring(tempfile("", ""), 2)))
+               jobName = paste0("piktests-remind-preprocessing_", substring(tempfile("", ""), 2)),
+               executionMode = executionMode)
   }
 
   if ("madratExample" %in% whatToRun) {
@@ -76,7 +86,8 @@ run <- function(renvInstallPackages = NULL,
     workingDirectory = file.path(runFolder, "preprocessings", "madratExample"),
     renvToLoad = runFolder,
     madratConfig = madratConfig,
-    jobName = paste0("piktests-madratExample-preprocessing_", substring(tempfile("", ""), 2)))
+    jobName = paste0("piktests-madratExample-preprocessing_", substring(tempfile("", ""), 2)),
+    executionMode = executionMode)
   }
 
   return(invisible(runFolder))

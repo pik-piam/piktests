@@ -9,7 +9,8 @@ run(
   piktestsFolder = getwd(),
   whatToRun = c("remind-preprocessing", "magpie-preprocessing"),
   runFolder = file.path(piktestsFolder, format(Sys.time(), "\%Y_\%m_\%d-\%H_\%M")),
-  runInNewRSession = callr::r
+  runInNewRSession = callr::r,
+  executionMode = c("slurm", "background", "directly")
 )
 }
 \arguments{
@@ -24,6 +25,8 @@ Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfueh
 
 \item{runInNewRSession}{Exists for testing. A function like `callr::r` taking a function and arguments to execute
 in a new R session.}
+
+\item{executionMode}{Determines how long running jobs are started. One of "slurm", "background", "directly"}
 }
 \value{
 Invisibly, the path to the folder holding everything related to this piktests run.
