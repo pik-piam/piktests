@@ -26,6 +26,7 @@ computations <- list(
       # renv::install not necessary, because this is run before renv auto-detects and installs dependencies
     },
     compute = function() {
+      withr::local_dir("preprocessing-magpie")
       source(file.path("start", "default.R")) # nolint
     }
   ),

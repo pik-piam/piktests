@@ -20,7 +20,9 @@ setupRenv <- function(targetFolder,
   renv::init(targetFolder, restart = FALSE, bare = TRUE) # remove bare when newest foreign can be installed on cluster
 
   # TODO remove the following line when newest foreign, cli, desc are installed on cluster
-  renv::install(c("foreign@0.8-76", "cli", "desc"))
+  renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp"))
+
+  renv::install("withr")
 
   for (computationName in names(whatToRun)) {
     workingDirectory <- file.path(targetFolder, "computations", computationName)
@@ -33,7 +35,7 @@ setupRenv <- function(targetFolder,
 
 
   renv::install(renvInstallPackages)
-  # TODO replace the following 2 lines with `renv::snapshot(type = "all")` when cluster bas packages are up to date
+  # TODO replace the following 2 lines with `renv::snapshot(type = "all")` when cluster base packages are up to date
   renv::install("callr")
   callr::r(function() renv::snapshot(type = "all"), show = TRUE)
 }
