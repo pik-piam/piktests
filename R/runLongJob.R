@@ -1,6 +1,6 @@
 #' runLongJob
 #'
-#' Run a function in a new R session, per default via SLURM (see executionMode).
+#' Run a function in a new R session, per default via slurm (see executionMode).
 #'
 #' @param workFunction This function will be run in a new R session, so it must use `::` whenever package functions are
 #' used. Also it cannot refer to variables in the outer scope, use the next parameter (arguments) to pass them.

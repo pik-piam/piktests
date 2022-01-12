@@ -12,7 +12,7 @@
 #' @param runFolder In general this should be left as default. Where the folder for this piktests run should be created.
 #' @param runInNewRSession Exists for testing. A function like `callr::r` taking a function and arguments to execute
 #' in a new R session.
-#' @param executionMode Determines how long running jobs are started. One of "slurm" (SLURM), "background", "directly"
+#' @param executionMode Determines how long running jobs are started. One of "slurm", "background", "directly"
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @author Pascal Führlich

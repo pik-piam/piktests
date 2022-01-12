@@ -38,7 +38,7 @@ In case of questions / problems please contact Pascal Führlich <pascal.fuehrlic
 
 To cite package **piktests** in publications use:
 
-Führlich P (2021). _piktests: Run PIK Integration Tests_. R package version 0.5.0, <URL: https://github.com/pik-piam/piktests>.
+Führlich P (2022). _piktests: Run PIK Integration Tests_. R package version 0.5.0, <URL: https://github.com/pik-piam/piktests>.
 
 A BibTeX entry for LaTeX users is
 
@@ -46,7 +46,7 @@ A BibTeX entry for LaTeX users is
 @Manual{,
   title = {piktests: Run PIK Integration Tests},
   author = {Pascal Führlich},
-  year = {2021},
+  year = {2022},
   note = {R package version 0.5.0},
   url = {https://github.com/pik-piam/piktests},
 }

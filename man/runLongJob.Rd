@@ -33,7 +33,7 @@ of the slurm job.}
 "slurm" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`}
 }
 \description{
-Run a function in a new R session, per default via SLURM (see executionMode).
+Run a function in a new R session, per default via slurm (see executionMode).
 }
 \author{
 Pascal Führlich
