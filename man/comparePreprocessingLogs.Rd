@@ -7,7 +7,7 @@
 comparePreprocessingLogs(preprocessingName, runFolder = getwd())
 }
 \arguments{
-\item{preprocessingName}{"magpie" or "remind"}
+\item{preprocessingName}{Name of the preprocessing you want to compare logs for, e.g. "magpie" or "remind".}
 
 \item{runFolder}{The path to a run folder created by `piktests::runWithComparison`.}
 }

@@ -77,7 +77,7 @@ runLongJob <- function(workFunction,
                    workFunction = workFunction, arguments = arguments,
                    njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory, overwrite = FALSE,
                    sbatch_opt = list(`mail-type` = "END",
-                                     array = "",
+                                     array = "", # cluster won't send mails if slurmR default `array = "1-1"` is used
                                      qos = "priority",
                                      mem = 50000,
                                      output = outputFilePath))

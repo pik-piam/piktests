@@ -21,7 +21,7 @@ Invisibly, the path to the folder holding the two actual piktests runs.
 \description{
 Starts two piktests runs, one with default packages and another one with renvInstallPackages installed, so they can
 be compared. Run this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
-Use `piktests::comparePreprocessingLogs` for comparison after all runs are completed.
+Use \code{\link{comparePreprocessingLogs}} for comparison after all runs are completed.
 }
 \seealso{
 \code{\link{comparePreprocessingLogs}}, \code{\link{run}}
