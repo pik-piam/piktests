@@ -4,7 +4,12 @@
 \alias{runWithComparison}
 \title{runWithComparison}
 \usage{
-runWithComparison(renvInstallPackages, piktestsFolder = getwd(), ...)
+runWithComparison(
+  renvInstallPackages,
+  piktestsFolder = getwd(),
+  whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
+  ...
+)
 }
 \arguments{
 \item{renvInstallPackages}{Only in the second run, after installing

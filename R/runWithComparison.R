@@ -15,7 +15,8 @@
 #' @seealso \code{\link{comparePreprocessingLogs}}, \code{\link{run}}
 #'
 #' @export
-runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(), ...) {
+runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
+                              whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")], ...) {
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   runFolder <- normalizePath(file.path(piktestsFolder, now), mustWork = FALSE)
   if (file.exists(runFolder)) {
@@ -25,13 +26,17 @@ runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(), ...
   run(NULL, ..., runFolder = file.path(runFolder, paste0(now, "-old")))
   run(renvInstallPackages, ..., runFolder = file.path(runFolder, paste0(now, "-new")))
   if (Sys.which("diff") != "") {
-    logOld <- file.path(runFolder, "old", "computations", "$1", paste0("piktests-$1-", now, "-old.log"))
-    logNew <- file.path(runFolder, "new", "computations", "$1", paste0("piktests-$1-", now, "-new.log"))
-    writeLines(c("#!/usr/bin/env sh",
-                 paste0('diff "', logOld, '" "', logNew, '"')),
-               file.path(runFolder, "compareLogs.sh"))
-    Sys.chmod(file.path(runFolder, "compareLogs.sh"))
-    system2("chmod", c("u+x", file.path(runFolder, "compareLogs.sh")))
+    for (computationName in names(whatToRun)) {
+      compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
+      logOld <- file.path(runFolder, paste0(now, "-old"), "computations", computationName,
+                          paste0("piktests-", computationName, "-", now, "-old.log"))
+      logNew <- file.path(runFolder, paste0(now, "-new"), "computations", computationName,
+                          paste0("piktests-", computationName, "-", now, "-new.log"))
+      writeLines(c("#!/usr/bin/env sh",
+                   paste0('diff "', logOld, '" "', logNew, '"')),
+                 compareLogsPath)
+      system2("chmod", c("u+x", compareLogsPath))
+    }
   }
   return(invisible(runFolder))
 }
