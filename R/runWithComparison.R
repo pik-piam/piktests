@@ -23,8 +23,8 @@ runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
     stop(runFolder, " already exists!")
   }
   dir.create(runFolder, recursive = TRUE)
-  run(NULL, ..., runFolder = file.path(runFolder, paste0(now, "-old")))
-  run(renvInstallPackages, ..., runFolder = file.path(runFolder, paste0(now, "-new")))
+  run(NULL, whatToRun = whatToRun, ..., runFolder = file.path(runFolder, paste0(now, "-old")))
+  run(renvInstallPackages, whatToRun = whatToRun, ..., runFolder = file.path(runFolder, paste0(now, "-new")))
   if (Sys.which("diff") != "") {
     for (computationName in names(whatToRun)) {
       compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
