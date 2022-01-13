@@ -20,10 +20,9 @@ computations <- list(
   # setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`
   magpiePreprocessing = list(
     setup = function(workingDirectory) {
-      renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git",
                       path = file.path(workingDirectory, "preprocessing-magpie"))
-      # renv::install not necessary, because this is run before renv auto-detects and installs dependencies
+      # further renv::install not necessary, because this is run before renv auto-detects and installs dependencies
     },
     compute = function() {
       withr::local_dir("preprocessing-magpie")
@@ -32,12 +31,26 @@ computations <- list(
   ),
   remindPreprocessing = list(
     setup = function(workingDirectory) {
+      gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git",
+                      path = file.path(workingDirectory, "preprocessing-remind"))
+      if (!file.exists(file.path("preprocessing-remind", "start.R")) ||
+          tools::md5sum(file.path("preprocessing-remind", "start.R")) != "04c25662fc7960b4f15d97ed49af3168") {
+        warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind/-/blob/master/start.R was changed, but",
+                "piktests is still using the old version.")
+      }
+      unlink(file.path(workingDirectory, "preprocessing-remind"), recursive = TRUE)
       renv::install("mrremind")
     },
     compute = function() {
-      # sidestep package check warning (mrremind not in DESCRIPTION); ok because setup installs mrremind
+      # paste("mrremind") to sidestep mrremind not in DESCRIPTION warning; mrremind will be installed by setupRenv
       library(paste("mrremind"), character.only = TRUE) # nolint
-      madrat::retrieveData("remind", cachetype = "def")
+      lapply(c("regionmappingH12.csv",
+               "regionmappingREMIND.csv",
+               "regionmapping_21_EU11.csv",
+               "regionmappingH12_Aus.csv"),
+             function(regionmapping) {
+               madrat::retrieveData(model = "REMIND", regionmapping = regionmapping, rev = 6.00, cachetype = "def")
+             })
     }
   ),
   madratExample = list(

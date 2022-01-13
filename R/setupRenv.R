@@ -22,7 +22,7 @@ setupRenv <- function(targetFolder,
   # TODO remove the following line when newest package versions are installed on cluster
   renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp"))
 
-  renv::install("withr")
+  renv::install(c("withr", "gert"))
 
   for (computationName in names(whatToRun)) {
     workingDirectory <- file.path(targetFolder, "computations", computationName)
