@@ -16,12 +16,22 @@
 #'
 #' @export
 runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(), ...) {
-  runFolder <- file.path(piktestsFolder, format(Sys.time(), "%Y_%m_%d-%H_%M"))
+  now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
+  runFolder <- normalizePath(file.path(piktestsFolder, now), mustWork = FALSE)
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")
   }
   dir.create(runFolder, recursive = TRUE)
-  run(NULL, ..., runFolder = file.path(runFolder, "old"))
-  run(renvInstallPackages, ..., runFolder = file.path(runFolder, "new"))
+  run(NULL, ..., runFolder = file.path(runFolder, paste0(now, "-old")))
+  run(renvInstallPackages, ..., runFolder = file.path(runFolder, paste0(now, "-new")))
+  if (Sys.which("diff") != "") {
+    logOld <- file.path(runFolder, "old", "computations", "$1", paste0("piktests-$1-", now, "-old.log"))
+    logNew <- file.path(runFolder, "new", "computations", "$1", paste0("piktests-$1-", now, "-new.log"))
+    writeLines(c("#!/usr/bin/env sh",
+                 paste0('diff "', logOld, '" "', logNew, '"')),
+               file.path(runFolder, "compareLogs.sh"))
+    Sys.chmod(file.path(runFolder, "compareLogs.sh"))
+    system2("chmod", c("u+x", file.path(runFolder, "compareLogs.sh")))
+  }
   return(invisible(runFolder))
 }
