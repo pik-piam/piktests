@@ -27,7 +27,9 @@ setupRenv <- function(targetFolder,
   for (computationName in names(whatToRun)) {
     workingDirectory <- file.path(targetFolder, "computations", computationName)
     dir.create(workingDirectory, recursive = TRUE)
-    whatToRun[[computationName]][["setup"]](workingDirectory)
+    withr::with_dir(workingDirectory, {
+      whatToRun[[computationName]][["setup"]]()
+    })
   }
 
   dependencies <- renv::dependencies(targetFolder, errors = "fatal")

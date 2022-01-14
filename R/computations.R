@@ -19,9 +19,8 @@
 computations <- list(
   # setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`
   magpiePreprocessing = list(
-    setup = function(workingDirectory) {
-      gert::git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git",
-                      path = file.path(workingDirectory, "preprocessing-magpie"))
+    setup = function() {
+      gert::git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git", path = "preprocessing-magpie")
       # further renv::install not necessary, because this is run before renv auto-detects and installs dependencies
     },
     compute = function() {
@@ -30,15 +29,13 @@ computations <- list(
     }
   ),
   remindPreprocessing = list(
-    setup = function(workingDirectory) {
-      gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git",
-                      path = file.path(workingDirectory, "preprocessing-remind"))
-      if (!file.exists(file.path("preprocessing-remind", "start.R")) ||
-          tools::md5sum(file.path("preprocessing-remind", "start.R")) != "04c25662fc7960b4f15d97ed49af3168") {
-        warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind/-/blob/master/start.R was changed, but",
+    setup = function() {
+      gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
+      if (gert::git_commit_id(repo = "preprocessing-remind") != "f3107d60c89d483f869f3286f649be569cc94aee") {
+        warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but",
                 "piktests is still using the old version.")
       }
-      unlink(file.path(workingDirectory, "preprocessing-remind"), recursive = TRUE)
+      unlink("preprocessing-remind", recursive = TRUE)
       renv::install("mrremind")
     },
     compute = function() {
@@ -54,7 +51,7 @@ computations <- list(
     }
   ),
   madratExample = list(
-    setup = function(workingDirectory) {
+    setup = function() {
       renv::install("madrat")
     },
     compute = function() {

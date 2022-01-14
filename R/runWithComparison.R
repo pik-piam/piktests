@@ -2,17 +2,18 @@
 #'
 #' Starts two piktests runs, one with default packages and another one with renvInstallPackages installed, so they can
 #' be compared. Run this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
-#' Use \code{\link{comparePreprocessingLogs}} for comparison after all runs are completed.
+#' Use the shell scripts created in the run folder to compare logs after all runs are finished.
 #'
 #' @param renvInstallPackages Only in the second run, after installing
 #' other packages, `renv::install(renvInstallPackages)` is called.
 #' @param piktestsFolder A new folder is created in the given directory. In that folder two folders called "old"
 #' and "new" are created which contain the actual piktests runs.
+#' @param whatToRun A list of computation objects. See \code{\link{computations}}.
 #' @param ... Additional arguments passed to \code{\link{run}}.
 #' @return Invisibly, the path to the folder holding the two actual piktests runs.
 #'
 #' @author Pascal Führlich
-#' @seealso \code{\link{comparePreprocessingLogs}}, \code{\link{run}}
+#' @seealso \code{\link{run}}
 #'
 #' @export
 runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
@@ -27,7 +28,8 @@ runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
   run(NULL, whatToRun = whatToRun, ..., runFolder = file.path(runFolder, paste0(now, "-old")))
   run(renvInstallPackages, whatToRun = whatToRun, ..., runFolder = file.path(runFolder, paste0(now, "-new")))
 
-  diffTool <- if (file.exists("/home/pascalfu/.cargo/bin/delta")) "/home/pascalfu/.cargo/bin/delta" else "diff"
+  # on the cluster default diff does not support colors, so using pascal's delta (fancy diff tool) installation
+  diffTool <- if (file.exists("/home/pascalfu/.cargo/bin/delta")) "/home/pascalfu/.cargo/bin/delta" else "diff" # nolint
   for (computationName in names(whatToRun)) {
     compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
     oldLog <- file.path(runFolder, paste0(now, "-old"), "computations", computationName,
