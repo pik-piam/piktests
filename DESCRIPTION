@@ -18,5 +18,4 @@ Imports:
     slurmR,
     withr
 Suggests:
-    covr,
-    diffr
+    covr

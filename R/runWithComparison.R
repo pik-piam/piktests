@@ -17,6 +17,7 @@
 #' @export
 runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
                               whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")], ...) {
+  stopifnot(!is.null(renvInstallPackages))
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   runFolder <- normalizePath(file.path(piktestsFolder, now), mustWork = FALSE)
   if (file.exists(runFolder)) {
@@ -29,13 +30,17 @@ runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
   diffTool <- if (file.exists("/home/pascalfu/.cargo/bin/delta")) "/home/pascalfu/.cargo/bin/delta" else "diff"
   for (computationName in names(whatToRun)) {
     compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
-    logOld <- file.path(runFolder, paste0(now, "-old"), "computations", computationName,
+    oldLog <- file.path(runFolder, paste0(now, "-old"), "computations", computationName,
                         paste0("piktests-", computationName, "-", now, "-old.log"))
-    logNew <- file.path(runFolder, paste0(now, "-new"), "computations", computationName,
+    newLog <- file.path(runFolder, paste0(now, "-new"), "computations", computationName,
                         paste0("piktests-", computationName, "-", now, "-new.log"))
 
+    # remove file hashes and runtimes before comparing
     writeLines(c("#!/usr/bin/env sh",
-                 paste0(diffTool, ' "', logOld, '" "', logNew, '"')),
+                 paste0("sed -r 's/(in [0-9.]+ (seconds|Minutes\")$|-F[^.]+\\.rds$)//g' '", oldLog, "' > old.log"),
+                 paste0("sed -r 's/(in [0-9.]+ (seconds|Minutes\")$|-F[^.]+\\.rds$)//g' '", newLog, "' > new.log"),
+                 paste0(diffTool, " old.log new.log"),
+                 "rm old.log new.log"),
                compareLogsPath)
     system2("chmod", c("+x", compareLogsPath))
   }
