@@ -37,10 +37,12 @@ runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
 
     # remove file hashes and runtimes before comparing
     writeLines(c("#!/usr/bin/env sh",
-                 paste0("sed -r 's/(in [0-9.]+ (seconds|Minutes\")$|-F[^.]+\\.rds$)//g' '", oldLog, "' > old.log"),
-                 paste0("sed -r 's/(in [0-9.]+ (seconds|Minutes\")$|-F[^.]+\\.rds$)//g' '", newLog, "' > new.log"),
-                 paste0(diffTool, " old.log new.log"),
-                 "rm old.log new.log"),
+                 "oldLog=$(mktemp)",
+                 "newLog=$(mktemp)",
+                 paste0("sed -r 's/(in [0-9.]+ (seconds|Minutes\")$|-F[^.]+\\.rds$)//g' '", oldLog, "' > $oldLog"),
+                 paste0("sed -r 's/(in [0-9.]+ (seconds|Minutes\")$|-F[^.]+\\.rds$)//g' '", newLog, "' > $newLog"),
+                 paste0(diffTool, " $oldLog $newLog"),
+                 "rm $oldLog $newLog"),
                compareLogsPath)
     system2("chmod", c("+x", compareLogsPath))
   }
