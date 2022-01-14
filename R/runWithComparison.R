@@ -25,18 +25,20 @@ runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
   dir.create(runFolder, recursive = TRUE)
   run(NULL, whatToRun = whatToRun, ..., runFolder = file.path(runFolder, paste0(now, "-old")))
   run(renvInstallPackages, whatToRun = whatToRun, ..., runFolder = file.path(runFolder, paste0(now, "-new")))
-  if (Sys.which("diff") != "") {
-    for (computationName in names(whatToRun)) {
-      compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
-      logOld <- file.path(runFolder, paste0(now, "-old"), "computations", computationName,
-                          paste0("piktests-", computationName, "-", now, "-old.log"))
-      logNew <- file.path(runFolder, paste0(now, "-new"), "computations", computationName,
-                          paste0("piktests-", computationName, "-", now, "-new.log"))
-      writeLines(c("#!/usr/bin/env sh",
-                   paste0('diff "', logOld, '" "', logNew, '"')),
-                 compareLogsPath)
-      system2("chmod", c("u+x", compareLogsPath))
-    }
+
+  diffTool <- if (file.exists("/home/pascalfu/.cargo/bin/delta")) "/home/pascalfu/.cargo/bin/delta" else "diff"
+  for (computationName in names(whatToRun)) {
+    compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
+    logOld <- file.path(runFolder, paste0(now, "-old"), "computations", computationName,
+                        paste0("piktests-", computationName, "-", now, "-old.log"))
+    logNew <- file.path(runFolder, paste0(now, "-new"), "computations", computationName,
+                        paste0("piktests-", computationName, "-", now, "-new.log"))
+
+    writeLines(c("#!/usr/bin/env sh",
+                 paste0(diffTool, ' "', logOld, '" "', logNew, '"')),
+               compareLogsPath)
+    system2("chmod", c("+x", compareLogsPath))
   }
+
   return(invisible(runFolder))
 }
