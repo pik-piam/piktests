@@ -8,6 +8,7 @@ runWithComparison(
   renvInstallPackages,
   piktestsFolder = getwd(),
   whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
+  diffTool = c("delta", "colordiff", "diff"),
   ...
 )
 }
@@ -19,6 +20,9 @@ other packages, `renv::install(renvInstallPackages)` is called.}
 and "new" are created which contain the actual piktests runs.}
 
 \item{whatToRun}{A list of computation objects. See \code{\link{computations}}.}
+
+\item{diffTool}{One or more names of command line tools for comparing two text files. The first one that is found
+via `Sys.which` is used in the comparison shell script. If none is found falls back to "diff".}
 
 \item{...}{Additional arguments passed to \code{\link{run}}.}
 }
