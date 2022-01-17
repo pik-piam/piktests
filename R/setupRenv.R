@@ -22,12 +22,14 @@ setupRenv <- function(targetFolder,
   # TODO remove the following line when newest package versions are installed on cluster
   renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp"))
 
-  renv::install("withr")
+  renv::install(c("withr", "gert"))
 
   for (computationName in names(whatToRun)) {
     workingDirectory <- file.path(targetFolder, "computations", computationName)
     dir.create(workingDirectory, recursive = TRUE)
-    whatToRun[[computationName]][["setup"]](workingDirectory)
+    withr::with_dir(workingDirectory, {
+      whatToRun[[computationName]][["setup"]]()
+    })
   }
 
   dependencies <- renv::dependencies(targetFolder, errors = "fatal")
