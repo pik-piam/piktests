@@ -17,7 +17,8 @@ setupRenv <- function(targetFolder,
                       whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
                       renvInstallPackages = NULL) {
   # This function is run via callr::r so it must use `::` everywhere and cannot rely on roxygen's `@importFrom`.
-  renv::init(targetFolder, restart = FALSE, bare = TRUE) # remove bare when newest foreign can be installed on cluster
+
+  renv::init(targetFolder, restart = FALSE, bare = TRUE)
 
   # TODO remove the following line when newest package versions are installed on cluster
   renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp"))
