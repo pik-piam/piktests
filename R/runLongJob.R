@@ -16,7 +16,7 @@
 #' @author Pascal Führlich
 #'
 #' @importFrom callr r_bg r
-#' @importFrom renv activate
+#' @importFrom renv load project
 #' @importFrom slurmR opts_slurmR Slurm_lapply slurm_available
 #' @importFrom utils dump.frames sessionInfo
 #' @importFrom withr local_dir local_options
@@ -47,16 +47,16 @@ runLongJob <- function(workFunction,
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
-    if (!is.null(renvToLoad)) {
-      renv::load(renvToLoad)
-    }
 
-    # unload all loaded namespaces to prevent a crash when testing a new version of a package also used by piktests
-    for (i in seq_along(sessionInfo()[["loadedOnly"]])) {
-      for (p in setdiff(names(sessionInfo()[["loadedOnly"]]), "compiler")) {
-        try(unloadNamespace(p), silent = TRUE)
+    if (!is.null(renvToLoad)) {
+      if (is.null(renv::project())) {
+        renv::load(renvToLoad)
+      } else if (normalizePath(renv::project()) != normalizePath(renvToLoad)) {
+        warning("An renv is already loaded (", normalizePath(renv::project()), "), not loading ",
+                normalizePath(renvToLoad))
       }
     }
+
     return(do.call(workFunction, arguments))
   }
 
@@ -88,6 +88,6 @@ runLongJob <- function(workFunction,
                 stdout = outputFilePath, stderr = outputFilePath))
   } else {
     return(r(augmentedWorkFunction, list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-             show = interactive(), stdout = outputFilePath, stderr = outputFilePath))
+             show = TRUE, stdout = outputFilePath, stderr = outputFilePath))
   }
 }
