@@ -12,7 +12,6 @@
 #' piktests::run(whatToRun = piktests::computations["magpiePreprocessing"])
 #' }
 #'
-#' @importFrom gert git_clone
 #' @importFrom madrat retrieveData
 #' @importFrom renv install
 #' @export
@@ -20,6 +19,7 @@ computations <- list(
   # setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`
   magpiePreprocessing = list(
     setup = function() {
+      renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git", path = "preprocessing-magpie")
       # further renv::install not necessary, because this is run before renv auto-detects and installs dependencies
     },
@@ -30,6 +30,7 @@ computations <- list(
   ),
   remindPreprocessing = list(
     setup = function() {
+      renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
       if (gert::git_commit_id(repo = "preprocessing-remind") != "f3107d60c89d483f869f3286f649be569cc94aee") {
         warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but",

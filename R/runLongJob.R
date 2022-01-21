@@ -88,6 +88,7 @@ runLongJob <- function(workFunction,
                 stdout = outputFilePath, stderr = outputFilePath))
   } else {
     return(r(augmentedWorkFunction, list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-             show = TRUE, stdout = outputFilePath, stderr = outputFilePath))
+             show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing(),
+             stdout = outputFilePath, stderr = outputFilePath))
   }
 }

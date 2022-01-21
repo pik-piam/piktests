@@ -7,7 +7,7 @@
 run(
   renvInstallPackages = NULL,
   piktestsFolder = getwd(),
-  whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
+  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   runFolder = file.path(piktestsFolder, format(Sys.time(), "\%Y_\%m_\%d-\%H_\%M")),
   runInNewRSession = callr::r,
   executionMode = c("slurm", "background", "directly")
@@ -19,7 +19,8 @@ Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfueh
 
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
-\item{whatToRun}{A list of computation objects. See \code{\link{computations}}.}
+\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
+computations are executed.}
 
 \item{runFolder}{In general this should be left as default. Where the folder for this piktests run should be created.}
 
@@ -37,6 +38,9 @@ Runs integration tests in an isolated runtime environment.
 \details{
 A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
 preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
+}
+\seealso{
+\code{\link{computations}}
 }
 \author{
 Pascal Führlich

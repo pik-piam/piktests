@@ -1,8 +1,7 @@
 #' @importFrom callr r
 #' @importFrom renv init restore
 #' @importFrom withr local_dir
-#' @export
-runInRenv <- function(work, ..., targetFolder = ".", renvLockfile = NULL, renvPreInstall = function() {}) {
+runInRenv <- function(work, ..., targetFolder = ".", renvLockfile = NULL, renvPreInstall = function() NULL) {
   local_dir(targetFolder)
   writeLines(deparse(work), "work.R")
   r(function(renvLockfile, renvPreInstall) {

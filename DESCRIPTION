@@ -12,10 +12,12 @@ LazyData: true
 RoxygenNote: 7.1.2
 Imports:
     callr,
-    gert,
     madrat,
     renv,
     slurmR,
     withr
 Suggests:
-    covr
+    covr,
+    gert,
+    lucode2,
+    testthat
