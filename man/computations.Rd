@@ -17,12 +17,6 @@ A list of computation objects to be used by \code{\link{run}} via the `whatToRun
 Each computation object is a list with a setup and a compute function. These are called at the appropriate times
 during a piktests \code{\link{run}}.
 }
-\examples{
-\dontrun{
-piktests::run(whatToRun = piktests::computations["magpiePreprocessing"])
-}
-
-}
 \author{
 Pascal Führlich
 }

@@ -5,12 +5,13 @@
 #' A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
 #' preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
 #'
+#' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
+#' computations are executed.
 #' @param renvInstallPackages After installing other packages, renv::install(renvInstallPackages) is called.
 #' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
 #' @param piktestsFolder A new folder for this piktests run is created in the given directory.
-#' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
-#' computations are executed.
-#' @param runFolder In general this should be left as default. Where the folder for this piktests run should be created.
+#' @param runFolder Path where a folder for this piktests run should be created. Generally should be left as default,
+#' which creates a folder name with current date, time, and computationNames.
 #' @param runInNewRSession Exists for testing. A function like `callr::r` taking a function and arguments to execute
 #' in a new R session.
 #' @param executionMode Determines how long running jobs are started. One of "slurm", "background", "directly"
@@ -24,16 +25,20 @@
 #' @importFrom madrat setConfig
 #' @importFrom slurmR slurm_available
 #' @export
-run <- function(renvInstallPackages = NULL,
+run <- function(computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+                renvInstallPackages = NULL,
                 piktestsFolder = getwd(),
-                computationNames = c("magpiePreprocessing", "remindPreprocessing"),
-                runFolder = file.path(piktestsFolder, format(Sys.time(), "%Y_%m_%d-%H_%M")),
+                runFolder = NULL,
                 runInNewRSession = callr::r,
                 executionMode = c("slurm", "background", "directly")) {
   executionMode <- match.arg(executionMode)
   if (executionMode == "slurm" && !slurm_available()) {
     warning("slurm is unavailable, falling back to background execution (callr::r_bg)")
     executionMode <- "background"
+  }
+  if (is.null(runFolder)) {
+    runFolder <- file.path(piktestsFolder, paste0(format(Sys.time(), "%Y_%m_%d-%H_%M"), "-",
+                                                  paste(computationNames, collapse = "_")))
   }
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")

@@ -4,12 +4,12 @@
 #' be compared. Run this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
 #' Use the shell scripts created in the run folder to compare logs after all runs are finished.
 #'
+#' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
+#' computations are executed.
 #' @param renvInstallPackages Only in the second run, after installing
 #' other packages, `renv::install(renvInstallPackages)` is called.
 #' @param piktestsFolder A new folder is created in the given directory. In that folder two folders called "old"
 #' and "new" are created which contain the actual piktests runs.
-#' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
-#' computations are executed.
 #' @param diffTool One or more names of command line tools for comparing two text files. The first one that is found
 #' via `Sys.which` is used in the comparison shell script. If none is found falls back to "diff".
 #' @param ... Additional arguments passed to \code{\link{run}}.
@@ -21,19 +21,21 @@
 #'
 #' @importFrom utils head
 #' @export
-runWithComparison <- function(renvInstallPackages, piktestsFolder = getwd(),
-                              computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+runWithComparison <- function(computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+                              renvInstallPackages, piktestsFolder = getwd(),
                               diffTool = c("delta", "colordiff", "diff"), ...) {
   stopifnot(!is.null(renvInstallPackages))
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
-  runFolder <- normalizePath(file.path(piktestsFolder, now), mustWork = FALSE)
+  runFolder <- normalizePath(file.path(piktestsFolder,
+                                       paste0(now, "-", paste(computationNames, collapse = "_"))), mustWork = FALSE)
+
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")
   }
   dir.create(runFolder, recursive = TRUE)
-  run(NULL, computationNames = computationNames, ...,
+  run(computationNames = computationNames, renvInstallPackages = NULL, ...,
       runFolder = file.path(runFolder, paste0(now, "-old")))
-  run(renvInstallPackages, computationNames = computationNames, ...,
+  run(computationNames = computationNames, renvInstallPackages = renvInstallPackages, ...,
       runFolder = file.path(runFolder, paste0(now, "-new")))
 
   # on the cluster default diff does not support colors, so using pascal's delta (fancy diff tool) installation

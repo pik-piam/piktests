@@ -7,16 +7,14 @@
 #'
 #' @author Pascal Führlich
 #'
-#' @examples
-#' \dontrun{
-#' piktests::run(whatToRun = piktests::computations["magpiePreprocessing"])
-#' }
-#'
 #' @importFrom madrat retrieveData
 #' @importFrom renv install
 #' @export
 computations <- list(
-  # setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`
+  # Setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`.
+  # When adding/changing computations make sure to push to your fork first and then
+  # call piktests::run(renvInstallPackages = "<your name>/piktests"), otherwise piktests::computations is taken
+  # from pik-piam/piktests.
   magpiePreprocessing = list(
     setup = function() {
       renv::install("gert")

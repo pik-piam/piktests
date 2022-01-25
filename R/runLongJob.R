@@ -37,24 +37,14 @@ runLongJob <- function(workFunction,
     if (i != 1) {
         return(invisible(NULL))
     }
-    withr::local_options(nwarnings = 10000, warn = 1, error = function() {
-      traceback(2, max.lines = 1000)
-      dump.frames(to.file = TRUE)
-      message("Dumped frames, run `load('", file.path(getwd(), "last.dump.rda"), "'); debugger()` to start debugging")
-      quit(save = "no", status = 1, runLast = TRUE)
-    })
+    withr::local_options(nwarnings = 10000, warn = 1)
     withr::local_dir(workingDirectory)
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
 
     if (!is.null(renvToLoad)) {
-      if (is.null(renv::project())) {
-        renv::load(renvToLoad)
-      } else if (normalizePath(renv::project()) != normalizePath(renvToLoad)) {
-        warning("An renv is already loaded (", normalizePath(renv::project()), "), not loading ",
-                normalizePath(renvToLoad))
-      }
+      renv::load(renvToLoad)
     }
 
     return(do.call(workFunction, arguments))

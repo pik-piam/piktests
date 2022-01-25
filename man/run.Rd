@@ -5,24 +5,25 @@
 \title{run}
 \usage{
 run(
+  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   renvInstallPackages = NULL,
   piktestsFolder = getwd(),
-  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
-  runFolder = file.path(piktestsFolder, format(Sys.time(), "\%Y_\%m_\%d-\%H_\%M")),
+  runFolder = NULL,
   runInNewRSession = callr::r,
   executionMode = c("slurm", "background", "directly")
 )
 }
 \arguments{
+\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
+computations are executed.}
+
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
 
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
-\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
-computations are executed.}
-
-\item{runFolder}{In general this should be left as default. Where the folder for this piktests run should be created.}
+\item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
+which is current date, time, and computationNames.}
 
 \item{runInNewRSession}{Exists for testing. A function like `callr::r` taking a function and arguments to execute
 in a new R session.}

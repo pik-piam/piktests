@@ -7,8 +7,8 @@
 #'
 #' @param targetFolder Where to setup the renv.
 #' @param computationNames A subset of names(piktests::computations). The setup functions of these computations are run.
-#' @param renvInstallPackages After installing other packages, renv::install(renvInstallPackages) is called.
-#' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
+#' @param renvInstallPackages renv::install(renvInstallPackages) is called. Use this to test changes in your fork
+#' by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
 #'
 #' @examples
 #' callr::r(piktests:::setupRenv,
@@ -40,7 +40,9 @@ setupRenv <- function(targetFolder,
   renv::init(targetFolder, restart = FALSE, bare = TRUE)
   stopifnot(normalizePath(getwd()) == normalizePath(targetFolder))
 
-  renv::install(renvInstallPackages)
+  if (!is.null(renvInstallPackages)) {
+    renv::install(renvInstallPackages)
+  }
 
   # TODO remove "foreign@0.8-76", "cli", "desc", "Rcpp"
   renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp", # TODO cli desc Rcpp no longer necessary?
@@ -57,7 +59,9 @@ setupRenv <- function(targetFolder,
   dependencies <- renv::dependencies()
   renv::install(unique(dependencies[["Package"]]))
 
-  renv::install(renvInstallPackages)
+  if (!is.null(renvInstallPackages)) {
+    renv::install(renvInstallPackages)
+  }
   renv::snapshot(type = "all")
   return(invisible(NULL))
 }
