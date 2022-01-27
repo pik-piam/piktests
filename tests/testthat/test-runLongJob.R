@@ -17,6 +17,7 @@ test_that("runLongJob works", {
     file.remove("pusteblume.log")
   }
 
+  skip_on_ci() # launching new R sessions with callr and using renvs during tests is unstable, so disable on ci
   workFunction <- function() {
     return(list(workingDirectory = getwd(),
                 libPaths = .libPaths(),
