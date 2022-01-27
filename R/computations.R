@@ -7,19 +7,17 @@
 #'
 #' @author Pascal Führlich
 #'
-#' @examples
-#' \dontrun{
-#' piktests::run(whatToRun = piktests::computations["magpiePreprocessing"])
-#' }
-#'
-#' @importFrom gert git_clone
 #' @importFrom madrat retrieveData
 #' @importFrom renv install
 #' @export
 computations <- list(
-  # setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`
+  # Setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`.
+  # When adding/changing computations make sure to push to your fork first and then
+  # call piktests::run(renvInstallPackages = "<your name>/piktests"), otherwise piktests::computations is taken
+  # from pik-piam/piktests.
   magpiePreprocessing = list(
     setup = function() {
+      renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git", path = "preprocessing-magpie")
       # further renv::install not necessary, because this is run before renv auto-detects and installs dependencies
     },
@@ -30,6 +28,7 @@ computations <- list(
   ),
   remindPreprocessing = list(
     setup = function() {
+      renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
       if (gert::git_commit_id(repo = "preprocessing-remind") != "f3107d60c89d483f869f3286f649be569cc94aee") {
         warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but",
@@ -41,13 +40,13 @@ computations <- list(
     compute = function() {
       # paste("mrremind") to sidestep mrremind not in DESCRIPTION warning; mrremind will be installed by setupRenv
       library(paste("mrremind"), character.only = TRUE) # nolint
-      lapply(c("regionmappingH12.csv",
-               "regionmappingREMIND.csv",
-               "regionmapping_21_EU11.csv",
-               "regionmappingH12_Aus.csv"),
-             function(regionmapping) {
-               madrat::retrieveData(model = "REMIND", regionmapping = regionmapping, rev = 6.00, cachetype = "def")
-             })
+      revision <- "6.278"
+      for (mappings in list(c(regionmapping = "regionmappingH12.csv", extramapping = ""),
+                            c(regionmapping = "regionmapping_21_EU11.csv", extramapping = ""))) {
+        madrat::retrieveData(model = "REMIND", regionmapping = mappings[["regionmapping"]], rev = revision)
+        madrat::retrieveData(model = "VALIDATIONREMIND", regionmapping = mappings[["regionmapping"]],
+                             extramapping = mappings[["extramapping"]], rev = revision)
+      }
     }
   ),
   madratExample = list(

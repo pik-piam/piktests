@@ -5,26 +5,24 @@
 \title{run}
 \usage{
 run(
+  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   renvInstallPackages = NULL,
   piktestsFolder = getwd(),
-  whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
-  runFolder = file.path(piktestsFolder, format(Sys.time(), "\%Y_\%m_\%d-\%H_\%M")),
-  runInNewRSession = callr::r,
+  runFolder = NULL,
   executionMode = c("slurm", "background", "directly")
 )
 }
 \arguments{
+\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
+computations are executed.}
+
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
 
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
-\item{whatToRun}{A list of computation objects. See \code{\link{computations}}.}
-
-\item{runFolder}{In general this should be left as default. Where the folder for this piktests run should be created.}
-
-\item{runInNewRSession}{Exists for testing. A function like `callr::r` taking a function and arguments to execute
-in a new R session.}
+\item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
+which creates a folder name based on the current date, time, and computationNames.}
 
 \item{executionMode}{Determines how long running jobs are started. One of "slurm", "background", "directly"}
 }
@@ -37,6 +35,9 @@ Runs integration tests in an isolated runtime environment.
 \details{
 A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
 preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
+}
+\seealso{
+\code{\link{computations}}
 }
 \author{
 Pascal Führlich

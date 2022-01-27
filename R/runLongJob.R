@@ -16,10 +16,10 @@
 #' @author Pascal Führlich
 #'
 #' @importFrom callr r_bg r
-#' @importFrom renv activate
+#' @importFrom renv load project
 #' @importFrom slurmR opts_slurmR Slurm_lapply slurm_available
 #' @importFrom utils dump.frames sessionInfo
-#' @importFrom withr local_dir local_options
+#' @importFrom withr local_dir local_options with_dir
 runLongJob <- function(workFunction,
                        arguments = list(),
                        workingDirectory = getwd(),
@@ -30,37 +30,34 @@ runLongJob <- function(workFunction,
   executionMode <- match.arg(executionMode)
   stopifnot(executionMode != "slurm" || slurm_available())
 
+  workingDirectory <- normalizePath(workingDirectory)
+
   dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
-  augmentedWorkFunction <- function(i, renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
+  augmentedWorkFunction <- function(i, workingDirectory, madratConfig, workFunction, arguments) {
     # workaround for a crash in mcaffinity(old.aff)
     if (i != 1) {
         return(invisible(NULL))
     }
-    withr::local_options(nwarnings = 10000, warn = 1, error = function() {
-      traceback(2, max.lines = 1000)
-      dump.frames(to.file = TRUE)
-      message("Dumped frames, run `load('", file.path(getwd(), "last.dump.rda"), "'); debugger()` to start debugging")
-      quit(save = "no", status = 1, runLast = TRUE)
-    })
+    withr::local_options(nwarnings = 10000, warn = 1)
     withr::local_dir(workingDirectory)
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
-    if (!is.null(renvToLoad)) {
-      renv::load(renvToLoad)
-    }
 
-    # unload all loaded namespaces to prevent a crash when testing a new version of a package also used by piktests
-    for (i in seq_along(sessionInfo()[["loadedOnly"]])) {
-      for (p in setdiff(names(sessionInfo()[["loadedOnly"]]), "compiler")) {
-        try(unloadNamespace(p), silent = TRUE)
-      }
-    }
     return(do.call(workFunction, arguments))
   }
 
   outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
+  if (is.null(renvToLoad)) {
+    libPaths <- .libPaths() # nolint
+  } else {
+    local_dir(renvToLoad) # all following newly started R sessions will automatically init this renv
+    libPaths <- callr::r(function() { # get the libPaths set in the renv
+      renv::load() # callr overwrites the .libPaths the renv .Rprofile has set, so load again
+      .libPaths() # nolint
+    })
+  }
 
   if (executionMode == "slurm") {
     suppressSpecificWarnings <- function(expr, regexpr) {
@@ -73,9 +70,10 @@ runLongJob <- function(workFunction,
     return(suppressSpecificWarnings({
       # list(1, 2) is a workaround for a crash in mcaffinity(old.aff), length(X) has to be greater than 1
       Slurm_lapply(list(1, 2), augmentedWorkFunction,
-                   renvToLoad = renvToLoad, workingDirectory = workingDirectory, madratConfig = madratConfig,
+                   workingDirectory = workingDirectory, madratConfig = madratConfig,
                    workFunction = workFunction, arguments = arguments,
                    njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory, overwrite = FALSE,
+                   libPaths = libPaths,
                    sbatch_opt = list(`mail-type` = "END",
                                      array = "", # cluster won't send mails if slurmR default `array = "1-1"` is used
                                      qos = "priority",
@@ -83,11 +81,11 @@ runLongJob <- function(workFunction,
                                      output = outputFilePath))
     }, "No such file or directory")) # warning from normalizePath in Slurm_lapply, path is created after normalizing
   } else if (executionMode == "background") {
-    return(r_bg(augmentedWorkFunction,
-                list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                stdout = outputFilePath, stderr = outputFilePath))
+    return(r_bg(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
+                stdout = outputFilePath, stderr = outputFilePath, libpath = libPaths))
   } else {
-    return(r(augmentedWorkFunction, list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-             show = interactive(), stdout = outputFilePath, stderr = outputFilePath))
+    return(r(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
+             show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing(),
+             stdout = outputFilePath, stderr = outputFilePath, libpath = libPaths))
   }
 }

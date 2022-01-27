@@ -5,41 +5,37 @@
 #' A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
 #' preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
 #'
+#' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
+#' computations are executed.
 #' @param renvInstallPackages After installing other packages, renv::install(renvInstallPackages) is called.
 #' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
 #' @param piktestsFolder A new folder for this piktests run is created in the given directory.
-#' @param whatToRun A list of computation objects. See \code{\link{computations}}.
-#' @param runFolder In general this should be left as default. Where the folder for this piktests run should be created.
-#' @param runInNewRSession Exists for testing. A function like `callr::r` taking a function and arguments to execute
-#' in a new R session.
+#' @param runFolder Path where a folder for this piktests run should be created. Generally should be left as default,
+#' which creates a folder name based on the current date, time, and computationNames.
 #' @param executionMode Determines how long running jobs are started. One of "slurm", "background", "directly"
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @author Pascal Führlich
 #'
+#' @seealso \code{\link{computations}}
+#'
 #' @importFrom callr r
 #' @importFrom madrat setConfig
 #' @importFrom slurmR slurm_available
 #' @export
-run <- function(renvInstallPackages = NULL,
+run <- function(computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+                renvInstallPackages = NULL,
                 piktestsFolder = getwd(),
-                whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
-                runFolder = file.path(piktestsFolder, format(Sys.time(), "%Y_%m_%d-%H_%M")),
-                runInNewRSession = callr::r,
+                runFolder = NULL,
                 executionMode = c("slurm", "background", "directly")) {
-  whatToRunFormatCheck <- try({
-    stopifnot(all(vapply(whatToRun, function(computation) is.function(computation[["setup"]]), logical(1))))
-    stopifnot(all(vapply(whatToRun, function(computation) is.function(computation[["compute"]]), logical(1))))
-    stopifnot(all(vapply(seq_along(whatToRun),
-                         function(i) identical(whatToRun[[i]], whatToRun[[names(whatToRun)[[i]]]]), logical(1))))
-  }, silent = TRUE)
-  if ("try-error" %in% class(whatToRunFormatCheck)) {
-    stop("whatToRun is malformed. See `str(piktests::computations['madratExample'])` for a correct example.")
-  }
   executionMode <- match.arg(executionMode)
   if (executionMode == "slurm" && !slurm_available()) {
     warning("slurm is unavailable, falling back to background execution (callr::r_bg)")
     executionMode <- "background"
+  }
+  if (is.null(runFolder)) {
+    runFolder <- file.path(piktestsFolder, paste0(format(Sys.time(), "%Y_%m_%d-%H_%M"), "-",
+                                                  paste(computationNames, collapse = "_")))
   }
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")
@@ -51,7 +47,8 @@ run <- function(renvInstallPackages = NULL,
   outputFolder <- file.path(runFolder, "madratOutputFolder")
   dir.create(outputFolder)
 
-  runInNewRSession(setupRenv, list(runFolder, whatToRun, renvInstallPackages), show = TRUE, spinner = FALSE)
+  r(setupRenv, list(runFolder, computationNames, renvInstallPackages), spinner = FALSE,
+    show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
 
   setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
@@ -63,8 +60,8 @@ run <- function(renvInstallPackages = NULL,
                locale = Sys.getlocale()),
           file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
 
-  for (computationName in names(whatToRun)) {
-    runLongJob(whatToRun[[computationName]][["compute"]],
+  for (computationName in computationNames) {
+    runLongJob(computations[[computationName]][["compute"]],
                workingDirectory = file.path(runFolder, "computations", computationName),
                renvToLoad = runFolder,
                madratConfig = madratConfig,

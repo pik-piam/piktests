@@ -2,42 +2,58 @@
 #'
 #' Sets up a fresh renv and installs the required packages in it.
 #'
-#' @param targetFolder Where to setup the renv.
-#' @param whatToRun See \code{\link{run}} documentation for `whatToRun`.
-#' @param renvInstallPackages After installing other packages, renv::install(renvInstallPackages) is called.
-#' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
+#' This function should be called in a fresh R session (e.g. via callr::r), because setting up an renv involves
+#' changing critical aspects of your R session like your libpaths.
 #'
+#' @param targetFolder Where to setup the renv.
+#' @param computationNames A subset of names(piktests::computations). The setup functions of these computations are run.
+#' @param renvInstallPackages renv::install(renvInstallPackages) is called. Use this to test changes in your fork
+#' by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
+#'
+#' @examples
+#' \dontrun{
+#' callr::r(piktests:::setupRenv,
+#'          list(targetFolder = tempdir(),
+#'               computationNames = c("madratExample", "magpiePreprocessing"),
+#'               renvInstallPackages = c("tscheypidi/madrat", "magclass@@6.0.9")),
+#'          show = TRUE)
+#' }
 #' @author Pascal Führlich
 #'
-#' @importFrom callr r
-#' @importFrom gert git_clone
+#' @seealso \code{\link{computations}}
+#'
 #' @importFrom renv init install dependencies snapshot
 #' @importFrom withr with_dir
 setupRenv <- function(targetFolder,
-                      whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
+                      computationNames = c("madratExample", "magpiePreprocessing"),
                       renvInstallPackages = NULL) {
   # This function is run via callr::r so it must use `::` everywhere and cannot rely on roxygen's `@importFrom`.
-  renv::init(targetFolder, restart = FALSE, bare = TRUE) # remove bare when newest foreign can be installed on cluster
 
-  # TODO remove the following line when newest package versions are installed on cluster
-  renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp"))
+  renv::init(targetFolder, restart = FALSE, bare = TRUE)
+  stopifnot(normalizePath(getwd()) == normalizePath(targetFolder))
 
-  renv::install(c("withr", "gert"))
+  if (!is.null(renvInstallPackages)) {
+    renv::install(renvInstallPackages)
+  }
 
-  for (computationName in names(whatToRun)) {
-    workingDirectory <- file.path(targetFolder, "computations", computationName)
+  # TODO remove "foreign@0.8-76", "cli", "desc", "Rcpp"
+  renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp", # TODO cli desc Rcpp no longer necessary?
+                  "withr", "piktests"))
+
+  for (computationName in computationNames) {
+    workingDirectory <- file.path("computations", computationName)
     dir.create(workingDirectory, recursive = TRUE)
     withr::with_dir(workingDirectory, {
-      whatToRun[[computationName]][["setup"]]()
+      piktests::computations[[computationName]][["setup"]]()
     })
   }
 
-  dependencies <- renv::dependencies(targetFolder, errors = "fatal")
+  dependencies <- renv::dependencies()
   renv::install(unique(dependencies[["Package"]]))
 
-
-  renv::install(renvInstallPackages)
-  # TODO replace the following 2 lines with `renv::snapshot(type = "all")` when cluster base packages are up to date
-  renv::install("callr")
-  callr::r(function() renv::snapshot(type = "all"), show = TRUE)
+  if (!is.null(renvInstallPackages)) {
+    renv::install(renvInstallPackages)
+  }
+  renv::snapshot(type = "all")
+  return(invisible(NULL))
 }

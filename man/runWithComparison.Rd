@@ -5,21 +5,22 @@
 \title{runWithComparison}
 \usage{
 runWithComparison(
+  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   renvInstallPackages,
   piktestsFolder = getwd(),
-  whatToRun = computations[c("magpiePreprocessing", "remindPreprocessing")],
   diffTool = c("delta", "colordiff", "diff"),
   ...
 )
 }
 \arguments{
+\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
+computations are executed.}
+
 \item{renvInstallPackages}{Only in the second run, after installing
 other packages, `renv::install(renvInstallPackages)` is called.}
 
 \item{piktestsFolder}{A new folder is created in the given directory. In that folder two folders called "old"
 and "new" are created which contain the actual piktests runs.}
-
-\item{whatToRun}{A list of computation objects. See \code{\link{computations}}.}
 
 \item{diffTool}{One or more names of command line tools for comparing two text files. The first one that is found
 via `Sys.which` is used in the comparison shell script. If none is found falls back to "diff".}
@@ -35,7 +36,7 @@ be compared. Run this to test changes in your fork by passing "<gituser>/<repo>"
 Use the shell scripts created in the run folder to compare logs after all runs are finished.
 }
 \seealso{
-\code{\link{run}}
+\code{\link{run}}, \code{\link{computations}}
 }
 \author{
 Pascal Führlich
