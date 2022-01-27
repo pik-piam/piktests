@@ -19,7 +19,7 @@
 #' @importFrom renv load project
 #' @importFrom slurmR opts_slurmR Slurm_lapply slurm_available
 #' @importFrom utils dump.frames sessionInfo
-#' @importFrom withr local_dir local_options
+#' @importFrom withr local_dir local_options with_dir
 runLongJob <- function(workFunction,
                        arguments = list(),
                        workingDirectory = getwd(),
@@ -30,9 +30,12 @@ runLongJob <- function(workFunction,
   executionMode <- match.arg(executionMode)
   stopifnot(executionMode != "slurm" || slurm_available())
 
+  workingDirectory <- normalizePath(workingDirectory)
+
   dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
-  augmentedWorkFunction <- function(i, renvToLoad, workingDirectory, madratConfig, workFunction, arguments) {
+  augmentedWorkFunction <- function(i, workingDirectory, madratConfig, workFunction, arguments) {
+    print(loadedNamespaces())
     # workaround for a crash in mcaffinity(old.aff)
     if (i != 1) {
         return(invisible(NULL))
@@ -43,14 +46,19 @@ runLongJob <- function(workFunction,
       withr::local_options(madrat_cfg = madratConfig)
     }
 
-    if (!is.null(renvToLoad)) {
-      renv::load(renvToLoad)
-    }
-
     return(do.call(workFunction, arguments))
   }
 
   outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
+  if (is.null(renvToLoad)) {
+    libPaths <- .libPaths() # nolint
+  } else {
+    local_dir(renvToLoad) # all following newly started R sessions will automatically init this renv
+    libPaths <- callr::r(function() { # get the libPaths set in the renv
+      renv::load() # callr overwrites the .libPaths the renv .Rprofile has set, so load again
+      .libPaths() # nolint
+    })
+  }
 
   if (executionMode == "slurm") {
     suppressSpecificWarnings <- function(expr, regexpr) {
@@ -63,9 +71,10 @@ runLongJob <- function(workFunction,
     return(suppressSpecificWarnings({
       # list(1, 2) is a workaround for a crash in mcaffinity(old.aff), length(X) has to be greater than 1
       Slurm_lapply(list(1, 2), augmentedWorkFunction,
-                   renvToLoad = renvToLoad, workingDirectory = workingDirectory, madratConfig = madratConfig,
+                   workingDirectory = workingDirectory, madratConfig = madratConfig,
                    workFunction = workFunction, arguments = arguments,
                    njobs = 1, job_name = jobName, plan = "submit", tmp_path = workingDirectory, overwrite = FALSE,
+                   libPaths = libPaths,
                    sbatch_opt = list(`mail-type` = "END",
                                      array = "", # cluster won't send mails if slurmR default `array = "1-1"` is used
                                      qos = "priority",
@@ -73,12 +82,11 @@ runLongJob <- function(workFunction,
                                      output = outputFilePath))
     }, "No such file or directory")) # warning from normalizePath in Slurm_lapply, path is created after normalizing
   } else if (executionMode == "background") {
-    return(r_bg(augmentedWorkFunction,
-                list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
-                stdout = outputFilePath, stderr = outputFilePath))
+    return(r_bg(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
+                stdout = outputFilePath, stderr = outputFilePath, libpath = libPaths))
   } else {
-    return(r(augmentedWorkFunction, list(1, renvToLoad, workingDirectory, madratConfig, workFunction, arguments),
+    return(r(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
              show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing(),
-             stdout = outputFilePath, stderr = outputFilePath))
+             stdout = outputFilePath, stderr = outputFilePath, libpath = libPaths))
   }
 }

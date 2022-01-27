@@ -11,12 +11,13 @@
 #' by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
 #'
 #' @examples
+#' \dontrun{
 #' callr::r(piktests:::setupRenv,
 #'          list(targetFolder = tempdir(),
 #'               computationNames = c("madratExample", "magpiePreprocessing"),
-#'               renvInstallPackages = c("tscheypidi/madrat", "magclass@@6.1.1")),
+#'               renvInstallPackages = c("tscheypidi/madrat", "magclass@@6.0.9")),
 #'          show = TRUE)
-#'
+#' }
 #' @author Pascal Führlich
 #'
 #' @seealso \code{\link{computations}}

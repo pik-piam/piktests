@@ -23,7 +23,7 @@ Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfueh
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
 \item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
-which is current date, time, and computationNames.}
+which creates a folder name based on the current date, time, and computationNames.}
 
 \item{runInNewRSession}{Exists for testing. A function like `callr::r` taking a function and arguments to execute
 in a new R session.}

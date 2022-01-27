@@ -15,8 +15,8 @@ setupRenv(
 
 \item{computationNames}{A subset of names(piktests::computations). The setup functions of these computations are run.}
 
-\item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
-Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
+\item{renvInstallPackages}{renv::install(renvInstallPackages) is called. Use this to test changes in your fork
+by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
 }
 \description{
 Sets up a fresh renv and installs the required packages in it.
@@ -26,12 +26,13 @@ This function should be called in a fresh R session (e.g. via callr::r), because
 changing critical aspects of your R session like your libpaths.
 }
 \examples{
+\dontrun{
 callr::r(piktests:::setupRenv,
          list(targetFolder = tempdir(),
               computationNames = c("madratExample", "magpiePreprocessing"),
-              renvInstallPackages = c("tscheypidi/madrat", "magclass@6.1.1")),
+              renvInstallPackages = c("tscheypidi/madrat", "magclass@6.0.9")),
          show = TRUE)
-
+}
 }
 \seealso{
 \code{\link{computations}}
