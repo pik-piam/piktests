@@ -28,15 +28,6 @@ setupRenv <- function(targetFolder,
                       computationNames = c("madratExample", "magpiePreprocessing"),
                       renvInstallPackages = NULL) {
   # This function is run via callr::r so it must use `::` everywhere and cannot rely on roxygen's `@importFrom`.
-  defaultLoadedNamespaces <- c("compiler", "graphics", "utils", "grDevices", "stats", "datasets", "methods", "base")
-  nonDefaultLoadedNamespaces <- setdiff(loadedNamespaces(), defaultLoadedNamespaces)
-  if (length(nonDefaultLoadedNamespaces) > 0) {
-    warning("The following non-default packages are already loaded at the beginning of piktests::setupRenv:\n",
-            paste(nonDefaultLoadedNamespaces, collapse = ", "),
-            "\nThis might lead to package version conflicts and crashes. All arguments (and also their defaults) to ",
-            "setupRenv must not contain complex data types like functions, environments, or expressions, otherwise ",
-            "non-default packages might be loaded automatically.")
-  }
 
   renv::init(targetFolder, restart = FALSE, bare = TRUE)
   stopifnot(normalizePath(getwd()) == normalizePath(targetFolder))

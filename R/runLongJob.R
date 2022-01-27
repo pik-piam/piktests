@@ -35,7 +35,6 @@ runLongJob <- function(workFunction,
   dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
   augmentedWorkFunction <- function(i, workingDirectory, madratConfig, workFunction, arguments) {
-    print(loadedNamespaces())
     # workaround for a crash in mcaffinity(old.aff)
     if (i != 1) {
         return(invisible(NULL))
