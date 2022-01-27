@@ -40,13 +40,13 @@ computations <- list(
     compute = function() {
       # paste("mrremind") to sidestep mrremind not in DESCRIPTION warning; mrremind will be installed by setupRenv
       library(paste("mrremind"), character.only = TRUE) # nolint
-      lapply(c("regionmappingH12.csv",
-               "regionmappingREMIND.csv",
-               "regionmapping_21_EU11.csv",
-               "regionmappingH12_Aus.csv"),
-             function(regionmapping) {
-               madrat::retrieveData(model = "REMIND", regionmapping = regionmapping, rev = 6.00, cachetype = "def")
-             })
+      revision <- "6.278"
+      for (mappings in list(c(regionmapping = "regionmappingH12.csv", extramapping = ""),
+                            c(regionmapping = "regionmapping_21_EU11.csv", extramapping = ""))) {
+        madrat::retrieveData(model = "REMIND", regionmapping = mappings[["regionmapping"]], rev = revision)
+        madrat::retrieveData(model = "VALIDATIONREMIND", regionmapping = mappings[["regionmapping"]],
+                             extramapping = mappings[["extramapping"]], rev = revision)
+      }
     }
   ),
   madratExample = list(

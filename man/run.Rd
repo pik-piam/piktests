@@ -9,7 +9,6 @@ run(
   renvInstallPackages = NULL,
   piktestsFolder = getwd(),
   runFolder = NULL,
-  runInNewRSession = callr::r,
   executionMode = c("slurm", "background", "directly")
 )
 }
@@ -24,9 +23,6 @@ Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfueh
 
 \item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
 which creates a folder name based on the current date, time, and computationNames.}
-
-\item{runInNewRSession}{Exists for testing. A function like `callr::r` taking a function and arguments to execute
-in a new R session.}
 
 \item{executionMode}{Determines how long running jobs are started. One of "slurm", "background", "directly"}
 }

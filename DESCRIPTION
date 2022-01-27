@@ -17,4 +17,5 @@ Imports:
     slurmR,
     withr
 Suggests:
-    covr
+    covr,
+    testthat
