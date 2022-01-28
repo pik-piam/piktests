@@ -1,7 +1,7 @@
 Package: piktests
 Type: Package
-Version: 0.7.1
-Date: 2022-01-27
+Version: 0.7.2
+Date: 2022-01-28
 Title: Run PIK Integration Tests
 Description: This package includes integration tests for selected models and packages related to those models.
 Authors@R: c(person("Pascal", "Führlich", email = "pascal.fuehrlich@pik-potsdam.de", role = c("aut","cre")))
