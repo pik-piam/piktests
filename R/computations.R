@@ -30,8 +30,8 @@ computations <- list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
-      if (gert::git_commit_id(repo = "preprocessing-remind") != "f3107d60c89d483f869f3286f649be569cc94aee") {
-        warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but",
+      if (gert::git_commit_id(repo = "preprocessing-remind") != "07884904b4b86e98b49ec15ea784389285b3049b") {
+        warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but ",
                 "piktests is still using the old version.")
       }
       unlink("preprocessing-remind", recursive = TRUE)
@@ -41,11 +41,12 @@ computations <- list(
       # paste("mrremind") to sidestep mrremind not in DESCRIPTION warning; mrremind will be installed by setupRenv
       library(paste("mrremind"), character.only = TRUE) # nolint
       revision <- "6.278"
-      for (mappings in list(c(regionmapping = "regionmappingH12.csv", extramapping = ""),
-                            c(regionmapping = "regionmapping_21_EU11.csv", extramapping = ""))) {
-        madrat::retrieveData(model = "REMIND", regionmapping = mappings[["regionmapping"]], rev = revision)
+      for (mappings in list(c(regionmapping = "regionmappingH12.csv", extramappings = ""),
+                            c(regionmapping = "regionmapping_21_EU11.csv", extramappings = ""))) {
+        madrat::retrieveData(model = "REMIND", regionmapping = mappings[["regionmapping"]],
+                             rev = revision, cachetype = "def")
         madrat::retrieveData(model = "VALIDATIONREMIND", regionmapping = mappings[["regionmapping"]],
-                             extramapping = mappings[["extramapping"]], rev = revision)
+                             extramappings = mappings[["extramappings"]], rev = revision, cachetype = "def")
       }
     }
   ),
