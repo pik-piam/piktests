@@ -22,17 +22,13 @@
 #' @importFrom callr r
 #' @importFrom madrat getConfig setConfig
 #' @importFrom slurmR slurm_available
+#' @importFrom withr with_output_sink
 #' @export
 run <- function(renvInstallPackages = NULL,
                 computationNames = c("magpiePreprocessing", "remindPreprocessing"),
                 piktestsFolder = getwd(),
                 runFolder = NULL,
                 executionMode = c("slurm", "directly")) {
-  executionMode <- match.arg(executionMode)
-  if (executionMode == "slurm" && !slurm_available()) {
-    warning("slurm is unavailable, falling back to direct execution (callr::r)")
-    executionMode <- "directly"
-  }
   if (is.null(runFolder)) {
     runFolder <- file.path(piktestsFolder, paste0(format(Sys.time(), "%Y_%m_%d-%H_%M"), "-",
                                                   paste(computationNames, collapse = "_")))
@@ -43,23 +39,31 @@ run <- function(renvInstallPackages = NULL,
   dir.create(runFolder, recursive = TRUE)
   runFolder <- normalizePath(runFolder)
 
-  r(setupRenv, list(runFolder, computationNames, renvInstallPackages), spinner = FALSE,
-    show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
+  with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
+    executionMode <- match.arg(executionMode)
+    if (executionMode == "slurm" && !slurm_available()) {
+      warning("slurm is unavailable, falling back to direct execution (callr::r)")
+      executionMode <- "directly"
+    }
 
-  madratMainFolder <- file.path(runFolder, "madratMainFolder")
-  dir.create(madratMainFolder)
-  setConfig(sourcefolder = getConfig("sourcefolder"),
-            mappingfolder = getConfig("mappingfolder"),
-            mainfolder = madratMainFolder,
-            .local = TRUE)
-  madratConfig <- getOption("madrat_cfg")
-  saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
+    r(setupRenv, list(runFolder, computationNames, renvInstallPackages), spinner = FALSE,
+      show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
 
-  # not used further, just for archiving/looking up later
-  saveRDS(list(options = options(), # nolint
-               environmentVariables = Sys.getenv(),
-               locale = Sys.getlocale()),
-          file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
+    madratMainFolder <- file.path(runFolder, "madratMainFolder")
+    dir.create(madratMainFolder)
+    setConfig(sourcefolder = getConfig("sourcefolder"),
+              mappingfolder = getConfig("mappingfolder"),
+              mainfolder = madratMainFolder,
+              .local = TRUE)
+    madratConfig <- getOption("madrat_cfg")
+    saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
+
+    # not used further, just for archiving/looking up later
+    saveRDS(list(options = options(), # nolint
+                 environmentVariables = Sys.getenv(),
+                 locale = Sys.getlocale()),
+            file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
+  })
 
   for (computationName in computationNames) {
     runLongJob(computations[[computationName]][["compute"]],
