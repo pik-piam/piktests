@@ -9,8 +9,8 @@ test_that("run works", {
   tempFolder <- withr::local_tempdir()
   runFolder <- piktests::run(computationNames = "madratExample", renvInstallPackages = "magclass@6.0.9",
                              piktestsFolder = tempFolder, executionMode = "directly")
-  expect_true(dir.exists(file.path(runFolder, "madratCacheFolder")))
-  expect_equal(length(Sys.glob(file.path(runFolder, "madratOutputFolder", "*.tgz"))), 1)
+  expect_true(dir.exists(file.path(runFolder, "madratMainFolder")))
+  expect_equal(length(Sys.glob(file.path(runFolder, "madratMainFolder", "output", "*.tgz"))), 1)
   expect_true(file.exists(file.path(runFolder, "madratConfig.rds")))
   expect_true(file.exists(file.path(runFolder, "optionsEnvironmentVariablesLocale.rds")))
   expect_equal(length(Sys.glob(file.path(runFolder, "computations", "madratExample", "*.log"))), 1)
