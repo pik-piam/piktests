@@ -28,10 +28,11 @@ run <- function(renvInstallPackages = NULL,
                 computationNames = c("magpiePreprocessing", "remindPreprocessing"),
                 piktestsFolder = getwd(),
                 runFolder = NULL,
+                jobNameSuffix = "",
                 executionMode = c("slurm", "directly")) {
+  now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   if (is.null(runFolder)) {
-    runFolder <- file.path(piktestsFolder, paste0(format(Sys.time(), "%Y_%m_%d-%H_%M"), "-",
-                                                  paste(computationNames, collapse = "_")))
+    runFolder <- file.path(piktestsFolder, paste0(now, "-", paste(computationNames, collapse = "_")))
   }
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")
@@ -70,7 +71,7 @@ run <- function(renvInstallPackages = NULL,
                workingDirectory = file.path(runFolder, "computations", computationName),
                renvToLoad = runFolder,
                madratConfig = madratConfig,
-               jobName = paste0("piktests-", computationName, "-", basename(runFolder)),
+               jobName = paste0("piktests-", computationName, "-", now, jobNameSuffix),
                executionMode = executionMode)
   }
 

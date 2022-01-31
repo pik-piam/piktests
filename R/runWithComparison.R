@@ -35,15 +35,15 @@ runWithComparison <- function(renvInstallPackages,
   }
   dir.create(runFolder, recursive = TRUE)
   run(computationNames = computationNames, renvInstallPackages = NULL, ...,
-      runFolder = file.path(runFolder, paste0(now, "-old")))
+      runFolder = file.path(runFolder, "old"), jobNameSuffix = "-old")
   run(computationNames = computationNames, renvInstallPackages = renvInstallPackages, ...,
-      runFolder = file.path(runFolder, paste0(now, "-new")))
+      runFolder = file.path(runFolder, "new"), jobNameSuffix = "-new")
 
   # on the cluster default diff does not support colors, so using pascal's delta (fancy diff tool) installation
   diffTool <- if (any(Sys.which(diffTool) != "")) head(diffTool[Sys.which(diffTool) != ""], 1) else "diff"
   for (computationName in computationNames) {
     compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
-    oldLog <- file.path(runFolder, paste0(now, "-old"), "computations", computationName,
+    oldLog <- file.path(runFolder, "old", "computations", computationName,
                         paste0("piktests-", computationName, "-", now, "-old.log"))
     newLog <- file.path(runFolder, paste0(now, "-new"), "computations", computationName,
                         paste0("piktests-", computationName, "-", now, "-new.log"))

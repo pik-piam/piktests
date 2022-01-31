@@ -9,6 +9,7 @@ run(
   computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   piktestsFolder = getwd(),
   runFolder = NULL,
+  jobNameSuffix = "",
   executionMode = c("slurm", "directly")
 )
 }
