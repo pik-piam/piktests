@@ -5,10 +5,10 @@
 #' A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
 #' preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
 #'
-#' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
-#' computations are executed.
 #' @param renvInstallPackages After installing other packages, renv::install(renvInstallPackages) is called.
 #' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
+#' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
+#' computations are executed.
 #' @param piktestsFolder A new folder for this piktests run is created in the given directory.
 #' @param runFolder Path where a folder for this piktests run should be created. Generally should be left as default,
 #' which creates a folder name based on the current date, time, and computationNames.
@@ -20,11 +20,11 @@
 #' @seealso \code{\link{computations}}
 #'
 #' @importFrom callr r
-#' @importFrom madrat setConfig
+#' @importFrom madrat getConfig setConfig
 #' @importFrom slurmR slurm_available
 #' @export
-run <- function(computationNames = c("magpiePreprocessing", "remindPreprocessing"),
-                renvInstallPackages = NULL,
+run <- function(renvInstallPackages = NULL,
+                computationNames = c("magpiePreprocessing", "remindPreprocessing"),
                 piktestsFolder = getwd(),
                 runFolder = NULL,
                 executionMode = c("slurm", "background", "directly")) {
@@ -42,15 +42,16 @@ run <- function(computationNames = c("magpiePreprocessing", "remindPreprocessing
   }
   dir.create(runFolder, recursive = TRUE)
   runFolder <- normalizePath(runFolder)
-  cacheFolder <- file.path(runFolder, "madratCacheFolder")
-  dir.create(cacheFolder)
-  outputFolder <- file.path(runFolder, "madratOutputFolder")
-  dir.create(outputFolder)
 
   r(setupRenv, list(runFolder, computationNames, renvInstallPackages), spinner = FALSE,
     show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
 
-  setConfig(cachefolder = cacheFolder, outputfolder = outputFolder, .local = TRUE)
+  madratMainFolder <- file.path(runFolder, "madratMainFolder")
+  dir.create(madratMainFolder)
+  setConfig(sourcefolder = getConfig("sourcefolder"),
+            mappingfolder = getConfig("mappingfolder"),
+            mainfolder = madratMainFolder,
+            .local = TRUE)
   madratConfig <- getOption("madrat_cfg")
   saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 

@@ -5,19 +5,19 @@
 \title{run}
 \usage{
 run(
-  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   renvInstallPackages = NULL,
+  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   piktestsFolder = getwd(),
   runFolder = NULL,
   executionMode = c("slurm", "background", "directly")
 )
 }
 \arguments{
-\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
-computations are executed.}
-
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
+
+\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
+computations are executed.}
 
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
