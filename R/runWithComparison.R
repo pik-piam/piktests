@@ -45,7 +45,7 @@ runWithComparison <- function(renvInstallPackages,
     compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
     oldLog <- file.path(runFolder, "old", "computations", computationName,
                         paste0("piktests-", computationName, "-", now, "-old.log"))
-    newLog <- file.path(runFolder, paste0(now, "-new"), "computations", computationName,
+    newLog <- file.path(runFolder, "new", "computations", computationName,
                         paste0("piktests-", computationName, "-", now, "-new.log"))
 
     # remove file hashes and runtimes before comparing
