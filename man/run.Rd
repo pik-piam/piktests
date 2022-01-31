@@ -25,6 +25,8 @@ computations are executed.}
 \item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
 which creates a folder name based on the current date, time, and computationNames.}
 
+\item{jobNameSuffix}{A suffix to be appended to the SLURM job's name.}
+
 \item{executionMode}{Determines how long running jobs are started. One of "slurm", "directly"}
 }
 \value{

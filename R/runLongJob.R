@@ -1,6 +1,7 @@
 #' runLongJob
 #'
-#' Run a function in a new R session, per default via slurm (see executionMode).
+#' Run a function in a new R session, per default via SLURM (see executionMode). The log will be written to
+#' `file.path(workingDirectory, "job.log")`.
 #'
 #' @param workFunction This function will be run in a new R session, so it must use `::` whenever package functions are
 #' used. Also it cannot refer to variables in the outer scope, use the next parameter (arguments) to pass them.
@@ -8,8 +9,7 @@
 #' @param workingDirectory The working directory in which workFunction will be called.
 #' @param renvToLoad The renv project to load before running workFunction.
 #' @param madratConfig A madrat config (as returned by `madrat::getConfig()`) to be used when running workFunction.
-#' @param jobName The output file will be called `<jobName>.log`. If executionMode is "slurm" this is also the name
-#' of the slurm job.
+#' @param jobName The SLURM job's name.
 #' @param executionMode Determines how workFunction is started.
 #' "slurm" -> `slurmR::Slurm_lapply`, "directly" -> `callr::r`
 #'
@@ -48,7 +48,7 @@ runLongJob <- function(workFunction,
     return(do.call(workFunction, arguments))
   }
 
-  outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
+  outputFilePath <- file.path(workingDirectory, "job.log")
   if (is.null(renvToLoad)) {
     libPaths <- .libPaths() # nolint
   } else {
