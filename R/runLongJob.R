@@ -11,7 +11,7 @@
 #' @param jobName The output file will be called `<jobName>.log`. If executionMode is "slurm" this is also the name
 #' of the slurm job.
 #' @param executionMode Determines how workFunction is started.
-#' "slurm" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
+#' "slurm" -> `slurmR::Slurm_lapply`, "directly" -> `callr::r`
 #'
 #' @author Pascal Führlich
 #'
@@ -26,7 +26,7 @@ runLongJob <- function(workFunction,
                        renvToLoad = NULL,
                        madratConfig = NULL,
                        jobName = opts_slurmR$get_job_name(),
-                       executionMode = c("slurm", "background", "directly")) {
+                       executionMode = c("slurm", "directly")) {
   executionMode <- match.arg(executionMode)
   stopifnot(executionMode != "slurm" || slurm_available())
 
@@ -80,9 +80,6 @@ runLongJob <- function(workFunction,
                                      mem = 50000,
                                      output = outputFilePath))
     }, "No such file or directory")) # warning from normalizePath in Slurm_lapply, path is created after normalizing
-  } else if (executionMode == "background") {
-    return(r_bg(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
-                stdout = outputFilePath, stderr = outputFilePath, libpath = libPaths))
   } else {
     return(r(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
              show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing(),

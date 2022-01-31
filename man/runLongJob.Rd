@@ -11,7 +11,7 @@ runLongJob(
   renvToLoad = NULL,
   madratConfig = NULL,
   jobName = opts_slurmR$get_job_name(),
-  executionMode = c("slurm", "background", "directly")
+  executionMode = c("slurm", "directly")
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ used. Also it cannot refer to variables in the outer scope, use the next paramet
 of the slurm job.}
 
 \item{executionMode}{Determines how workFunction is started.
-"slurm" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`}
+"slurm" -> `slurmR::Slurm_lapply`, "directly" -> `callr::r`}
 }
 \description{
 Run a function in a new R session, per default via slurm (see executionMode).

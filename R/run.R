@@ -12,7 +12,7 @@
 #' @param piktestsFolder A new folder for this piktests run is created in the given directory.
 #' @param runFolder Path where a folder for this piktests run should be created. Generally should be left as default,
 #' which creates a folder name based on the current date, time, and computationNames.
-#' @param executionMode Determines how long running jobs are started. One of "slurm", "background", "directly"
+#' @param executionMode Determines how long running jobs are started. One of "slurm", "directly"
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @author Pascal Führlich
@@ -27,11 +27,11 @@ run <- function(renvInstallPackages = NULL,
                 computationNames = c("magpiePreprocessing", "remindPreprocessing"),
                 piktestsFolder = getwd(),
                 runFolder = NULL,
-                executionMode = c("slurm", "background", "directly")) {
+                executionMode = c("slurm", "directly")) {
   executionMode <- match.arg(executionMode)
   if (executionMode == "slurm" && !slurm_available()) {
-    warning("slurm is unavailable, falling back to background execution (callr::r_bg)")
-    executionMode <- "background"
+    warning("slurm is unavailable, falling back to direct execution (callr::r)")
+    executionMode <- "directly"
   }
   if (is.null(runFolder)) {
     runFolder <- file.path(piktestsFolder, paste0(format(Sys.time(), "%Y_%m_%d-%H_%M"), "-",
