@@ -60,7 +60,9 @@ computations <- list(
     }
   ),
   test = list(
-    setup = function() NULL,
+    setup = function() {
+
+    },
     compute = function() {
       message("asdf")
       stop("badum")
