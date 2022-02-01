@@ -44,6 +44,7 @@ runLongJob <- function(workFunction,
     }
     withr::local_options(nwarnings = 10000, warn = 1, error = function() {
       traceback(2)
+      dump.frames(to.file = TRUE)
       quit(status = 1)
     })
     withr::local_dir(workingDirectory)
