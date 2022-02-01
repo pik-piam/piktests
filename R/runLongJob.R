@@ -1,6 +1,7 @@
 #' runLongJob
 #'
-#' Run a function in a new R session, per default via slurm (see executionMode).
+#' Run a function in a new R session, per default via SLURM (see executionMode). The log will be written to
+#' `file.path(workingDirectory, "job.log")`.
 #'
 #' @param workFunction This function will be run in a new R session, so it must use `::` whenever package functions are
 #' used. Also it cannot refer to variables in the outer scope, use the next parameter (arguments) to pass them.
@@ -8,10 +9,9 @@
 #' @param workingDirectory The working directory in which workFunction will be called.
 #' @param renvToLoad The renv project to load before running workFunction.
 #' @param madratConfig A madrat config (as returned by `madrat::getConfig()`) to be used when running workFunction.
-#' @param jobName The output file will be called `<jobName>.log`. If executionMode is "slurm" this is also the name
-#' of the slurm job.
+#' @param jobName The SLURM job's name.
 #' @param executionMode Determines how workFunction is started.
-#' "slurm" -> `slurmR::Slurm_lapply`, "background" -> `callr::r_bg`, "directly" -> `callr::r`
+#' "slurm" -> `slurmR::Slurm_lapply`, "directly" -> `callr::r`
 #'
 #' @author Pascal Führlich
 #'
@@ -26,7 +26,7 @@ runLongJob <- function(workFunction,
                        renvToLoad = NULL,
                        madratConfig = NULL,
                        jobName = opts_slurmR$get_job_name(),
-                       executionMode = c("slurm", "background", "directly")) {
+                       executionMode = c("slurm", "directly")) {
   executionMode <- match.arg(executionMode)
   stopifnot(executionMode != "slurm" || slurm_available())
 
@@ -48,7 +48,7 @@ runLongJob <- function(workFunction,
     return(do.call(workFunction, arguments))
   }
 
-  outputFilePath <- file.path(workingDirectory, paste0(jobName, ".log"))
+  outputFilePath <- file.path(workingDirectory, "job.log")
   if (is.null(renvToLoad)) {
     libPaths <- .libPaths() # nolint
   } else {
@@ -80,9 +80,6 @@ runLongJob <- function(workFunction,
                                      mem = 50000,
                                      output = outputFilePath))
     }, "No such file or directory")) # warning from normalizePath in Slurm_lapply, path is created after normalizing
-  } else if (executionMode == "background") {
-    return(r_bg(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
-                stdout = outputFilePath, stderr = outputFilePath, libpath = libPaths))
   } else {
     return(r(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
              show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing(),

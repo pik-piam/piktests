@@ -5,26 +5,29 @@
 \title{run}
 \usage{
 run(
-  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   renvInstallPackages = NULL,
+  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
   piktestsFolder = getwd(),
   runFolder = NULL,
-  executionMode = c("slurm", "background", "directly")
+  jobNameSuffix = "",
+  executionMode = c("slurm", "directly")
 )
 }
 \arguments{
-\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
-computations are executed.}
-
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
+
+\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
+computations are executed.}
 
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
 \item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
 which creates a folder name based on the current date, time, and computationNames.}
 
-\item{executionMode}{Determines how long running jobs are started. One of "slurm", "background", "directly"}
+\item{jobNameSuffix}{A suffix to be appended to the SLURM job's name.}
+
+\item{executionMode}{Determines how long running jobs are started. One of "slurm", "directly"}
 }
 \value{
 Invisibly, the path to the folder holding everything related to this piktests run.

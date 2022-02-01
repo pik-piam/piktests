@@ -4,10 +4,10 @@
 #' be compared. Run this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
 #' Use the shell scripts created in the run folder to compare logs after all runs are finished.
 #'
+#' @param renvInstallPackages Only in the second run, after installing other
+#' packages, `renv::install(renvInstallPackages)` is called.
 #' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
 #' computations are executed.
-#' @param renvInstallPackages Only in the second run, after installing
-#' other packages, `renv::install(renvInstallPackages)` is called.
 #' @param piktestsFolder A new folder is created in the given directory. In that folder two folders called "old"
 #' and "new" are created which contain the actual piktests runs.
 #' @param diffTool One or more names of command line tools for comparing two text files. The first one that is found
@@ -21,8 +21,9 @@
 #'
 #' @importFrom utils head
 #' @export
-runWithComparison <- function(computationNames = c("magpiePreprocessing", "remindPreprocessing"),
-                              renvInstallPackages, piktestsFolder = getwd(),
+runWithComparison <- function(renvInstallPackages,
+                              computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+                              piktestsFolder = getwd(),
                               diffTool = c("delta", "colordiff", "diff"), ...) {
   stopifnot(!is.null(renvInstallPackages))
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
@@ -34,18 +35,16 @@ runWithComparison <- function(computationNames = c("magpiePreprocessing", "remin
   }
   dir.create(runFolder, recursive = TRUE)
   run(computationNames = computationNames, renvInstallPackages = NULL, ...,
-      runFolder = file.path(runFolder, paste0(now, "-old")))
+      runFolder = file.path(runFolder, "old"), jobNameSuffix = "-old")
   run(computationNames = computationNames, renvInstallPackages = renvInstallPackages, ...,
-      runFolder = file.path(runFolder, paste0(now, "-new")))
+      runFolder = file.path(runFolder, "new"), jobNameSuffix = "-new")
 
   # on the cluster default diff does not support colors, so using pascal's delta (fancy diff tool) installation
   diffTool <- if (any(Sys.which(diffTool) != "")) head(diffTool[Sys.which(diffTool) != ""], 1) else "diff"
   for (computationName in computationNames) {
     compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
-    oldLog <- file.path(runFolder, paste0(now, "-old"), "computations", computationName,
-                        paste0("piktests-", computationName, "-", now, "-old.log"))
-    newLog <- file.path(runFolder, paste0(now, "-new"), "computations", computationName,
-                        paste0("piktests-", computationName, "-", now, "-new.log"))
+    oldLog <- file.path(runFolder, "old", "computations", computationName, "job.log")
+    newLog <- file.path(runFolder, "new", "computations", computationName, "job.log")
 
     # remove file hashes and runtimes before comparing
     writeLines(c("#!/usr/bin/env sh",

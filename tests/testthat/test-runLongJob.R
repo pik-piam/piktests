@@ -1,8 +1,6 @@
 test_that("runLongJob works", {
   expect_identical(piktests:::runLongJob(function(x, y) x + y, list(y = 3, 5),
                                          workingDirectory = withr::local_tempdir(), executionMode = "directly"), 8)
-  expect_identical(piktests:::runLongJob(function() 3 + 5, workingDirectory = withr::local_tempdir(),
-                                         executionMode = "background")$wait(3000)$get_result(), 8)
 
   if (slurmR::slurm_available()) {
     # testthat loads piktests in a weird way, so slurmR cannot load it, so we unload to avoid crashing
