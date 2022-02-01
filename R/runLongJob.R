@@ -15,7 +15,7 @@
 #'
 #' @author Pascal Führlich
 #'
-#' @importFrom callr r_bg r
+#' @importFrom callr r
 #' @importFrom renv load project
 #' @importFrom slurmR opts_slurmR Slurm_lapply slurm_available
 #' @importFrom utils dump.frames sessionInfo
@@ -53,7 +53,7 @@ runLongJob <- function(workFunction,
     libPaths <- .libPaths() # nolint
   } else {
     local_dir(renvToLoad) # all following newly started R sessions will automatically init this renv
-    libPaths <- callr::r(function() { # get the libPaths set in the renv
+    libPaths <- r(function() { # get the libPaths set in the renv
       renv::load() # callr overwrites the .libPaths the renv .Rprofile has set, so load again
       .libPaths() # nolint
     })
