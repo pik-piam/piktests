@@ -40,6 +40,10 @@ setupRenv <- function(targetFolder,
   renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp", # TODO cli desc Rcpp no longer necessary?
                   "withr", "piktests"))
 
+  if (!is.null(renvInstallPackages)) {
+    renv::install(renvInstallPackages)
+  }
+
   for (computationName in computationNames) {
     workingDirectory <- file.path("computations", computationName)
     dir.create(workingDirectory, recursive = TRUE)
