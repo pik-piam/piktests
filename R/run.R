@@ -22,7 +22,6 @@
 #'
 #' @importFrom callr r
 #' @importFrom madrat getConfig setConfig
-#' @importFrom slurmR slurm_available
 #' @importFrom withr with_output_sink
 #' @export
 run <- function(renvInstallPackages = NULL,
@@ -43,10 +42,6 @@ run <- function(renvInstallPackages = NULL,
 
   with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
     executionMode <- match.arg(executionMode)
-    if (executionMode == "slurm" && !slurm_available()) {
-      warning("slurm is unavailable, falling back to direct execution (callr::r)")
-      executionMode <- "directly"
-    }
 
     r(setupRenv, list(runFolder, computationNames, renvInstallPackages), spinner = FALSE,
       show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())

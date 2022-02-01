@@ -28,7 +28,10 @@ runLongJob <- function(workFunction,
                        jobName = opts_slurmR$get_job_name(),
                        executionMode = c("slurm", "directly")) {
   executionMode <- match.arg(executionMode)
-  stopifnot(executionMode != "slurm" || slurm_available())
+  if (executionMode == "slurm" && !slurm_available()) {
+    warning("slurm is unavailable, falling back to direct execution (callr::r)")
+    executionMode <- "directly"
+  }
 
   workingDirectory <- normalizePath(workingDirectory)
 
@@ -55,7 +58,7 @@ runLongJob <- function(workFunction,
     local_dir(renvToLoad) # all following newly started R sessions will automatically init this renv
     libPaths <- r(function() { # get the libPaths set in the renv
       renv::load() # callr overwrites the .libPaths the renv .Rprofile has set, so load again
-      .libPaths() # nolint
+      return(.libPaths()) # nolint
     })
   }
 

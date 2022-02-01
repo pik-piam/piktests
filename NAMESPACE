@@ -2,6 +2,7 @@
 
 export(computations)
 export(run)
+export(runInRenv)
 export(runWithComparison)
 importFrom(callr,r)
 importFrom(madrat,getConfig)
