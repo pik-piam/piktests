@@ -58,6 +58,7 @@ computations <- list(
       library("madrat") # nolint
       madrat::retrieveData("example", cachetype = "def")
       stop("badum")
+      cat("done\n")
     }
   )
 )
