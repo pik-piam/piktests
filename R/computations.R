@@ -58,15 +58,5 @@ computations <- list(
       library("madrat") # nolint
       madrat::retrieveData("example", cachetype = "def")
     }
-  ),
-  test = list(
-    setup = function() {
-
-    },
-    compute = function() {
-      message("asdf")
-      stop("badum")
-      message("tsss")
-    }
   )
 )
