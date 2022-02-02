@@ -42,17 +42,22 @@ runLongJob <- function(workFunction,
     if (i != 1) {
         return(invisible(NULL))
     }
-    withr::local_options(nwarnings = 10000, warn = 1, error = function() {
-      traceback(2)
-      dump.frames(to.file = TRUE)
-      quit(status = 1)
-    })
     withr::local_dir(workingDirectory)
+    withr::local_options(nwarnings = 10000, warn = 1)
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
 
-    return(do.call(workFunction, arguments))
+    result <- try({
+      do.call(workFunction, arguments)
+    })
+    if (inherits(result, "try-error")) {
+      print(result)
+      traceback()
+      stop(result)
+    } else {
+      return(result)
+    }
   }
 
   outputFilePath <- file.path(workingDirectory, "job.log")
