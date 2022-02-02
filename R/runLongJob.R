@@ -20,6 +20,7 @@
 #' @importFrom slurmR opts_slurmR Slurm_lapply slurm_available
 #' @importFrom utils dump.frames sessionInfo
 #' @importFrom withr local_dir local_options with_dir
+#' @export
 runLongJob <- function(workFunction,
                        arguments = list(),
                        workingDirectory = getwd(),

@@ -3,6 +3,7 @@
 export(computations)
 export(run)
 export(runInRenv)
+export(runLongJob)
 export(runWithComparison)
 importFrom(callr,r)
 importFrom(madrat,getConfig)

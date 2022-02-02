@@ -7,8 +7,8 @@ test_that("run works", {
   }
   withr::local_options(repos = c(rse = "https://rse.pik-potsdam.de/r/packages", cran = "https://cran.rstudio.com/"))
   tempFolder <- withr::local_tempdir()
-  runFolder <- piktests::run(computationNames = "madratExample", renvInstallPackages = "magclass@6.0.9",
-                             piktestsFolder = tempFolder, executionMode = "directly")
+  runFolder <- run(computationNames = "madratExample", renvInstallPackages = "magclass@6.0.9",
+                   piktestsFolder = tempFolder, executionMode = "directly")
   expect_true(dir.exists(file.path(runFolder, "madratMainFolder")))
   expect_equal(length(Sys.glob(file.path(runFolder, "madratMainFolder", "output", "*.tgz"))), 1)
   expect_true(file.exists(file.path(runFolder, "madratConfig.rds")))
@@ -18,6 +18,6 @@ test_that("run works", {
   expect_true(file.exists(file.path(runFolder, "renv.lock")))
 
   dir.create(file.path(tempFolder, format(Sys.time(), "%Y_%m_%d-%H_%M")), showWarnings = FALSE)
-  expect_error(piktests::run(computationNames = "madratExample", piktestsFolder = tempFolder,
-                             executionMode = "directly"), "already exists!")
+  expect_error(run(computationNames = "madratExample", piktestsFolder = tempFolder,
+                   executionMode = "directly"), "already exists!")
 })
