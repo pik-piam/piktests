@@ -15,11 +15,12 @@
 #'
 #' @author Pascal Führlich
 #'
-#' @importFrom callr r_bg r
+#' @importFrom callr r
 #' @importFrom renv load project
 #' @importFrom slurmR opts_slurmR Slurm_lapply slurm_available
 #' @importFrom utils dump.frames sessionInfo
 #' @importFrom withr local_dir local_options with_dir
+#' @export
 runLongJob <- function(workFunction,
                        arguments = list(),
                        workingDirectory = getwd(),
@@ -28,7 +29,10 @@ runLongJob <- function(workFunction,
                        jobName = opts_slurmR$get_job_name(),
                        executionMode = c("slurm", "directly")) {
   executionMode <- match.arg(executionMode)
-  stopifnot(executionMode != "slurm" || slurm_available())
+  if (executionMode == "slurm" && !slurm_available()) {
+    warning("slurm is unavailable, falling back to direct execution (callr::r)")
+    executionMode <- "directly"
+  }
 
   workingDirectory <- normalizePath(workingDirectory)
 
@@ -39,13 +43,22 @@ runLongJob <- function(workFunction,
     if (i != 1) {
         return(invisible(NULL))
     }
-    withr::local_options(nwarnings = 10000, warn = 1)
     withr::local_dir(workingDirectory)
+    withr::local_options(nwarnings = 10000, warn = 1)
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
 
-    return(do.call(workFunction, arguments))
+    result <- try({
+      do.call(workFunction, arguments)
+    })
+    if (inherits(result, "try-error")) {
+      print(result)
+      traceback()
+      stop(result)
+    } else {
+      return(result)
+    }
   }
 
   outputFilePath <- file.path(workingDirectory, "job.log")
@@ -53,9 +66,9 @@ runLongJob <- function(workFunction,
     libPaths <- .libPaths() # nolint
   } else {
     local_dir(renvToLoad) # all following newly started R sessions will automatically init this renv
-    libPaths <- callr::r(function() { # get the libPaths set in the renv
+    libPaths <- r(function() { # get the libPaths set in the renv
       renv::load() # callr overwrites the .libPaths the renv .Rprofile has set, so load again
-      .libPaths() # nolint
+      return(.libPaths()) # nolint
     })
   }
 

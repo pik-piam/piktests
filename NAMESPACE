@@ -2,9 +2,10 @@
 
 export(computations)
 export(run)
+export(runInRenv)
+export(runLongJob)
 export(runWithComparison)
 importFrom(callr,r)
-importFrom(callr,r_bg)
 importFrom(madrat,getConfig)
 importFrom(madrat,retrieveData)
 importFrom(madrat,setConfig)

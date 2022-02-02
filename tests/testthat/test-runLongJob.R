@@ -1,12 +1,12 @@
 test_that("runLongJob works", {
-  expect_identical(piktests:::runLongJob(function(x, y) x + y, list(y = 3, 5),
-                                         workingDirectory = withr::local_tempdir(), executionMode = "directly"), 8)
+  expect_identical(runLongJob(function(x, y) x + y, list(y = 3, 5),
+                              workingDirectory = withr::local_tempdir(), executionMode = "directly"), 8)
 
   if (slurmR::slurm_available()) {
     # testthat loads piktests in a weird way, so slurmR cannot load it, so we unload to avoid crashing
     unloadNamespace("piktests")
     withr::with_output_sink(nullfile(), {
-      slurmJob <- piktests:::runLongJob(function() 3 + 5, jobName = "pusteblume")
+      slurmJob <- runLongJob(function() 3 + 5, jobName = "pusteblume")
     })
     library("piktests")
     expect_identical(slurmR::Slurm_collect(slurmJob)[[1]], 8)
@@ -29,11 +29,11 @@ test_that("runLongJob works", {
     renv::install("withr")
   }, list(renvProject))
   workingDirectory <- withr::local_tempdir()
-  x <- piktests:::runLongJob(workFunction,
-                             workingDirectory = workingDirectory,
-                             renvToLoad = renvProject,
-                             madratConfig = madrat::getConfig(verbose = FALSE),
-                             executionMode = "directly")
+  x <- runLongJob(workFunction,
+                  workingDirectory = workingDirectory,
+                  renvToLoad = renvProject,
+                  madratConfig = madrat::getConfig(verbose = FALSE),
+                  executionMode = "directly")
   expect_identical(normalizePath(x[["workingDirectory"]]), normalizePath(workingDirectory))
   expect_identical(x[["renvProject"]], renvProject)
   expect_true(startsWith(x[["libPaths"]][[1]], renvProject))

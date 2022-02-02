@@ -10,7 +10,8 @@ run(
   piktestsFolder = getwd(),
   runFolder = NULL,
   jobNameSuffix = "",
-  executionMode = c("slurm", "directly")
+  executionMode = c("slurm", "directly"),
+  useLocalMadratCache = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ which creates a folder name based on the current date, time, and computationName
 \item{jobNameSuffix}{A suffix to be appended to the SLURM job's name.}
 
 \item{executionMode}{Determines how long running jobs are started. One of "slurm", "directly"}
+
+\item{useLocalMadratCache}{If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.}
 }
 \value{
 Invisibly, the path to the folder holding everything related to this piktests run.

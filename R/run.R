@@ -14,6 +14,7 @@
 #' which creates a folder name based on the current date, time, and computationNames.
 #' @param jobNameSuffix A suffix to be appended to the SLURM job's name.
 #' @param executionMode Determines how long running jobs are started. One of "slurm", "directly"
+#' @param useLocalMadratCache If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @author Pascal Führlich
@@ -22,7 +23,6 @@
 #'
 #' @importFrom callr r
 #' @importFrom madrat getConfig setConfig
-#' @importFrom slurmR slurm_available
 #' @importFrom withr with_output_sink
 #' @export
 run <- function(renvInstallPackages = NULL,
@@ -30,7 +30,8 @@ run <- function(renvInstallPackages = NULL,
                 piktestsFolder = getwd(),
                 runFolder = NULL,
                 jobNameSuffix = "",
-                executionMode = c("slurm", "directly")) {
+                executionMode = c("slurm", "directly"),
+                useLocalMadratCache = TRUE) {
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   if (is.null(runFolder)) {
     runFolder <- file.path(piktestsFolder, paste0(now, "-", paste(computationNames, collapse = "_")))
@@ -43,20 +44,21 @@ run <- function(renvInstallPackages = NULL,
 
   with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
     executionMode <- match.arg(executionMode)
-    if (executionMode == "slurm" && !slurm_available()) {
-      warning("slurm is unavailable, falling back to direct execution (callr::r)")
-      executionMode <- "directly"
-    }
 
     r(setupRenv, list(runFolder, computationNames, renvInstallPackages), spinner = FALSE,
       show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
 
-    madratMainFolder <- file.path(runFolder, "madratMainFolder")
-    dir.create(madratMainFolder)
+    # use global/preconfigured source and mapping folder
     setConfig(sourcefolder = getConfig("sourcefolder"),
               mappingfolder = getConfig("mappingfolder"),
-              mainfolder = madratMainFolder,
               .local = TRUE)
+    if (!useLocalMadratCache) {
+      setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE)
+    }
+
+    madratMainFolder <- file.path(runFolder, "madratMainFolder")
+    dir.create(madratMainFolder)
+    setConfig(mainfolder = madratMainFolder, .local = TRUE)
     madratConfig <- getOption("madrat_cfg")
     saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 

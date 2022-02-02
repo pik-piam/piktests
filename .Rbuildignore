@@ -9,3 +9,4 @@
 ^.*\.zenodo.json$
 ^run.sh$
 ^\.pre-commit-config\.yaml$
+^workflow$
