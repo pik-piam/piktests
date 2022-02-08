@@ -36,8 +36,8 @@ setupRenv <- function(targetFolder,
     renv::install(renvInstallPackages)
   }
 
-  # TODO remove "foreign@0.8-76", "cli", "desc", "Rcpp"
-  renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp", # TODO cli desc Rcpp no longer necessary?
+  # "foreign@0.8-76", "cli", "desc", "Rcpp", "rlang" are only necessary to support current R setup on cluster
+  renv::install(c("foreign@0.8-76", "cli", "desc", "Rcpp", "rlang",
                   "withr", "piktests"))
 
   if (!is.null(renvInstallPackages)) {

@@ -30,7 +30,7 @@ computations <- list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
-      if (gert::git_commit_id(repo = "preprocessing-remind") != "07884904b4b86e98b49ec15ea784389285b3049b") {
+      if (gert::git_commit_id(repo = "preprocessing-remind") != "cc0775cd10aff574a64ca67ef452b7b8dead8ae0") {
         warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but ",
                 "piktests is still using the old version.")
       }
@@ -38,8 +38,7 @@ computations <- list(
       renv::install("mrremind")
     },
     compute = function() {
-      # paste("mrremind") to sidestep mrremind not in DESCRIPTION warning; mrremind will be installed by setupRenv
-      library(paste("mrremind"), character.only = TRUE) # nolint
+      withr::local_package("mrremind")
       revision <- "6.278"
       for (mappings in list(c(regionmapping = "regionmappingH12.csv", extramappings = ""),
                             c(regionmapping = "regionmapping_21_EU11.csv", extramappings = ""))) {
@@ -55,7 +54,7 @@ computations <- list(
       renv::install("madrat")
     },
     compute = function() {
-      library("madrat") # nolint
+      withr::local_package("madrat")
       madrat::retrieveData("example", cachetype = "def")
     }
   )
