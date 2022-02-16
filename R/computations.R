@@ -30,7 +30,7 @@ computations <- list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
-      if (gert::git_commit_id(repo = "preprocessing-remind") != "cc0775cd10aff574a64ca67ef452b7b8dead8ae0") {
+      if (gert::git_commit_id(repo = "preprocessing-remind") != "2de7f1a284e8cef12a9bf68f6aa052cfc5dbfdd5") {
         warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but ",
                 "piktests is still using the old version.")
       }
@@ -47,6 +47,15 @@ computations <- list(
         madrat::retrieveData(model = "VALIDATIONREMIND", regionmapping = mappings[["regionmapping"]],
                              extramappings = mappings[["extramappings"]], rev = revision, cachetype = "def")
       }
+    }
+  ),
+  edgebuildingsPreprocessing = list(
+    setup = function() {
+      renv::install("mredgebuildings")
+    },
+    compute = function() {
+      withr::local_package("mredgebuildings")
+      madrat::retrieveData(model = "edgebuildings", cachetype = "def")
     }
   ),
   madratExample = list(
