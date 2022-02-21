@@ -66,5 +66,14 @@ computations <- list(
       withr::local_package("madrat")
       madrat::retrieveData("example", cachetype = "def")
     }
+  ),
+  testFailure = list(
+    setup = function() {
+      renv::install("mredgebuildings")
+    },
+    compute = function() {
+      withr::local_package("mredgebuildings")
+      madrat::calcOutput("FloorspacePast")
+    }
   )
 )
