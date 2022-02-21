@@ -11,7 +11,7 @@ run(
   runFolder = NULL,
   jobNameSuffix = "",
   executionMode = c("slurm", "directly"),
-  useLocalMadratCache = TRUE
+  localCache = TRUE
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ which creates a folder name based on the current date, time, and computationName
 
 \item{executionMode}{Determines how long running jobs are started. One of "slurm", "directly"}
 
-\item{useLocalMadratCache}{If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.}
+\item{localCache}{If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.}
 }
 \value{
 Invisibly, the path to the folder holding everything related to this piktests run.

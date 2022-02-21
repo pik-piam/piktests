@@ -1,8 +1,8 @@
 Type: Package
 Package: piktests
 Title: Run PIK Integration Tests
-Version: 0.8.3
-Date: 2022-02-16
+Version: 0.8.4
+Date: 2022-02-21
 Authors@R: 
     person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = c("aut", "cre"))
 Description: This package includes integration tests for selected models

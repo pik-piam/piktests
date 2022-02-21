@@ -45,8 +45,10 @@ run <- function(renvInstallPackages = NULL,
   with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
     executionMode <- match.arg(executionMode)
 
-    r(setupRenv, list(runFolder, computationNames, renvInstallPackages), spinner = FALSE,
-      show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
+    # deparsing allows moving code to a new R session without any environments from the original R session attached
+    computationsSourceCode <- deparse(piktests::computations)
+    r(setupRenv, list(runFolder, computationNames, renvInstallPackages, computationsSourceCode),
+      spinner = FALSE, show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
 
     # use global/preconfigured source and mapping folder
     setConfig(sourcefolder = getConfig("sourcefolder"),

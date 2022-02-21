@@ -12,9 +12,6 @@
 #' @export
 computations <- list(
   # Setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`.
-  # When adding/changing computations make sure to push to your fork first and then
-  # call piktests::run(renvInstallPackages = "<your name>/piktests"), otherwise piktests::computations is taken
-  # from pik-piam/piktests.
   magpiePreprocessing = list(
     setup = function() {
       renv::install("gert")
@@ -30,9 +27,10 @@ computations <- list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
-      if (gert::git_commit_id(repo = "preprocessing-remind") != "2de7f1a284e8cef12a9bf68f6aa052cfc5dbfdd5") {
+      preprocessingRemindHash <- "2de7f1a284e8cef12a9bf68f6aa052cfc5dbfdd5"
+      if (gert::git_commit_id(repo = "preprocessing-remind") != preprocessingRemindHash) {
         warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but ",
-                "piktests is still using the old version.")
+                "piktests is still using an old version (commit ", preprocessingRemindHash, ").")
       }
       unlink("preprocessing-remind", recursive = TRUE)
       renv::install("mrremind")
@@ -65,16 +63,6 @@ computations <- list(
     compute = function() {
       withr::local_package("madrat")
       madrat::retrieveData("example", cachetype = "def")
-    }
-  ),
-  # TODO remove this
-  testFailure = list(
-    setup = function() {
-      renv::install("mredgebuildings")
-    },
-    compute = function() {
-      withr::local_package("mredgebuildings")
-      madrat::calcOutput("FloorspacePast")
     }
   )
 )
