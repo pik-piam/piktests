@@ -49,16 +49,9 @@ runLongJob <- function(workFunction,
       withr::local_options(madrat_cfg = madratConfig)
     }
 
-    result <- try({
-      do.call(workFunction, arguments)
-    })
-    if (inherits(result, "try-error")) {
-      print(result)
-      traceback()
-      stop(result)
-    } else {
-      return(result)
-    }
+    tryCatch({
+      return(do.call(workFunction, arguments))
+    }, error = traceback)
   }
 
   outputFilePath <- file.path(workingDirectory, "job.log")
@@ -96,6 +89,6 @@ runLongJob <- function(workFunction,
   } else {
     return(r(augmentedWorkFunction, list(1, workingDirectory, madratConfig, workFunction, arguments),
              show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing(),
-             stdout = outputFilePath, stderr = outputFilePath, libpath = libPaths))
+             stdout = outputFilePath, stderr = outputFilePath, libpath = libPaths, error = "debugger"))
   }
 }
