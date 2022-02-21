@@ -67,6 +67,7 @@ computations <- list(
       madrat::retrieveData("example", cachetype = "def")
     }
   ),
+  # TODO remove this
   testFailure = list(
     setup = function() {
       renv::install("mredgebuildings")

@@ -14,7 +14,7 @@
 #' which creates a folder name based on the current date, time, and computationNames.
 #' @param jobNameSuffix A suffix to be appended to the SLURM job's name.
 #' @param executionMode Determines how long running jobs are started. One of "slurm", "directly"
-#' @param useLocalMadratCache If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.
+#' @param localCache If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @author Pascal Führlich
@@ -31,7 +31,7 @@ run <- function(renvInstallPackages = NULL,
                 runFolder = NULL,
                 jobNameSuffix = "",
                 executionMode = c("slurm", "directly"),
-                useLocalMadratCache = TRUE) {
+                localCache = TRUE) {
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   if (is.null(runFolder)) {
     runFolder <- file.path(piktestsFolder, paste0(now, "-", paste(computationNames, collapse = "_")))
@@ -52,7 +52,7 @@ run <- function(renvInstallPackages = NULL,
     setConfig(sourcefolder = getConfig("sourcefolder"),
               mappingfolder = getConfig("mappingfolder"),
               .local = TRUE)
-    if (!useLocalMadratCache) {
+    if (!localCache) {
       setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE)
     }
 
