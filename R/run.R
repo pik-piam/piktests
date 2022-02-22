@@ -32,6 +32,11 @@ run <- function(renvInstallPackages = NULL,
                 jobNameSuffix = "",
                 executionMode = c("slurm", "directly"),
                 localCache = TRUE) {
+  invalidComputationNames <- computationNames[!computationNames %in% names(computations)]
+  if (length(invalidComputationNames) > 0) {
+    stop("Computations not found: ", paste(invalidComputationNames, collapse = ", "), " --- ",
+         "Available computations: ", paste(names(computations), collapse = ", "))
+  }
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   if (is.null(runFolder)) {
     runFolder <- file.path(piktestsFolder, paste0(now, "-", paste(computationNames, collapse = "_")))
