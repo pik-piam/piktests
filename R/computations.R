@@ -15,7 +15,7 @@ computations <- list(
   # When adding/changing computations make sure to push to your fork first and then
   # call piktests::run(renvInstallPackages = "<your name>/piktests"), otherwise piktests::computations is taken
   # from pik-piam/piktests.
-  magpiePreprocessing = list(
+  magPrep = list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git", path = "preprocessing-magpie")
@@ -26,7 +26,7 @@ computations <- list(
       source(file.path("start", "default.R")) # nolint
     }
   ),
-  remindPreprocessing = list(
+  remPrep = list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
@@ -49,7 +49,7 @@ computations <- list(
       }
     }
   ),
-  edgebuildingsPreprocessing = list(
+  edgebuildingsPrep = list(
     setup = function() {
       renv::install("mredgebuildings")
     },

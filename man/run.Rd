@@ -6,7 +6,7 @@
 \usage{
 run(
   renvInstallPackages = NULL,
-  computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+  computationNames = c("magPrep", "remPrep"),
   piktestsFolder = getwd(),
   runFolder = NULL,
   jobNameSuffix = "",
@@ -46,5 +46,5 @@ preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` 
 \code{\link{computations}}
 }
 \author{
-Pascal Führlich
+Pascal Führlich, Jan Philipp Dietrich
 }

@@ -22,13 +22,13 @@
 #' @importFrom utils head
 #' @export
 runWithComparison <- function(renvInstallPackages,
-                              computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+                              computationNames = c("magPrep", "remPrep"),
                               piktestsFolder = getwd(),
                               diffTool = c("delta", "colordiff", "diff"), ...) {
   stopifnot(!is.null(renvInstallPackages))
-  now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
+  now <- format(Sys.time(), "%y%m%d-%H%M")
   runFolder <- normalizePath(file.path(piktestsFolder,
-                                       paste0(now, "-", paste(computationNames, collapse = "_"))), mustWork = FALSE)
+                                       paste0(now, "_", paste(computationNames, collapse = "_"))), mustWork = FALSE)
 
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")

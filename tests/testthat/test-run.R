@@ -13,7 +13,7 @@ test_that("run works", {
   expect_equal(length(Sys.glob(file.path(runFolder, "madratMainFolder", "output", "*.tgz"))), 1)
   expect_true(file.exists(file.path(runFolder, "madratConfig.rds")))
   expect_true(file.exists(file.path(runFolder, "optionsEnvironmentVariablesLocale.rds")))
-  expect_equal(length(Sys.glob(file.path(runFolder, "computations", "madratExample", "*.log"))), 1)
+  expect_equal(length(Sys.glob(file.path(runFolder, "madratExample", "*.log"))), 1)
   expect_true(dir.exists(file.path(runFolder, "renv")))
   expect_true(file.exists(file.path(runFolder, "renv.lock")))
 

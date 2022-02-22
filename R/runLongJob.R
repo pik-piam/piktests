@@ -34,7 +34,7 @@ runLongJob <- function(workFunction,
     executionMode <- "directly"
   }
 
-  workingDirectory <- normalizePath(workingDirectory)
+  workingDirectory <- normalizePath(workingDirectory, mustWork = FALSE)
 
   dir.create(workingDirectory, recursive = TRUE, showWarnings = !dir.exists(workingDirectory))
 
