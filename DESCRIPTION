@@ -2,7 +2,7 @@ Type: Package
 Package: piktests
 Title: Run PIK Integration Tests
 Version: 0.8.4
-Date: 2022-02-21
+Date: 2022-02-22
 Authors@R: 
     person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = c("aut", "cre"))
 Description: This package includes integration tests for selected models
@@ -16,8 +16,11 @@ Imports:
     slurmR,
     withr
 Suggests:
+    knitr,
     covr,
-    testthat
+    testthat,
+    rmarkdown
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2
+VignetteBuilder: knitr

@@ -27,10 +27,10 @@ computations <- list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
-      preprocessingRemindHash <- "2de7f1a284e8cef12a9bf68f6aa052cfc5dbfdd5"
+      preprocessingRemindHash <- "07b2dd389691e659efac0c32949caa1047b26228"
       if (gert::git_commit_id(repo = "preprocessing-remind") != preprocessingRemindHash) {
         warning("https://gitlab.pik-potsdam.de/REMIND/preprocessing-remind was changed, but ",
-                "piktests is still using an old version (commit ", preprocessingRemindHash, ").")
+                "piktests is still using the old version at commit ", preprocessingRemindHash)
       }
       unlink("preprocessing-remind", recursive = TRUE)
       renv::install("mrremind")

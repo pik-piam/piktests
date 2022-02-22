@@ -28,7 +28,8 @@ runWithComparison <- function(renvInstallPackages,
   stopifnot(!is.null(renvInstallPackages))
   now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
   runFolder <- normalizePath(file.path(piktestsFolder,
-                                       paste0(now, "-", paste(computationNames, collapse = "_"))), mustWork = FALSE)
+                                       paste0(now, "-comparison-", paste(computationNames, collapse = "_"))),
+                             mustWork = FALSE)
 
   if (file.exists(runFolder)) {
     stop(runFolder, " already exists!")

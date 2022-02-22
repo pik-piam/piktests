@@ -1,0 +1,60 @@
+---
+title: "How to run piktests"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to run piktests}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+piktests runs computations like preprocessings for various models in an isolated runtime environment. The most basic
+piktests run can be started with:
+
+```{r, eval = FALSE}
+piktests::run()
+```
+
+This will create a so called runfolder which contains everything related to this piktests run. To isolate the package
+library a new [renv](https://rstudio.github.io/renv/) is created for each piktests run. A new mainfolder is created to
+isolate from the system wide [madrat](https://github.com/pik-piam/madrat) setup, but the system wide sourcefolder and
+mappingfolder are still used. By default the system wide cachefolder is not used, but this can be changed by passing
+`localCache = FALSE`. After setup, by default the magpie and remind preprocessing are run, via SLURM if available,
+otherwise in a separate R session.
+
+## Running with alternative package versions
+
+A common use case for piktests is running a computation using a development version of a package. Assuming the
+development version to be used is located on GitHub at https://github.com/pfuehrlich-pik/madrat:
+
+```{r, eval = FALSE}
+piktests::run(renvInstallPackages = "pfuehrlich-pik/madrat",
+              computationNames = "madratExample")
+```
+
+This will run `renv::install("pfuehrlich-pik/madrat")` during setup and then run the madratExample computation using
+this madrat version. The `renvInstallPackages` argument is passed directly to `renv::install`, which also allows passing
+multiple package specifications, e.g. `c("pfuehrlich-pik/madrat", "magclass@5.7.0")`.
+
+Often it is helpful to compare the logs of a piktests run using the default package versions to the logs of a piktests
+run with alternate package versions. To do so:
+
+```{r, eval = FALSE}
+piktests::runWithComparison(renvInstallPackages = "pfuehrlich-pik/madrat",
+                            computationNames = "madratExample")
+```
+
+This will create two piktests runs: One using default packages and another one for the alternate packages, in this case
+`pfuehrlich-pik/madrat`. For each computation a shell script is created that can be used to easily compare/diff the logs
+of both runs after they are finished:
+
+```{sh, eval = FALSE}
+cd <runfolder>
+./compareLogs-madratExample.sh
+```

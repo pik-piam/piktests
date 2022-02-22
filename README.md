@@ -31,6 +31,14 @@ Package updates can be installed using `update.packages` (make sure that the add
 update.packages()
 ```
 
+## Tutorial
+
+The package comes with a vignette describing the basic functionality of the package and how to use it. You can load it with the following command (the package needs to be installed):
+
+```r
+vignette("how-to-run-piktests") # How to run piktests
+```
+
 ## Questions / Problems
 
 In case of questions / problems please contact Pascal Führlich <pascal.fuehrlich@pik-potsdam.de>.
