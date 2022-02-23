@@ -53,7 +53,7 @@ run <- function(renvInstallPackages = NULL,
               mappingfolder = getConfig("mappingfolder"),
               .local = TRUE)
     if (!useLocalMadratCache) {
-      setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE)
+      setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE) # nolint
     }
 
     madratMainFolder <- file.path(runFolder, "madratMainFolder")

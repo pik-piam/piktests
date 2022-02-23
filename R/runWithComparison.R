@@ -43,8 +43,8 @@ runWithComparison <- function(renvInstallPackages,
   diffTool <- if (any(Sys.which(diffTool) != "")) head(diffTool[Sys.which(diffTool) != ""], 1) else "diff"
   for (computationName in computationNames) {
     compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
-    oldLog <- file.path(runFolder, "old", "computations", computationName, "job.log")
-    newLog <- file.path(runFolder, "new", "computations", computationName, "job.log")
+    oldLog <- file.path(runFolder, "old", computationName, "job.log")
+    newLog <- file.path(runFolder, "new", computationName, "job.log")
 
     # remove file hashes and runtimes before comparing
     writeLines(c("#!/usr/bin/env sh",

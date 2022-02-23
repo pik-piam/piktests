@@ -43,7 +43,7 @@ setupRenv <- function(targetFolder,
   }
 
   for (computationName in computationNames) {
-    workingDirectory <- file.path("computations", computationName)
+    workingDirectory <- computationName
     dir.create(workingDirectory, recursive = TRUE)
     withr::with_dir(workingDirectory, {
       piktests::computations[[computationName]][["setup"]]()
