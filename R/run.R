@@ -26,7 +26,7 @@
 #' @importFrom withr with_output_sink
 #' @export
 run <- function(renvInstallPackages = NULL,
-                computationNames = c("magPrep", "remPrep"),
+                computationNames = c("magpiePrep", "remindPrep"),
                 piktestsFolder = getwd(),
                 runFolder = NULL,
                 jobNameSuffix = "",
