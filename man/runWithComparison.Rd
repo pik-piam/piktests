@@ -6,7 +6,7 @@
 \usage{
 runWithComparison(
   renvInstallPackages,
-  computationNames = c("magPrep", "remPrep"),
+  computationNames = c("magpiePrep", "remindPrep"),
   piktestsFolder = getwd(),
   diffTool = c("delta", "colordiff", "diff"),
   ...

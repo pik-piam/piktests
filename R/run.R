@@ -32,15 +32,8 @@ run <- function(renvInstallPackages = NULL,
                 jobNameSuffix = "",
                 executionMode = c("slurm", "directly"),
                 useLocalMadratCache = TRUE) {
-  now <- format(Sys.time(), "%y%m%d-%H%M")
-  if (is.null(runFolder)) {
-    runFolder <- file.path(piktestsFolder, paste0(now, "_", paste(computationNames, collapse = "_")))
-  }
-  if (file.exists(runFolder)) {
-    stop(runFolder, " already exists!")
-  }
-  dir.create(runFolder, recursive = TRUE)
-  runFolder <- normalizePath(runFolder)
+
+  runFolder <- createRunFolder(computationNames, piktestsFolder, runFolder)
 
   with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
     executionMode <- match.arg(executionMode)

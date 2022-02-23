@@ -26,14 +26,7 @@ runWithComparison <- function(renvInstallPackages,
                               piktestsFolder = getwd(),
                               diffTool = c("delta", "colordiff", "diff"), ...) {
   stopifnot(!is.null(renvInstallPackages))
-  now <- format(Sys.time(), "%y%m%d-%H%M")
-  runFolder <- normalizePath(file.path(piktestsFolder,
-                                       paste0(now, "_", paste(computationNames, collapse = "_"))), mustWork = FALSE)
-
-  if (file.exists(runFolder)) {
-    stop(runFolder, " already exists!")
-  }
-  dir.create(runFolder, recursive = TRUE)
+  runFolder <- createRunFolder(computationNames, piktestsFolder)
   run(computationNames = computationNames, renvInstallPackages = NULL, ...,
       runFolder = file.path(runFolder, "old"), jobNameSuffix = "-old")
   run(computationNames = computationNames, renvInstallPackages = renvInstallPackages, ...,

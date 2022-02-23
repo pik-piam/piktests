@@ -6,7 +6,7 @@
 \usage{
 run(
   renvInstallPackages = NULL,
-  computationNames = c("magPrep", "remPrep"),
+  computationNames = c("magpiePrep", "remindPrep"),
   piktestsFolder = getwd(),
   runFolder = NULL,
   jobNameSuffix = "",

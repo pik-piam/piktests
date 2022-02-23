@@ -17,7 +17,8 @@ test_that("run works", {
   expect_true(dir.exists(file.path(runFolder, "renv")))
   expect_true(file.exists(file.path(runFolder, "renv.lock")))
 
+  runFolder <- piktests:::createRunFolder("madratExample", tempFolder)
   dir.create(file.path(tempFolder, format(Sys.time(), "%Y_%m_%d-%H_%M")), showWarnings = FALSE)
   expect_error(run(computationNames = "madratExample", piktestsFolder = tempFolder,
-                   executionMode = "directly"), "already exists!")
+                   runFolder = runFolder, executionMode = "directly"), "already exists!")
 })
