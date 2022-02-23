@@ -17,7 +17,7 @@
 #' @param useLocalMadratCache If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
-#' @author Pascal Führlich
+#' @author Pascal Führlich, Jan Philipp Dietrich
 #'
 #' @seealso \code{\link{computations}}
 #'
@@ -26,21 +26,14 @@
 #' @importFrom withr with_output_sink
 #' @export
 run <- function(renvInstallPackages = NULL,
-                computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+                computationNames = c("magpiePrep", "remindPrep"),
                 piktestsFolder = getwd(),
                 runFolder = NULL,
                 jobNameSuffix = "",
                 executionMode = c("slurm", "directly"),
                 useLocalMadratCache = TRUE) {
-  now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
-  if (is.null(runFolder)) {
-    runFolder <- file.path(piktestsFolder, paste0(now, "-", paste(computationNames, collapse = "_")))
-  }
-  if (file.exists(runFolder)) {
-    stop(runFolder, " already exists!")
-  }
-  dir.create(runFolder, recursive = TRUE)
-  runFolder <- normalizePath(runFolder)
+
+  runFolder <- createRunFolder(computationNames, piktestsFolder, runFolder)
 
   with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
     executionMode <- match.arg(executionMode)
@@ -53,7 +46,7 @@ run <- function(renvInstallPackages = NULL,
               mappingfolder = getConfig("mappingfolder"),
               .local = TRUE)
     if (!useLocalMadratCache) {
-      setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE)
+      setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE) # nolint
     }
 
     madratMainFolder <- file.path(runFolder, "madratMainFolder")
@@ -71,10 +64,10 @@ run <- function(renvInstallPackages = NULL,
 
   for (computationName in computationNames) {
     runLongJob(computations[[computationName]][["compute"]],
-               workingDirectory = file.path(runFolder, "computations", computationName),
+               workingDirectory = file.path(runFolder, computationName),
                renvToLoad = runFolder,
                madratConfig = madratConfig,
-               jobName = paste0("piktests-", computationName, "-", now, jobNameSuffix),
+               jobName = paste0(computationName, jobNameSuffix),
                executionMode = executionMode)
   }
 
