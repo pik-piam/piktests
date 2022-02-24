@@ -11,13 +11,12 @@ createRunFolder(
 )
 }
 \arguments{
-\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
-computations are executed.}
+\item{computationNames}{These are appended to the created folder's name.}
 
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
 \item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
-which creates a folder name based on the current date, time, and computationNames.}
+which creates a folder name based on the current date and computationNames.}
 }
 \description{
 Constructs a folder name based on current data and existing folders

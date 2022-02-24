@@ -4,7 +4,9 @@
 \name{computations}
 \alias{computations}
 \title{computations}
-\format{An object of class \code{list} of length 4.}
+\format{
+An object of class \code{list} of length 4.
+}
 \usage{
 computations
 }
