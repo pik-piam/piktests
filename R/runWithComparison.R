@@ -22,19 +22,11 @@
 #' @importFrom utils head
 #' @export
 runWithComparison <- function(renvInstallPackages,
-                              computationNames = c("magpiePreprocessing", "remindPreprocessing"),
+                              computationNames = c("magpiePrep", "remindPrep"),
                               piktestsFolder = getwd(),
                               diffTool = c("delta", "colordiff", "diff"), ...) {
   stopifnot(!is.null(renvInstallPackages))
-  now <- format(Sys.time(), "%Y_%m_%d-%H_%M")
-  runFolder <- normalizePath(file.path(piktestsFolder,
-                                       paste0(now, "-comparison-", paste(computationNames, collapse = "_"))),
-                             mustWork = FALSE)
-
-  if (file.exists(runFolder)) {
-    stop(runFolder, " already exists!")
-  }
-  dir.create(runFolder, recursive = TRUE)
+  runFolder <- createRunFolder(computationNames, piktestsFolder)
   run(computationNames = computationNames, renvInstallPackages = NULL, ...,
       runFolder = file.path(runFolder, "old"), jobNameSuffix = "-old")
   run(computationNames = computationNames, renvInstallPackages = renvInstallPackages, ...,
@@ -44,8 +36,8 @@ runWithComparison <- function(renvInstallPackages,
   diffTool <- if (any(Sys.which(diffTool) != "")) head(diffTool[Sys.which(diffTool) != ""], 1) else "diff"
   for (computationName in computationNames) {
     compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
-    oldLog <- file.path(runFolder, "old", "computations", computationName, "job.log")
-    newLog <- file.path(runFolder, "new", "computations", computationName, "job.log")
+    oldLog <- file.path(runFolder, "old", computationName, "job.log")
+    newLog <- file.path(runFolder, "new", computationName, "job.log")
 
     # remove file hashes and runtimes before comparing
     writeLines(c("#!/usr/bin/env sh",

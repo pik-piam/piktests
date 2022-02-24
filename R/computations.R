@@ -12,7 +12,7 @@
 #' @export
 computations <- list(
   # Setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`.
-  magpiePreprocessing = list(
+  magpiePrep = list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git", path = "preprocessing-magpie")
@@ -23,7 +23,7 @@ computations <- list(
       source(file.path("start", "default.R")) # nolint
     }
   ),
-  remindPreprocessing = list(
+  remindPrep = list(
     setup = function() {
       renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
@@ -47,7 +47,7 @@ computations <- list(
       }
     }
   ),
-  edgebuildingsPreprocessing = list(
+  edgebuildingsPrep = list(
     setup = function() {
       renv::install("mredgebuildings")
     },
