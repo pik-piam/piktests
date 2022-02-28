@@ -11,7 +11,7 @@ createRunFolder <- function(computationNames = c("magpiePrep", "remindPrep"), pi
                             runFolder = NULL) {
   if (is.null(runFolder)) {
     now <- format(Sys.time(), "%y%b%d")
-    for (l in c("", letters)) {
+    for (l in letters) {
       runFolder <- file.path(piktestsFolder, paste0(now, l, "_", paste(computationNames, collapse = "_")))
       if (!file.exists(runFolder)) break
     }
