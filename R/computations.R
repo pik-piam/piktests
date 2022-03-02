@@ -56,6 +56,14 @@ computations <- list(
       madrat::retrieveData(model = "edgebuildings", cachetype = "def")
     }
   ),
+  testComputation = list(
+    setup = function() {
+      file.create("setupComplete")
+    },
+     compute = function() {
+       message("computation complete")
+     }
+  ),
   madratExample = list(
     setup = function() {
       renv::install("madrat")

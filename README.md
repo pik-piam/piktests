@@ -1,6 +1,6 @@
 # Run PIK Integration Tests
 
-R package **piktests**, version **0.8.4**
+R package **piktests**, version **0.8.6**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/piktests)](https://cran.r-project.org/package=piktests)  [![R build status](https://github.com/pik-piam/piktests/workflows/check/badge.svg)](https://github.com/pik-piam/piktests/actions) [![codecov](https://codecov.io/gh/pik-piam/piktests/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/piktests) [![r-universe](https://pik-piam.r-universe.dev/badges/piktests)](https://pik-piam.r-universe.dev/ui#builds)
 
@@ -47,16 +47,16 @@ In case of questions / problems please contact Pascal Führlich <pascal.fuehrlic
 
 To cite package **piktests** in publications use:
 
-Führlich P (2022). _piktests: Run PIK Integration Tests_. R package version 0.8.4, <URL: https://github.com/pik-piam/piktests>.
+Führlich P, Dietrich J (2022). _piktests: Run PIK Integration Tests_. R package version 0.8.6, <URL: https://github.com/pik-piam/piktests>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
 @Manual{,
   title = {piktests: Run PIK Integration Tests},
-  author = {Pascal Führlich},
+  author = {Pascal Führlich and Jan Philipp Dietrich},
   year = {2022},
-  note = {R package version 0.8.4},
+  note = {R package version 0.8.6},
   url = {https://github.com/pik-piam/piktests},
 }
 ```
