@@ -14,7 +14,7 @@
 #' which creates a folder name based on the current date, time, and computationNames.
 #' @param jobNameSuffix A suffix to be appended to the SLURM job's name.
 #' @param executionMode Determines how long running jobs are started. One of "slurm", "directly"
-#' @param useLocalMadratCache If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.
+#' @param localCache If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.
 #' @return Invisibly, the path to the folder holding everything related to this piktests run.
 #'
 #' @author Pascal Führlich, Jan Philipp Dietrich
@@ -31,22 +31,29 @@ run <- function(renvInstallPackages = NULL,
                 runFolder = NULL,
                 jobNameSuffix = "",
                 executionMode = c("slurm", "directly"),
-                useLocalMadratCache = TRUE) {
+                localCache = TRUE) {
+  invalidComputationNames <- computationNames[!computationNames %in% names(computations)]
+  if (length(invalidComputationNames) > 0) {
+    stop("Computations not found: ", paste(invalidComputationNames, collapse = ", "), " --- ",
+         "Available computations: ", paste(names(computations), collapse = ", "))
+  }
 
   runFolder <- createRunFolder(computationNames, piktestsFolder, runFolder)
 
   with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
     executionMode <- match.arg(executionMode)
 
-    r(setupRenv, list(runFolder, computationNames, renvInstallPackages), spinner = FALSE,
-      show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
+    # deparsing allows moving code to a new R session without any environments from the original R session attached
+    computationsSourceCode <- deparse(piktests::computations)
+    r(setupRenv, list(runFolder, computationNames, renvInstallPackages, computationsSourceCode),
+      spinner = FALSE, show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
 
     # use global/preconfigured source and mapping folder
     setConfig(sourcefolder = getConfig("sourcefolder"),
               mappingfolder = getConfig("mappingfolder"),
               .local = TRUE)
-    if (!useLocalMadratCache) {
-      setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE) # nolint
+    if (!localCache) {
+      setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE)
     }
 
     madratMainFolder <- file.path(runFolder, "madratMainFolder")

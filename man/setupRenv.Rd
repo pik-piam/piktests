@@ -6,8 +6,9 @@
 \usage{
 setupRenv(
   targetFolder,
-  computationNames = c("madratExample", "magpiePreprocessing"),
-  renvInstallPackages = NULL
+  computationNames,
+  renvInstallPackages,
+  computationsSourceCode
 )
 }
 \arguments{
@@ -17,6 +18,13 @@ setupRenv(
 
 \item{renvInstallPackages}{renv::install(renvInstallPackages) is called. Use this to test changes in your fork
 by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
+
+\item{computationsSourceCode}{A character vector containing the source code to create a list of computations
+(see \code{\link{computations}}), usually `deparse(piktests::computations)`. Passing the computations like this has
+two reasons: The environments associated with the functions in the computations are stripped. These associated
+environments are only valid in the R session they originate from, but because setupRenv is run in a separate R
+session they are invalid here. The other advantage is that setupRenv does not need to install piktests just to get
+access to the computations.}
 }
 \description{
 Sets up a fresh renv and installs the required packages in it.
@@ -30,7 +38,8 @@ changing critical aspects of your R session like your libpaths.
 callr::r(piktests:::setupRenv,
          list(targetFolder = tempdir(),
               computationNames = c("madratExample", "magpiePreprocessing"),
-              renvInstallPackages = c("tscheypidi/madrat", "magclass@6.0.9")),
+              renvInstallPackages = c("tscheypidi/madrat", "magclass@6.0.9"),
+              computationsSourceCode = deparse(piktests::computations)),
          show = TRUE)
 }
 }

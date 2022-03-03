@@ -1,6 +1,6 @@
 # Run PIK Integration Tests
 
-R package **piktests**, version **0.8.5**
+R package **piktests**, version **0.8.6**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/piktests)](https://cran.r-project.org/package=piktests)  [![R build status](https://github.com/pik-piam/piktests/workflows/check/badge.svg)](https://github.com/pik-piam/piktests/actions) [![codecov](https://codecov.io/gh/pik-piam/piktests/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/piktests) [![r-universe](https://pik-piam.r-universe.dev/badges/piktests)](https://pik-piam.r-universe.dev/ui#builds)
 
@@ -31,6 +31,14 @@ Package updates can be installed using `update.packages` (make sure that the add
 update.packages()
 ```
 
+## Tutorial
+
+The package comes with a vignette describing the basic functionality of the package and how to use it. You can load it with the following command (the package needs to be installed):
+
+```r
+vignette("how-to-run-piktests") # How to run piktests
+```
+
 ## Questions / Problems
 
 In case of questions / problems please contact Pascal Führlich <pascal.fuehrlich@pik-potsdam.de>.
@@ -39,7 +47,7 @@ In case of questions / problems please contact Pascal Führlich <pascal.fuehrlic
 
 To cite package **piktests** in publications use:
 
-Führlich P, Dietrich J (2022). _piktests: Run PIK Integration Tests_. R package version 0.8.5, <URL: https://github.com/pik-piam/piktests>.
+Führlich P, Dietrich J (2022). _piktests: Run PIK Integration Tests_. R package version 0.8.6, <URL: https://github.com/pik-piam/piktests>.
 
 A BibTeX entry for LaTeX users is
 
@@ -48,7 +56,7 @@ A BibTeX entry for LaTeX users is
   title = {piktests: Run PIK Integration Tests},
   author = {Pascal Führlich and Jan Philipp Dietrich},
   year = {2022},
-  note = {R package version 0.8.5},
+  note = {R package version 0.8.6},
   url = {https://github.com/pik-piam/piktests},
 }
 ```

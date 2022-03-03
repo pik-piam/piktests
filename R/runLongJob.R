@@ -49,16 +49,9 @@ runLongJob <- function(workFunction,
       withr::local_options(madrat_cfg = madratConfig)
     }
 
-    result <- try({
-      do.call(workFunction, arguments)
-    })
-    if (inherits(result, "try-error")) {
-      print(result)
-      traceback()
-      stop(result)
-    } else {
-      return(result)
-    }
+    tryCatch({
+      return(do.call(workFunction, arguments))
+    }, error = traceback)
   }
 
   outputFilePath <- file.path(workingDirectory, "job.log")

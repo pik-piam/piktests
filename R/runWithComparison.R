@@ -41,10 +41,11 @@ runWithComparison <- function(renvInstallPackages,
 
     # remove file hashes and runtimes before comparing
     writeLines(c("#!/usr/bin/env sh",
+                 paste(diffTool, paste0("'", file.path(runFolder, c("old", "new"), "renv.lock"), "'", collapse = " ")),
                  "oldLog=$(mktemp)",
                  "newLog=$(mktemp)",
-                 paste0("sed -r 's/(in [0-9.]+ (seconds|Minutes\")$|-F[^.]+\\.rds$)//g' '", oldLog, "' > $oldLog"),
-                 paste0("sed -r 's/(in [0-9.]+ (seconds|Minutes\")$|-F[^.]+\\.rds$)//g' '", newLog, "' > $newLog"),
+                 paste0("sed -r 's/in [0-9.]+ (seconds|Minutes\")$//g' '", oldLog, "' > $oldLog"),
+                 paste0("sed -r 's/in [0-9.]+ (seconds|Minutes\")$//g' '", newLog, "' > $newLog"),
                  paste0(diffTool, " $oldLog $newLog"),
                  "rm $oldLog $newLog"),
                compareLogsPath)
