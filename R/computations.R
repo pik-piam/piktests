@@ -70,7 +70,7 @@ computations <- list(
     },
     compute = function() {
       withr::local_package("madrat")
-      madrat::retrieveData("example", cachetype = "def")
+      madrat::retrieveData("example", cachetype = "def", puc = FALSE)
     }
   )
 )
