@@ -1,4 +1,5 @@
 test_that("run works", {
+  skip_on_ci() # launching new R sessions with callr and using renvs during tests is unstable, so disable on ci
   tempFolder <- withr::local_tempdir()
   runFolder <- run(computationNames = "testComputation", piktestsFolder = tempFolder, executionMode = "directly")
   expect_true(dir.exists(file.path(runFolder, "madratMainFolder")))
