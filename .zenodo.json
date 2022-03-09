@@ -1,6 +1,6 @@
 {
   "title": "piktests: Run PIK Integration Tests",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "<p>This package includes integration tests for selected models\n    and packages related to those models.<\/p>",
   "creators": [
     {
