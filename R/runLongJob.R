@@ -44,7 +44,7 @@ runLongJob <- function(workFunction,
         return(invisible(NULL))
     }
     withr::local_dir(workingDirectory)
-    withr::local_options(nwarnings = 10000, warn = 1)
+    withr::local_options(nwarnings = 1e6)
     if (!is.null(madratConfig)) {
       withr::local_options(madrat_cfg = madratConfig)
     }
