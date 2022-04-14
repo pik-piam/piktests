@@ -22,7 +22,7 @@
 #' @seealso \code{\link{computations}}
 #'
 #' @importFrom callr r
-#' @importFrom madrat getConfig setConfig
+#' @importFrom madrat getConfig localConfig
 #' @importFrom withr with_output_sink
 #' @export
 run <- function(renvInstallPackages = NULL,

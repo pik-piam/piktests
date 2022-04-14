@@ -4,17 +4,10 @@
 \alias{setupRenv}
 \title{setupRenv}
 \usage{
-setupRenv(
-  targetFolder,
-  computationNames,
-  renvInstallPackages,
-  computationsSourceCode
-)
+setupRenv(targetFolder, renvInstallPackages, computationsSourceCode)
 }
 \arguments{
 \item{targetFolder}{Where to setup the renv.}
-
-\item{computationNames}{A subset of names(piktests::computations). The setup functions of these computations are run.}
 
 \item{renvInstallPackages}{renv::install(renvInstallPackages) is called. Use this to test changes in your fork
 by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
@@ -25,6 +18,8 @@ two reasons: The environments associated with the functions in the computations 
 environments are only valid in the R session they originate from, but because setupRenv is run in a separate R
 session they are invalid here. The other advantage is that setupRenv does not need to install piktests just to get
 access to the computations.}
+
+\item{computationNames}{A subset of names(piktests::computations). The setup functions of these computations are run.}
 }
 \description{
 Sets up a fresh renv and installs the required packages in it.

@@ -6,7 +6,7 @@
 \usage{
 run(
   renvInstallPackages = NULL,
-  computationNames = c("magpiePrep", "remindPrep"),
+  computations = baseComputations[c("magpiePrep", "remindPrep")],
   piktestsFolder = getwd(),
   runFolder = NULL,
   jobNameSuffix = "",
@@ -18,9 +18,6 @@ run(
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
 
-\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
-computations are executed.}
-
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
 \item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
@@ -31,6 +28,9 @@ which creates a folder name based on the current date, time, and computationName
 \item{executionMode}{Determines how long running jobs are started. One of "slurm", "directly"}
 
 \item{localCache}{If TRUE (default) use a new and empty cache folder, otherwise `getConfig("cachefolder")`.}
+
+\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
+computations are executed.}
 }
 \value{
 Invisibly, the path to the folder holding everything related to this piktests run.
