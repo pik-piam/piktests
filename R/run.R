@@ -26,39 +26,30 @@
 #' @importFrom withr with_output_sink
 #' @export
 run <- function(renvInstallPackages = NULL,
-                computationNames = c("magpiePrep", "remindPrep"),
+                computations = baseComputations[c("magpiePrep", "remindPrep")],
                 piktestsFolder = getwd(),
                 runFolder = NULL,
                 jobNameSuffix = "",
                 executionMode = c("slurm", "directly"),
                 localCache = TRUE) {
-  invalidComputationNames <- computationNames[!computationNames %in% names(computations)]
-  if (length(invalidComputationNames) > 0) {
-    stop("Computations not found: ", paste(invalidComputationNames, collapse = ", "), " --- ",
-         "Available computations: ", paste(names(computations), collapse = ", "))
-  }
-
-  runFolder <- createRunFolder(computationNames, piktestsFolder, runFolder)
+  runFolder <- createRunFolder(names(computations), piktestsFolder, runFolder)
 
   with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
     executionMode <- match.arg(executionMode)
 
     # deparsing allows moving code to a new R session without any environments from the original R session attached
-    computationsSourceCode <- deparse(piktests::computations)
-    r(setupRenv, list(runFolder, computationNames, renvInstallPackages, computationsSourceCode),
+    r(setupRenv, list(runFolder, renvInstallPackages, deparse(computations)),
       spinner = FALSE, show = !requireNamespace("testthat", quietly = TRUE) || !testthat::is_testing())
 
     # use global/preconfigured source and mapping folder
-    setConfig(sourcefolder = getConfig("sourcefolder"),
-              mappingfolder = getConfig("mappingfolder"),
-              .local = TRUE)
+    localConfig(sourcefolder = getConfig("sourcefolder"), mappingfolder = getConfig("mappingfolder"))
     if (!localCache) {
-      setConfig(cachefolder = getConfig("cachefolder"), .local = TRUE)
+      localConfig(cachefolder = getConfig("cachefolder"))
     }
 
     madratMainFolder <- file.path(runFolder, "madratMainFolder")
     dir.create(madratMainFolder)
-    setConfig(mainfolder = madratMainFolder, .local = TRUE)
+    localConfig(mainfolder = madratMainFolder)
     madratConfig <- getOption("madrat_cfg")
     saveRDS(madratConfig, file.path(runFolder, "madratConfig.rds"))
 
@@ -69,7 +60,7 @@ run <- function(renvInstallPackages = NULL,
             file.path(runFolder, "optionsEnvironmentVariablesLocale.rds"))
   })
 
-  for (computationName in computationNames) {
+  for (computationName in names(computations)) {
     runLongJob(computations[[computationName]][["compute"]],
                workingDirectory = file.path(runFolder, computationName),
                renvToLoad = runFolder,

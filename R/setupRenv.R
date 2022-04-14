@@ -31,7 +31,7 @@
 #'
 #' @importFrom renv init install dependencies snapshot
 #' @importFrom withr with_dir
-setupRenv <- function(targetFolder, computationNames, renvInstallPackages, computationsSourceCode) {
+setupRenv <- function(targetFolder, renvInstallPackages, computationsSourceCode) {
   # This function is run via callr::r so it must use `::` everywhere and cannot rely on roxygen's `@importFrom`.
 
   renv::init(targetFolder, restart = FALSE, bare = TRUE)
@@ -48,7 +48,7 @@ setupRenv <- function(targetFolder, computationNames, renvInstallPackages, compu
   }
 
   computations <- eval(str2expression(computationsSourceCode))
-  for (computationName in computationNames) {
+  for (computationName in names(computations)) {
     workingDirectory <- computationName
     dir.create(workingDirectory, recursive = TRUE)
     withr::with_dir(workingDirectory, {
