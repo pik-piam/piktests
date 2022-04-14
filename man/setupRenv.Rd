@@ -13,13 +13,11 @@ setupRenv(targetFolder, renvInstallPackages, computationsSourceCode)
 by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
 
 \item{computationsSourceCode}{A character vector containing the source code to create a list of computations
-(see \code{\link{computations}}), usually `deparse(piktests::computations)`. Passing the computations like this has
-two reasons: The environments associated with the functions in the computations are stripped. These associated
-environments are only valid in the R session they originate from, but because setupRenv is run in a separate R
-session they are invalid here. The other advantage is that setupRenv does not need to install piktests just to get
-access to the computations.}
-
-\item{computationNames}{A subset of names(piktests::computations). The setup functions of these computations are run.}
+(see \code{\link{baseComputations}}), usually `deparse(piktests::computations)`. Passing the computations like
+this has two reasons: The environments associated with the functions in the computations are stripped. These
+associated environments are only valid in the R session they originate from, but because setupRenv is run in a
+separate R session they are invalid here. The other advantage is that setupRenv does not need to install piktests
+just to get access to the computations.}
 }
 \description{
 Sets up a fresh renv and installs the required packages in it.
@@ -30,16 +28,17 @@ changing critical aspects of your R session like your libpaths.
 }
 \examples{
 \dontrun{
+computations <- piktests::baseComputations[c("madratExample",
+                                             "magpiePreprocessing")]
 callr::r(piktests:::setupRenv,
          list(targetFolder = tempdir(),
-              computationNames = c("madratExample", "magpiePreprocessing"),
               renvInstallPackages = c("tscheypidi/madrat", "magclass@6.0.9"),
-              computationsSourceCode = deparse(piktests::computations)),
+              computationsSourceCode = deparse(computations)),
          show = TRUE)
 }
 }
 \seealso{
-\code{\link{computations}}
+\code{\link{baseComputations}}
 }
 \author{
 Pascal Führlich

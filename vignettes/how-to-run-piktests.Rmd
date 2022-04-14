@@ -35,7 +35,7 @@ development version to be used is located on GitHub at https://github.com/pfuehr
 
 ```{r, eval = FALSE}
 piktests::run(renvInstallPackages = "pfuehrlich-pik/madrat",
-              computationNames = "madratExample")
+              computations = piktests::baseComputations["madratExample"])
 ```
 
 This will run `renv::install("pfuehrlich-pik/madrat")` during setup and then run the madratExample computation using
@@ -47,7 +47,7 @@ run with alternate package versions. To do so:
 
 ```{r, eval = FALSE}
 piktests::runWithComparison(renvInstallPackages = "pfuehrlich-pik/madrat",
-                            computationNames = "madratExample")
+                            computations = piktests::baseComputations["madratExample"])
 ```
 
 This will create two piktests runs: One using default packages and another one for the alternate packages, in this case
