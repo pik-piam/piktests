@@ -14,5 +14,5 @@ test_that("run works", {
                "Computations not found: nonexistantComputation --- Available computations:")
 
   runFolder <- piktests:::createRunFolder("madratExample", tempFolder)
-  expect_error(piktests:::createRunFolder("madratExample", tempFolder, runFolder))
+  expect_error(piktests:::createRunFolder("madratExample", tempFolder, runFolder), "already exists!")
 })
