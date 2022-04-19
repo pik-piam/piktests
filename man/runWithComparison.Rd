@@ -6,7 +6,7 @@
 \usage{
 runWithComparison(
   renvInstallPackages,
-  computationNames = c("magpiePrep", "remindPrep"),
+  computations = baseComputations[c("magpiePrep", "remindPrep")],
   piktestsFolder = getwd(),
   diffTool = c("delta", "colordiff", "diff"),
   ...
@@ -16,8 +16,8 @@ runWithComparison(
 \item{renvInstallPackages}{Only in the second run, after installing other
 packages, `renv::install(renvInstallPackages)` is called.}
 
-\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
-computations are executed.}
+\item{computations}{A named list of "computations". A computation consists of a setup and a compute function.
+See example for a valid computation list.}
 
 \item{piktestsFolder}{A new folder is created in the given directory. In that folder two folders called "old"
 and "new" are created which contain the actual piktests runs.}
@@ -36,7 +36,7 @@ be compared. Run this to test changes in your fork by passing "<gituser>/<repo>"
 Use the shell scripts created in the run folder to compare logs after all runs are finished.
 }
 \seealso{
-\code{\link{run}}, \code{\link{computations}}
+\code{\link{run}}, \code{\link{baseComputations}}
 }
 \author{
 Pascal Führlich

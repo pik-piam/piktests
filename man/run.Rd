@@ -6,7 +6,7 @@
 \usage{
 run(
   renvInstallPackages = NULL,
-  computationNames = c("magpiePrep", "remindPrep"),
+  computations = baseComputations[c("magpiePrep", "remindPrep")],
   piktestsFolder = getwd(),
   runFolder = NULL,
   jobNameSuffix = "",
@@ -18,13 +18,13 @@ run(
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
 
-\item{computationNames}{A subset of names(piktests::computations). The setup and compute functions of these
-computations are executed.}
+\item{computations}{A named list of "computations". A computation consists of a setup and a compute function.
+See example for a valid computation list.}
 
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
 
 \item{runFolder}{Path where a folder for this piktests run should be created. Generally should be left as default,
-which creates a folder name based on the current date, time, and computationNames.}
+which creates a folder name based on the current date, time, and the computation names.}
 
 \item{jobNameSuffix}{A suffix to be appended to the SLURM job's name.}
 
@@ -39,11 +39,21 @@ Invisibly, the path to the folder holding everything related to this piktests ru
 Runs integration tests in an isolated runtime environment.
 }
 \details{
-A madratCacheFolder and a madratOutputFolder are created and used while running the tests. The non-public magpie
-preprocessing repo `git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git` is cloned, so you need access to it.
+The preconfigured madrat source and mapping folders are used, otherwise a subfolder of the newly created run folder
+is used as madrat mainfolder.
+}
+\examples{
+\dontrun{
+piktests::run(renvInstallPackages = c("tscheypidi/madrat", "magclass@6.0.9"),
+              computations = list(testComputation = list(setup = function() message("Hello"),
+                                                         compute = function() message("World"))),
+               executionMode = "directly",
+               localCache = FALSE)
+}
+
 }
 \seealso{
-\code{\link{computations}}
+\code{\link{baseComputations}}
 }
 \author{
 Pascal Führlich, Jan Philipp Dietrich
