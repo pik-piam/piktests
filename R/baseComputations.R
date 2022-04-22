@@ -44,6 +44,9 @@ baseComputations <- list(
   ),
   testComputation = list(
     setup = function() {
+      if (!is.null(renv::project())) {
+        renv::settings$use.cache(FALSE)
+      }
       file.create("setupComplete")
     },
      compute = function() {

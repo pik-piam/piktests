@@ -1,8 +1,8 @@
 Type: Package
 Package: piktests
 Title: Run PIK Integration Tests
-Version: 0.9.0
-Date: 2022-04-14
+Version: 0.9.1
+Date: 2022-04-22
 Authors@R: 
     c(person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = c("aut", "cre")),
       person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"))

@@ -6,7 +6,7 @@
 \usage{
 runWithComparison(
   renvInstallPackages,
-  computations = baseComputations[c("magpiePrep", "remindPrep")],
+  computations = c("magpiePrep", "remindPrep"),
   piktestsFolder = getwd(),
   diffTool = c("delta", "colordiff", "diff"),
   ...
@@ -16,7 +16,8 @@ runWithComparison(
 \item{renvInstallPackages}{Only in the second run, after installing other
 packages, `renv::install(renvInstallPackages)` is called.}
 
-\item{computations}{A named list of "computations". A computation consists of a setup and a compute function.
+\item{computations}{A named list of "computations", or names of computations predefined in
+\code{\link{baseComputations}}. A computation consists of a setup and a compute function.
 See example for a valid computation list.}
 
 \item{piktestsFolder}{A new folder is created in the given directory. In that folder two folders called "old"

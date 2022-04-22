@@ -7,7 +7,8 @@
 #'
 #' @param renvInstallPackages After installing other packages, renv::install(renvInstallPackages) is called.
 #' Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").
-#' @param computations A named list of "computations". A computation consists of a setup and a compute function.
+#' @param computations A named list of "computations", or names of computations predefined in
+#' \code{\link{baseComputations}}. A computation consists of a setup and a compute function.
 #' See example for a valid computation list.
 #' @param piktestsFolder A new folder for this piktests run is created in the given directory.
 #' @param runFolder Path where a folder for this piktests run should be created. Generally should be left as default,
@@ -35,12 +36,21 @@
 #' @importFrom withr with_output_sink
 #' @export
 run <- function(renvInstallPackages = NULL,
-                computations = baseComputations[c("magpiePrep", "remindPrep")],
+                computations = c("magpiePrep", "remindPrep"),
                 piktestsFolder = getwd(),
                 runFolder = NULL,
                 jobNameSuffix = "",
                 executionMode = c("slurm", "directly"),
                 localCache = TRUE) {
+
+  if (is.character(computations)) {
+    if (all(computations %in% names(baseComputations))) {
+      computations <- baseComputations[computations]
+    } else {
+      stop("Unknown computations provided: [", paste(setdiff(computations, names(baseComputations)), collapse = ", "),
+           "] - Available computations: [", paste(names(baseComputations), collapse = ", "), "]")
+    }
+  }
   runFolder <- createRunFolder(names(computations), piktestsFolder, runFolder)
 
   with_output_sink(file.path(runFolder, "piktestsSetup.log"), split = TRUE, code = {
