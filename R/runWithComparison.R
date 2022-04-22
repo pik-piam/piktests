@@ -27,11 +27,12 @@ runWithComparison <- function(renvInstallPackages,
                               piktestsFolder = getwd(),
                               diffTool = c("delta", "colordiff", "diff"), ...) {
   stopifnot(!is.null(renvInstallPackages))
-  if (!is.list(computations)) {
+  if (is.character(computations)) {
     if (all(computations %in% names(baseComputations))) {
       computations <- baseComputations[computations]
     } else {
-      stop("Computations provided in an incompatible format!")
+      stop("Unknown computations provided: [", paste(setdiff(computations, names(baseComputations)), collapse = ", "),
+           "] - Available computations: [", paste(names(baseComputations), collapse = ", "), "]")
     }
   }
   runFolder <- createRunFolder(names(computations), piktestsFolder)
