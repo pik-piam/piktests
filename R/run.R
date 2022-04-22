@@ -43,11 +43,12 @@ run <- function(renvInstallPackages = NULL,
                 executionMode = c("slurm", "directly"),
                 localCache = TRUE) {
 
-  if (!is.list(computations)) {
+  if (is.character(computations)) {
     if (all(computations %in% names(baseComputations))) {
       computations <- baseComputations[computations]
     } else {
-      stop("Computations provided in an incompatible format!")
+      stop("Unknown computations provided: [", paste(setdiff(computations, names(baseComputations)), collapse = ", "),
+           "] - Available computations: [", paste(names(baseComputations), collapse = ", "), "]")
     }
   }
   runFolder <- createRunFolder(names(computations), piktestsFolder, runFolder)
