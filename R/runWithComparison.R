@@ -6,7 +6,8 @@
 #'
 #' @param renvInstallPackages Only in the second run, after installing other
 #' packages, `renv::install(renvInstallPackages)` is called.
-#' @param computations A named list of "computations". A computation consists of a setup and a compute function.
+#' @param computations A named list of "computations", or names of computations predefined in
+#' \code{\link{baseComputations}}. A computation consists of a setup and a compute function.
 #' See example for a valid computation list.
 #' @param piktestsFolder A new folder is created in the given directory. In that folder two folders called "old"
 #' and "new" are created which contain the actual piktests runs.
@@ -22,10 +23,17 @@
 #' @importFrom utils head
 #' @export
 runWithComparison <- function(renvInstallPackages,
-                              computations = baseComputations[c("magpiePrep", "remindPrep")],
+                              computations = c("magpiePrep", "remindPrep"),
                               piktestsFolder = getwd(),
                               diffTool = c("delta", "colordiff", "diff"), ...) {
   stopifnot(!is.null(renvInstallPackages))
+  if (!is.list(computations)) {
+    if (all(computations %in% names(baseComputations))) {
+      computations <- baseComputations[computations]
+    } else {
+      stop("Computations provided in an incompatible format!")
+    }
+  }
   runFolder <- createRunFolder(names(computations), piktestsFolder)
   run(renvInstallPackages = NULL, computations = computations, ...,
       runFolder = file.path(runFolder, "old"), jobNameSuffix = "-old")

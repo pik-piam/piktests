@@ -6,7 +6,7 @@
 \usage{
 run(
   renvInstallPackages = NULL,
-  computations = baseComputations[c("magpiePrep", "remindPrep")],
+  computations = c("magpiePrep", "remindPrep"),
   piktestsFolder = getwd(),
   runFolder = NULL,
   jobNameSuffix = "",
@@ -18,7 +18,8 @@ run(
 \item{renvInstallPackages}{After installing other packages, renv::install(renvInstallPackages) is called.
 Use this to test changes in your fork by passing "<gituser>/<repo>" (e.g. "pfuehrlich-pik/madrat").}
 
-\item{computations}{A named list of "computations". A computation consists of a setup and a compute function.
+\item{computations}{A named list of "computations", or names of computations predefined in
+\code{\link{baseComputations}}. A computation consists of a setup and a compute function.
 See example for a valid computation list.}
 
 \item{piktestsFolder}{A new folder for this piktests run is created in the given directory.}
