@@ -7,7 +7,7 @@ test_that("run works", {
   expect_true(file.exists(file.path(runFolder, "madratConfig.rds")))
   expect_true(file.exists(file.path(runFolder, "optionsEnvironmentVariablesLocale.rds")))
   expect_true(file.exists(file.path(runFolder, "testComputation", "setupComplete")))
-  expect_equal(readLines(file.path(runFolder, "testComputation", "job.log")), "computation complete")
+  expect_true("computation complete" %in% readLines(file.path(runFolder, "testComputation", "job.log")))
   expect_true(dir.exists(file.path(runFolder, "renv")))
   expect_true(file.exists(file.path(runFolder, "renv.lock")))
 
