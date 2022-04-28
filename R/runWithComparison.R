@@ -6,8 +6,9 @@
 #'
 #' @param renvInstallPackages Only in the second run, after installing other
 #' packages, `renv::install(renvInstallPackages)` is called.
-#' @param computationNames A subset of names(piktests::computations). The setup and compute functions of these
-#' computations are executed.
+#' @param computations A named list of "computations", or names of computations predefined in
+#' \code{\link{baseComputations}}. A computation consists of a setup and a compute function.
+#' See example for a valid computation list.
 #' @param piktestsFolder A new folder is created in the given directory. In that folder two folders called "old"
 #' and "new" are created which contain the actual piktests runs.
 #' @param diffTool One or more names of command line tools for comparing two text files. The first one that is found
@@ -17,24 +18,32 @@
 #'
 #' @author Pascal Führlich
 #'
-#' @seealso \code{\link{run}}, \code{\link{computations}}
+#' @seealso \code{\link{run}}, \code{\link{baseComputations}}
 #'
 #' @importFrom utils head
 #' @export
 runWithComparison <- function(renvInstallPackages,
-                              computationNames = c("magpiePrep", "remindPrep"),
+                              computations = c("magpiePrep", "remindPrep"),
                               piktestsFolder = getwd(),
                               diffTool = c("delta", "colordiff", "diff"), ...) {
   stopifnot(!is.null(renvInstallPackages))
-  runFolder <- createRunFolder(computationNames, piktestsFolder)
-  run(computationNames = computationNames, renvInstallPackages = NULL, ...,
+  if (is.character(computations)) {
+    if (all(computations %in% names(baseComputations))) {
+      computations <- baseComputations[computations]
+    } else {
+      stop("Unknown computations provided: [", paste(setdiff(computations, names(baseComputations)), collapse = ", "),
+           "] - Available computations: [", paste(names(baseComputations), collapse = ", "), "]")
+    }
+  }
+  runFolder <- createRunFolder(names(computations), piktestsFolder)
+  run(renvInstallPackages = NULL, computations = computations, ...,
       runFolder = file.path(runFolder, "old"), jobNameSuffix = "-old")
-  run(computationNames = computationNames, renvInstallPackages = renvInstallPackages, ...,
+  run(renvInstallPackages = renvInstallPackages, computations = computations, ...,
       runFolder = file.path(runFolder, "new"), jobNameSuffix = "-new")
 
   # on the cluster default diff does not support colors, so using pascal's delta (fancy diff tool) installation
   diffTool <- if (any(Sys.which(diffTool) != "")) head(diffTool[Sys.which(diffTool) != ""], 1) else "diff"
-  for (computationName in computationNames) {
+  for (computationName in names(computations)) {
     compareLogsPath <- file.path(runFolder, paste0("compareLogs-", computationName, ".sh"))
     oldLog <- file.path(runFolder, "old", computationName, "job.log")
     newLog <- file.path(runFolder, "new", computationName, "job.log")

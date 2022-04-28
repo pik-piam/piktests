@@ -16,6 +16,7 @@ test_that("runLongJob works", {
   renvProject <- withr::local_tempdir()
   callr::r(function(targetDir) {
     renv::init(targetDir)
+    renv::settings$use.cache(FALSE)
     renv::install("withr")
   }, list(renvProject))
   workingDirectory <- withr::local_tempdir()

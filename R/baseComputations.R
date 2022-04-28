@@ -1,4 +1,4 @@
-#' computations
+#' baseComputations
 #'
 #' A list of computation objects to be used by \code{\link{run}} via the `whatToRun` parameter.
 #'
@@ -10,7 +10,7 @@
 #' @importFrom madrat retrieveData
 #' @importFrom renv install
 #' @export
-computations <- list(
+baseComputations <- list(
   # Setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`.
   magpiePrep = list(
     setup = function() {
@@ -59,6 +59,9 @@ computations <- list(
   ),
   testComputation = list(
     setup = function() {
+      if (!is.null(renv::project())) {
+        renv::settings$use.cache(FALSE)
+      }
       file.create("setupComplete")
     },
      compute = function() {
