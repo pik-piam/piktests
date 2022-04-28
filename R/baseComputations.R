@@ -33,16 +33,19 @@ baseComputations <- list(
       source(file.path("preprocessing-remind", "start.R")) # nolint
     }
   ),
-  remindExtraPrep = list(
+  remindExtramapValiPrep = list(
     setup = function() {
+    renv::install("mrremind", "mrvalidation", "edgeTransport")
     },
     compute = function() {
       withr::local_package("mrremind")
-      revision <- "6.278"
+      withr::local_package("mrcommons")
+      withr::local_package("mrvalidation")
+      withr::local_package("edgeTransport")
+
+      revision <- "6.298"
       for (mappings in list(c(regionmapping = "regionmappingH12.csv", extramappings = ""),
                             c(regionmapping = "regionmapping_21_EU11-without-missingH12.csv", extramappings = "regionmapping_21_EU11.csv"))) {
-        madrat::retrieveData(model = "REMIND", regionmapping = mappings[["regionmapping"]],
-                             rev = revision, cachetype = "def")
         madrat::retrieveData(model = "VALIDATIONREMIND", regionmapping = mappings[["regionmapping"]],
                              extramappings = mappings[["extramappings"]], rev = revision, cachetype = "def")
       }
