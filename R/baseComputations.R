@@ -38,35 +38,40 @@ baseComputations <- list(
   remindModel = list(
     setup = function() {
       message("Cloning the REMIND model repository, please wait...")
-      # TODO switch to remindmodel/remind
-      gert::git_clone("https://github.com/pfuehrlich-pik/remindmodel", branch = "develop", path = "repo")
+      gert::git_clone("https://github.com/remindmodel/remind", branch = "develop", path = "repo")
 
       renvProject <- normalizePath("..")
-      writeLines(paste0("renv::load('", renvProject, "')"),
+      writeLines(c(paste0("renv::load('", renvProject, "')"),
+                   "stopifnot(!is.null(renv::project()))"),
                  file.path("repo", ".Rprofile"))
+
+      renv::install("modelstats")
+      writeLines("start", file.path("repo", ".testsstatus")) # needed for modelstats
     },
     compute = function() {
       withr::local_dir("repo")
-      system2("Rscript", "start.R", input = "5") # 5 = SLURM priority, 12 nodes, nash H12
+      stopifnot(Sys.info()[["user"]] != "unknown")
+      modelstats::modeltests(model = "REMIND", user = Sys.info()[["user"]],
+                             compScen = FALSE, iamccheck = FALSE, email = FALSE)
     }
   ),
   magpieModel = list(
     setup = function() {
       gert::git_clone("https://github.com/magpiemodel/magpie", branch = "develop", path = "repo")
 
-      # TODO remove this file.remove when lucode is no longer used in these scripts
-      # delete scripts that use the unavailable lucode package
-      file.remove(file.path("repo", "scripts", "start", "projects", c("aff_bgp.R",
-                                                                      "project_BEST.R",
-                                                                      "project_inms2.R")))
-
       renvProject <- normalizePath("..")
-      writeLines(paste0("renv::load('", renvProject, "')"),
+      writeLines(c(paste0("renv::load('", renvProject, "')"),
+                   "stopifnot(!is.null(renv::project()))"),
                  file.path("repo", ".Rprofile"))
+
+      renv::install("modelstats")
+      writeLines("start", file.path("repo", ".testsstatus")) # needed for modelstats
     },
     compute = function() {
       withr::local_dir("repo")
-      source(file.path("scripts", "start", "default.R")) # nolint
+      stopifnot(Sys.info()[["user"]] != "unknown")
+      modelstats::modeltests(model = "MAgPIE", user = Sys.info()[["user"]],
+                             compScen = FALSE, iamccheck = FALSE, email = FALSE)
     }
   ),
   edgebuildingsPrep = list(
