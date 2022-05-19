@@ -70,7 +70,7 @@ baseComputations <- list(
     compute = function() {
       withr::local_dir("repo")
       stopifnot(Sys.info()[["user"]] != "unknown")
-      modelstats::modeltests(model = "MAgPIE", user = Sys.info()[["user"]],
+      modelstats::modeltests(mydir = normalizePath("."), model = "MAgPIE", user = Sys.info()[["user"]],
                              compScen = FALSE, iamccheck = FALSE, email = FALSE)
     }
   ),
