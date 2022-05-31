@@ -41,7 +41,10 @@ setupRenv <- function(targetFolder, renvInstallPackages, computationsSourceCode)
     renv::install(renvInstallPackages)
   }
 
-  renv::install("withr")
+  # withr is used to make temporary changes to global state like working directory, used in computations
+  # gert is used to clone repos in many computation setup functions
+  # yaml is needed so renv can determine dependencies in Rmd files
+  renv::install(c("withr", "gert", "yaml"))
 
   if (!is.null(renvInstallPackages)) {
     renv::install(renvInstallPackages)

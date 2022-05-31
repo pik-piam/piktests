@@ -11,12 +11,16 @@
 #' @importFrom renv install
 #' @export
 baseComputations <- list(
-  # Setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`.
+  # setup and compute functions run in a separate R session, so they must use `::` instead of roxygen's `@importFrom`
+
+  # the following packages are always available: renv, withr, gert, yaml
+
+  # renv will automatically determine and install dependencies after the setup function based on available R files
+  # so after e.g. cloning a repository no explicit renv::install for dependencies is needed
+
   magpiePrep = list(
     setup = function() {
-      renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:landuse/preprocessing-magpie.git", path = "preprocessing-magpie")
-      # further renv::install not necessary, because this is run before renv auto-detects and installs dependencies
     },
     compute = function() {
       withr::local_dir("preprocessing-magpie")
@@ -25,12 +29,49 @@ baseComputations <- list(
   ),
   remindPrep = list(
     setup = function() {
-      renv::install("gert")
       gert::git_clone("git@gitlab.pik-potsdam.de:REMIND/preprocessing-remind.git", path = "preprocessing-remind")
-      # further renv::install not necessary, because this is run before renv auto-detects and installs dependencies
     },
     compute = function() {
       source(file.path("preprocessing-remind", "start.R")) # nolint
+    }
+  ),
+  remindModel = list(
+    setup = function() {
+      message("Cloning the REMIND model repository, please wait...")
+      gert::git_clone("https://github.com/remindmodel/remind", branch = "develop", path = "repo")
+
+      renvProject <- normalizePath("..")
+      writeLines(c(paste0("renv::load('", renvProject, "')"),
+                   "stopifnot(!is.null(renv::project()))"),
+                 file.path("repo", ".Rprofile"))
+
+      renv::install("modelstats")
+      writeLines("start", file.path("repo", ".testsstatus")) # needed for modelstats
+    },
+    compute = function() {
+      withr::local_dir("repo")
+      stopifnot(Sys.info()[["user"]] != "unknown")
+      modelstats::modeltests(model = "REMIND", user = Sys.info()[["user"]],
+                             compScen = FALSE, iamccheck = FALSE, email = FALSE)
+    }
+  ),
+  magpieModel = list(
+    setup = function() {
+      gert::git_clone("https://github.com/magpiemodel/magpie", branch = "develop", path = "repo")
+
+      renvProject <- normalizePath("..")
+      writeLines(c(paste0("renv::load('", renvProject, "')"),
+                   "stopifnot(!is.null(renv::project()))"),
+                 file.path("repo", ".Rprofile"))
+
+      renv::install("modelstats")
+      writeLines("start", file.path("repo", ".testsstatus")) # needed for modelstats
+    },
+    compute = function() {
+      withr::local_dir("repo")
+      stopifnot(Sys.info()[["user"]] != "unknown")
+      modelstats::modeltests(mydir = normalizePath("."), model = "MAgPIE", user = Sys.info()[["user"]],
+                             compScen = FALSE, iamccheck = FALSE, email = FALSE)
     }
   ),
   edgebuildingsPrep = list(
