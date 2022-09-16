@@ -3,9 +3,10 @@ Package: piktests
 Title: Run PIK Integration Tests
 Version: 0.10.1
 Date: 2022-09-16
-Authors@R: 
-    c(person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = c("aut", "cre")),
-      person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"))
+Authors@R: c(
+    person("Pascal", "Führlich", , "pascal.fuehrlich@pik-potsdam.de", role = c("aut", "cre")),
+    person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut")
+  )
 Description: This package includes integration tests for selected models
     and packages related to those models.
 License: MIT + file LICENSE
@@ -17,11 +18,12 @@ Imports:
     slurmR,
     withr
 Suggests:
-    knitr,
     covr,
-    testthat,
-    rmarkdown
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder:
+    knitr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
-VignetteBuilder: knitr
