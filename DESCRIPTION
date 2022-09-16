@@ -19,7 +19,9 @@ Imports:
     withr
 Suggests:
     covr,
+    gert,
     knitr,
+    modelstats,
     rmarkdown,
     testthat
 VignetteBuilder:
