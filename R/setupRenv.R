@@ -64,7 +64,8 @@ setupRenv <- function(targetFolder, renvInstallPackages, computationsSourceCode)
   # despite MatrixModels requiring a newer Matrix Version
   # explicitly calling renv::install on all recursive strong dependencies solves this
   directDependencies <- unique(renv::dependencies()[["Package"]])
-  dependencies <- unique(unlist(tools::package_dependencies(directDependencies, recursive = "strong")))
+  dependencies <- unique(c(directDependencies,
+                           unlist(tools::package_dependencies(directDependencies, recursive = "strong"))))
   renv::install(dependencies)
 
   if (!is.null(renvInstallPackages)) {
