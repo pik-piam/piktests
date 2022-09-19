@@ -31,6 +31,7 @@
 #'
 #' @importFrom renv init install dependencies snapshot
 #' @importFrom withr with_dir
+#' @importFrom tools package_dependencies
 setupRenv <- function(targetFolder, renvInstallPackages, computationsSourceCode) {
   # This function is run via callr::r so it must use `::` everywhere and cannot rely on roxygen's `@importFrom`.
 
@@ -59,8 +60,12 @@ setupRenv <- function(targetFolder, renvInstallPackages, computationsSourceCode)
     })
   }
 
-  dependencies <- renv::dependencies()
-  renv::install(unique(dependencies[["Package"]]))
+  # renv::install("mrremind") installs MatrixModels but does not update Matrix,
+  # despite MatrixModels requiring a newer Matrix Version
+  # explicitly calling renv::install on all recursive strong dependencies solves this
+  directDependencies <- unique(renv::dependencies()[["Package"]])
+  dependencies <- unique(unlist(tools::package_dependencies(directDependencies, recursive = "strong")))
+  renv::install(dependencies)
 
   if (!is.null(renvInstallPackages)) {
     renv::install(renvInstallPackages)
